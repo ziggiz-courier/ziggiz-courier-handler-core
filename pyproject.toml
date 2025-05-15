@@ -25,7 +25,6 @@ pre-commit = "^4.2.0"
 flake8-docstrings = "^1.7.0"
 flake8 = "^7.2.0"
 flake8-import-order = "^0.18.2"
-python-semantic-release = "^9.21.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -47,9 +46,19 @@ lines_between_types = 1
 
 [tool.semantic_release]
 version_variable = ["pyproject.toml:version"]
-branch = "main"
+branches = ["main", "next", "next-major"]
 upload_to_pypi = false
-upload_to_release = true
+upload_to_repository = true
 build_command = "poetry build"
+dist_path = "dist/"
+remove_dist = false
 changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): version bump to v{version}"
+commit_author = "github-actions <action@github.com>"
+
+# Specify commit parsing and version bump rules
+major_on_zero = false
+[tool.semantic_release.commit_parser_options]
+allowed_tags = ["decoder", "encoder", "model", "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"]
+minor_tags = ["feat", "decoder", "encoder", "model"]
+patch_tags = ["fix", "perf"]
