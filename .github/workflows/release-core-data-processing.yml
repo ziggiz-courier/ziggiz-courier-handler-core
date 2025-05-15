@@ -28,19 +28,18 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: core-data-processing
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
       - name: Read Python version
         id: python_version
         run: |
           PY_VERSION=$(cat .python-version)
-          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
-        working-directory: .
+          echo "version=\${PY_VERSION}" >> \$GITHUB_OUTPUT
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ steps.python_version.outputs.version }}
+          python-version: \${{ steps.python_version.outputs.version }}
       - name: Install Poetry
         run: pip install poetry
       - name: Install dependencies
@@ -62,30 +61,29 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: core-data-processing
+        working-directory: .
     if: github.ref == 'refs/heads/main' || inputs.manual-release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: \${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
       - name: Read Python version
         id: python_version
         run: |
           PY_VERSION=$(cat .python-version)
-          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
-        working-directory: .
+          echo "version=\${PY_VERSION}" >> \$GITHUB_OUTPUT
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ steps.python_version.outputs.version }}
+          python-version: \${{ steps.python_version.outputs.version }}
       - name: Install Poetry
         run: pip install poetry
       - name: Install semantic-release
         run: pip install python-semantic-release==8.3.0
       - name: Run semantic-release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
