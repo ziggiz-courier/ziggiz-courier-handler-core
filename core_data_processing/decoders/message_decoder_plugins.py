@@ -17,14 +17,15 @@
 
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional, Type
+from typing import Any, Callable, Dict, List, Type, Union
 
 # Local/package imports
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
 
-# Registry: model class -> plugin function
+# Registry: model class -> plugin class instances
 _message_decoder_plugins: Dict[
-    Type[EventEnvelopeBaseModel], list[Callable[[EventEnvelopeBaseModel, Any], bool]]
+    Type[EventEnvelopeBaseModel],
+    list[Union["MessageDecoderPlugin", Callable[[EventEnvelopeBaseModel, Any], bool]]],
 ] = {}
 
 
@@ -35,12 +36,11 @@ class MessageDecoderPlugin(ABC):
     """
 
     @abstractmethod
-    def decode(self, model: EventEnvelopeBaseModel, raw: Any) -> bool:
+    def decode(self, model: EventEnvelopeBaseModel) -> bool:
         """
         Decode a message into the model.
         Args:
             model: The EventEnvelopeBaseModel instance to populate.
-            raw: The raw message data to decode.
         Returns:
             bool: True if decoding was successful, False otherwise.
         """
@@ -49,27 +49,35 @@ class MessageDecoderPlugin(ABC):
 def register_message_decoder(model_cls: Type[EventEnvelopeBaseModel]):
     """
     Decorator to register a message decoder plugin for a specific EventEnvelopeBaseModel subclass.
+
+    This can be used as a decorator on functions or a direct function to register plugin class instances.
+
     Args:
         model_cls: The subclass of EventEnvelopeBaseModel this plugin handles.
+
     Returns:
-        Decorator that registers the function as a plugin.
+        Decorator that registers the function or class instance as a plugin.
     """
 
-    def decorator(func: Callable[[EventEnvelopeBaseModel, Any], bool]):
-        _message_decoder_plugins.setdefault(model_cls, []).append(func)
-        return func
+    def decorator(
+        plugin_or_func: Union[
+            MessageDecoderPlugin, Callable[[EventEnvelopeBaseModel, Any], bool]
+        ],
+    ):
+        _message_decoder_plugins.setdefault(model_cls, []).append(plugin_or_func)
+        return plugin_or_func
 
     return decorator
 
 
 def get_message_decoders(
     model_cls: Type[EventEnvelopeBaseModel],
-) -> Optional[list[Callable[[EventEnvelopeBaseModel, Any], bool]]]:
+) -> List[Union[MessageDecoderPlugin, Callable[[EventEnvelopeBaseModel, Any], bool]]]:
     """
     Retrieve the message decoder plugins for a given model class.
     Args:
         model_cls: The subclass of EventEnvelopeBaseModel.
     Returns:
-        List of plugin functions or None if not registered.
+        List of plugin functions or class instances.
     """
     return _message_decoder_plugins.get(model_cls, [])

@@ -13,7 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# Directory marker for Fortinet FortiGate message plugins
+# Import plugins and base classes
+from .base import MessageDecoderPluginBase
+from .fortinet import fortigate
 from .paloalto import ngfw
 
-__all__ = ["paloalto"]
+__all__ = ["MessageDecoderPluginBase", "paloalto", "fortigate"]

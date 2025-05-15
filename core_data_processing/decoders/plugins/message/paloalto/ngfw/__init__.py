@@ -14,6 +14,14 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Directory marker for PaloAlto NGFW message plugin
-from .plugin import paloalto_ngfw_csv
+from .plugin import (
+    PaloAltoNGFWCSVDecoder,
+    paloalto_decoder_rfc3164,
+    paloalto_decoder_rfc5424,
+)
 
-__all__ = ["paloalto_ngfw_csv"]
+__all__ = [
+    "paloalto_decoder_rfc3164",
+    "paloalto_decoder_rfc5424",
+    "PaloAltoNGFWCSVDecoder",
+]

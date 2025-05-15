@@ -29,15 +29,15 @@ References:
 # Standard library imports
 import logging
 
+from typing import Any, Dict, Optional
+
 # Local/package imports
-from core_data_processing.decoders.utils.csv_parser import parse_quoted_csv_message
-from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
-from core_data_processing.models.event_structure_classification import (
-    StructuredEventStructureClassification,
-)
-from core_data_processing.models.message_decoder_plugins import (
+from core_data_processing.decoders.message_decoder_plugins import (
     register_message_decoder,
 )
+from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
+from core_data_processing.decoders.utils.csv_parser import parse_quoted_csv_message
+from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
 from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
 from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
 from .field_maps import PAN_TYPE_FIELD_MAP
@@ -45,52 +45,75 @@ from .field_maps import PAN_TYPE_FIELD_MAP
 logger = logging.getLogger(__name__)
 
 
-@register_message_decoder(SyslogRFC3164Message)
-@register_message_decoder(SyslogRFC5424Message)
-def paloalto_ngfw_csv(model: EventEnvelopeBaseModel, **kwargs) -> bool:
+class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
     """
-    Parse a PaloAlto NGFW syslog message in CSV format into event_data on the model.
+    Decoder for PaloAlto NGFW syslog messages in CSV format.
 
-    Args:
-        model (EventEnvelopeBaseModel): The event model instance to parse and update.
-        **kwargs: Additional keyword arguments (may include 'parsing_cache').
-
-    Returns:
-        bool: True if the message was parsed as PaloAlto NGFW CSV, False otherwise.
-
-    Example:
-        >>> msg = '2024/05/13 12:34:56,001801000000,TRAFFIC,...'
-        >>> paloalto_ngfw_csv(msg)
-        ['2024/05/13 12:34:56', '001801000000', 'TRAFFIC', ...]
+    This decoder parses PaloAlto NGFW syslog messages in CSV format and
+    updates the event model with structured data.
     """
-    message = getattr(model, "message", None)
-    if not isinstance(message, str):
+
+    def __init__(self, parsing_cache: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the PaloAlto NGFW CSV decoder.
+
+        Args:
+            parsing_cache (Optional[Dict[str, Any]]): A dictionary for caching parsed message results
+        """
+        super().__init__(parsing_cache)
+
+    def decode(self, model: EventEnvelopeBaseModel) -> bool:
+        """
+        Parse a PaloAlto NGFW syslog message in CSV format into event_data on the model.
+
+        Args:
+            model (EventEnvelopeBaseModel): The event model instance to parse and update.
+
+        Returns:
+            bool: True if the message was parsed as PaloAlto NGFW CSV, False otherwise.
+
+        Example:
+            >>> msg = '2024/05/13 12:34:56,001801000000,TRAFFIC,...'
+            >>> decoder = PaloAltoNGFWCSVDecoder()
+            >>> decoder.decode(model_with_msg)
+            True
+        """
+        message = getattr(model, "message", None)
+        if not isinstance(message, str):
+            return False
+
+        if "parse_quoted_csv_message" not in self.parsing_cache:
+            self.parsing_cache["parse_quoted_csv_message"] = parse_quoted_csv_message(
+                message
+            )
+
+        fields = self.parsing_cache["parse_quoted_csv_message"]
+
+        if fields and isinstance(fields, list) and len(fields) > 3:
+            type_field = fields[3] if len(fields) > 3 else None
+            field_names = None
+
+            if type_field:
+                field_names = PAN_TYPE_FIELD_MAP.get(type_field.upper())
+
+            if field_names:
+                self.apply_field_mapping(
+                    model=model,
+                    fields=fields,
+                    field_names=field_names,
+                    vendor="paloalto",
+                    product="ngfw",
+                    msgclass=type_field.lower(),
+                )
+                return True
+
         return False
-    if "parsing_cache" in kwargs and isinstance(kwargs["parsing_cache"], dict):
-        if "paloalto_ngfw_csv" not in kwargs["parsing_cache"]:
-            kwargs["parsing_cache"]["parse_quoted_csv_message"] = (
-                parse_quoted_csv_message(message)
-            )
-        fields = kwargs["parsing_cache"]["parse_quoted_csv_message"]
-    else:
-        fields = parse_quoted_csv_message(message)
-    if fields and isinstance(fields, list) and len(fields) > 3:
-        type_field = fields[3] if len(fields) > 3 else None
-        field_names = None
-        if type_field:
-            field_names = PAN_TYPE_FIELD_MAP.get(type_field.upper())
-        if field_names:
-            model.structure_classification = StructuredEventStructureClassification(
-                vendor="paloalto",
-                product="ngfw",
-                msgclass=type_field.lower(),
-                fields=field_names,
-            )
-            model.event_data = {k: v for k, v in zip(field_names, fields)}
 
-            logger.debug(
-                "PaloAlto NGFW plugin parsed event_data",
-                extra={"event_data": model.event_data},
-            )
-            return True
-    return False
+
+# Create singleton instances for registration
+paloalto_decoder_rfc3164 = PaloAltoNGFWCSVDecoder()
+paloalto_decoder_rfc5424 = PaloAltoNGFWCSVDecoder()
+
+# Register the class instances directly
+register_message_decoder(SyslogRFC3164Message)(paloalto_decoder_rfc3164)
+register_message_decoder(SyslogRFC5424Message)(paloalto_decoder_rfc5424)
