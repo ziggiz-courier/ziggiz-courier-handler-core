@@ -17,9 +17,11 @@
 
 # Local/package imports
 from core_data_processing.decoders.utils.timestamp_parser import TimestampParser
+from .cef_parser import parse_cef_message
 from .kv_parser import parse_kv_message
 
 __all__ = [
     "TimestampParser",
     "parse_kv_message",
+    "parse_cef_message",
 ]
