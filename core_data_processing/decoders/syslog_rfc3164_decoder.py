@@ -122,6 +122,21 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
     # Use the base decoder for efficient PRI extraction
     _base_decoder = SyslogRFCBaseDecoder()
 
+    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+        """
+        Initialize the decoder.
+
+        Args:
+            connection_cache: Optional dictionary for caching connections
+            event_parsing_cache: Optional dictionary for caching event parsing results
+        """
+        super().__init__(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+        self._base_decoder = SyslogRFCBaseDecoder(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+
     def _parse_timestamp(
         self, timestamp_str: str, formats, reference_time: Optional[datetime] = None
     ):
@@ -269,7 +284,8 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             )
 
             # --- Plugin-based event_data decoding ---
-            parsing_cache = parsing_cache or {}
+            if parsing_cache is None:
+                parsing_cache = self.event_parsing_cache
             plugins = get_message_decoders(SyslogRFC3164Message)
 
             if plugins and model.message:

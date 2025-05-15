@@ -55,7 +55,7 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
             ValueError: If the raw_data does not match basic syslog format
         """
         if parsing_cache is None:
-            parsing_cache = {}
+            parsing_cache = self.event_parsing_cache
 
         if not raw_data or len(raw_data) < 3:  # Needs at least <>x
             raise ValueError(f"Invalid syslog format: {raw_data}")

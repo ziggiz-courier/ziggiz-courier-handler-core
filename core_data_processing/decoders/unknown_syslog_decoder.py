@@ -31,10 +31,19 @@ from core_data_processing.models.event_envelope_base import EventEnvelopeBaseMod
 class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
     """Decoder that attempts RFC5424, then RFC3164, then RFCBase, else returns EventEnvelopeBaseModel with message."""
 
-    def __init__(self):
-        self._rfc5424 = SyslogRFC5424Decoder()
-        self._rfc3164 = SyslogRFC3164Decoder()
-        self._rfcbase = SyslogRFCBaseDecoder()
+    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+        super().__init__(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+        self._rfc5424 = SyslogRFC5424Decoder(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+        self._rfc3164 = SyslogRFC3164Decoder(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+        self._rfcbase = SyslogRFCBaseDecoder(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
 
     def decode(self, raw_data: Any) -> EventEnvelopeBaseModel:
         """

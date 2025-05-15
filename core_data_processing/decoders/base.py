@@ -28,6 +28,19 @@ T = TypeVar("T", bound=EventEnvelopeBaseModel)
 class Decoder(Generic[T], ABC):
     """Base class for all decoders."""
 
+    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+        """
+        Initialize the decoder.
+
+        Args:
+            connection_cache: Optional dictionary for caching connections
+            event_parsing_cache: Optional dictionary for caching event parsing results
+        """
+        self.connection_cache = connection_cache if connection_cache is not None else {}
+        self.event_parsing_cache = (
+            event_parsing_cache if event_parsing_cache is not None else {}
+        )
+
     @abstractmethod
     def decode(self, raw_data: Any) -> T:
         """

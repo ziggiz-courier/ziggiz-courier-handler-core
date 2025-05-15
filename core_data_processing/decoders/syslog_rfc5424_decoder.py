@@ -45,12 +45,28 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
     # Use the base decoder for efficient PRI extraction
     _base_decoder = SyslogRFCBaseDecoder()
 
+    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+        """
+        Initialize the decoder.
+
+        Args:
+            connection_cache: Optional dictionary for caching connections
+            event_parsing_cache: Optional dictionary for caching event parsing results
+        """
+        super().__init__(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+        self._base_decoder = SyslogRFCBaseDecoder(
+            connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
+        )
+
     def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFC5424Message:
         """
         Decode a syslog RFC5424 message from raw string data.
 
         Args:
             raw_data: The raw syslog message as string
+            parsing_cache: Optional dictionary for caching parsing data
 
         Returns:
             A SyslogRFC5424Message instance representing the decoded data
@@ -86,6 +102,8 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             )
 
             # --- Plugin-based event_data decoding ---
+            if parsing_cache is None:
+                parsing_cache = self.event_parsing_cache
             plugins = get_message_decoders(SyslogRFC5424Message)
             if plugins and model.message:
                 for plugin in plugins:

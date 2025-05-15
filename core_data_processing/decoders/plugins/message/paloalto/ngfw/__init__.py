@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Directory marker for PaloAlto NGFW message plugin
-from . import ngfw
-from .plugin import paloalto_ngfw
+from .plugin import paloalto_ngfw_csv
 
-__all__ = ["plugin"]
+__all__ = ["paloalto_ngfw_csv"]
