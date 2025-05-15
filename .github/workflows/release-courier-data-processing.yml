@@ -21,7 +21,7 @@ jobs:
       - name: Read Python version
         id: python_version
         run: |
-          PY_VERSION=$(cat core-data-processing/.python-version)
+          PY_VERSION=$(cat .python-version)
           echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
         working-directory: .
       - name: Set up Python
