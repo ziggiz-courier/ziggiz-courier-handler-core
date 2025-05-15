@@ -25,6 +25,7 @@ pre-commit = "^4.2.0"
 flake8-docstrings = "^1.7.0"
 flake8 = "^7.2.0"
 flake8-import-order = "^0.18.2"
+python-semantic-release = "^9.21.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -50,6 +51,6 @@ branch = "main"
 upload_to_pypi = false
 upload_to_release = true
 build_command = "poetry build"
-commit_parser = "semantic_release.commit_parser.conventional:ConventionalCommitParser"
+commit_parser = "semantic_release.parser.angular"
 changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): version bump to v{version}"
