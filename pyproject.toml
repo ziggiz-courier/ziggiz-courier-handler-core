@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "core-data-processing"
+version = "0.2.0"
+description = "Data processing library for decoding, transforming, and encoding data"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "core_data_processing"}]
+
+
+[tool.poetry.dependencies]
+python = "^3.13"
+opentelemetry-api = "^1.32.1"
+opentelemetry-sdk = "^1.32.1"
+mypy = "^1.15.0"
+pydantic = "^2.6.1"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+black = "^25.1.0"
+isort = "^6.0.1"
+autoflake8 = "^0.4.1"
+pytest-mypy = "^1.0.1"
+pre-commit = "^4.2.0"
+flake8-docstrings = "^1.7.0"
+flake8 = "^7.2.0"
+flake8-import-order = "^0.18.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = [".coverage"]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["core_data_processing"]
+known_third_party = ["tests"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+import_heading_stdlib = "Standard library imports"
+import_heading_thirdparty = "Third-party imports"
+import_heading_firstparty = "Local/package imports"
+no_lines_before = ["STDLIB", "LOCALFOLDER"]
+lines_between_types = 1

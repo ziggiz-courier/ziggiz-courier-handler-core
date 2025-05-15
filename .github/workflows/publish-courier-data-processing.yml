@@ -1,0 +1,39 @@
+name: Publish core-data-processing to GitHub Packages
+
+on:
+  push:
+    tags:
+      - "core-data-processing-v*"
+
+jobs:
+  publish:
+    name: Build & Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core-data-processing
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Python version
+        id: python_version
+        run: |
+          PY_VERSION=$(cat core-data-processing/.python-version)
+          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
+        working-directory: .
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python_version.outputs.version }}
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install --only main
+        working-directory: core-data-processing
+      - name: Build package
+        run: poetry build
+        working-directory: core-data-processing
+      - name: Publish to GitHub Packages
+        env:
+          POETRY_PYPI_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+        run: poetry publish --build -r github
+        working-directory: core-data-processing

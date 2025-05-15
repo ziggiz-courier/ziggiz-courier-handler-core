@@ -1,0 +1,86 @@
+name: Release core-data-processing
+
+on:
+  push:
+    paths:
+      - "core-data-processing/**"
+      - ".github/workflows/*-core-data-processing.yml"
+    branches:
+      - main
+
+jobs:
+  test-lint:
+    name: Test & Lint (CPython & PyPy)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core-data-processing
+    strategy:
+      matrix:
+        python-implementation: ["cpypy", "pypy"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Python version
+        id: python_version
+        run: |
+          PY_VERSION=$(cat core-data-processing/.python-version)
+          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
+        working-directory: .
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python_version.outputs.version }}
+          python-implementation: ${{ matrix.python-implementation }}
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Run black
+        run: poetry run black --check core_data_processing
+      - name: Run flake8
+        run: poetry run flake8 core_data_processing
+      - name: Run isort
+        run: poetry run isort --check-only core_data_processing
+      #   - name: Run mypy
+      #     run: poetry run mypy core_data_processing
+      - name: Run pytest
+        run: poetry run pytest tests
+
+  release:
+    name: Version, Commit & Tag
+    needs: test-lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: core-data-processing
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read Python version
+        id: python_version
+        run: |
+          PY_VERSION=$(cat core-data-processing/.python-version)
+          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
+        working-directory: .
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python_version.outputs.version }}
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install semantic-release
+        run: pip install python-semantic-release
+      - name: Run semantic-release (version, commit, tag)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          semantic-release version
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pyproject.toml CHANGELOG.md
+          git commit -m "chore(release): version bump [skip ci]" || echo "No changes to commit"
+          VERSION=$(python -c "import toml; print(toml.load('core-data-processing/pyproject.toml')['tool']['poetry']['version'])")
+          git tag core-data-processing-v$VERSION
+          git push origin HEAD:main --follow-tags
