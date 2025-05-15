@@ -107,6 +107,8 @@ jobs:
           key: poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
+      - name: Install Poetry
+        run: pip install poetry
       - name: Install dependencies
         if: steps.poetry-cache.outputs.cache-hit != 'true'
         run: poetry install
