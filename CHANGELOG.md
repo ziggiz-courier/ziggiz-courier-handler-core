@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.1.1 (2025-05-15)
+
+### Bug Fixes
+
+- Correct version in pyproject.toml
+  ([`fbfa50d`](https://github.com/ziggiz-courier/core-data-processing/commit/fbfa50d98cbb3e3dbcf4e56e7b41801f59ca511e))
+
+
 ## v0.1.0 (2025-05-15)
 
 ### Bug Fixes
