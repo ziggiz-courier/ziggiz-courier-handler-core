@@ -59,12 +59,12 @@ commit_author = "github-actions <action@github.com>"
 match = "(main|master)"
 prerelease = false
 
-[tool.semantic_release.branches.next"]
+[tool.semantic_release.branches.next]
 match = "^next$"
 prerelease = true
 prerelease_token = "next"
 
-[tool.semantic_release.branches.next-major"]
+[tool.semantic_release.branches.next-major]
 match = "^next-major$"
 prerelease = true
 prerelease_token = "next"
