@@ -1,6 +1,16 @@
 name: Release core-data-processing
 
 on:
+  workflow_dispatch:
+    inputs:
+      manual-release:
+        description: "Manually trigger a release"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
   push:
     branches:
       - main
@@ -10,17 +20,15 @@ on:
       - "core_data_processing/**"
       - "poetry.lock"
       - "pyproject.toml"
-      - ".github/workflows/release-courier-data-processing.yml"
+      - ".github/workflows/release-core-data-processing.yml"
+      - "tests/**"
 jobs:
   test-lint:
-    name: Test & Lint (CPython & PyPy)
+    name: Test & Lint
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: core-data-processing
-    strategy:
-      matrix:
-        python-implementation: ["cpython", "pypy"]
     steps:
       - uses: actions/checkout@v4
       - name: Read Python version
@@ -33,7 +41,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ steps.python_version.outputs.version }}
-          python-implementation: ${{ matrix.python-implementation }}
       - name: Install Poetry
         run: pip install poetry
       - name: Install dependencies
@@ -44,8 +51,8 @@ jobs:
         run: poetry run flake8 core_data_processing
       - name: Run isort
         run: poetry run isort --check-only core_data_processing
-      #   - name: Run mypy
-      #     run: poetry run mypy core_data_processing
+      - name: Run mypy
+        run: poetry run mypy core_data_processing
       - name: Run pytest
         run: poetry run pytest tests
 
@@ -56,11 +63,12 @@ jobs:
     defaults:
       run:
         working-directory: core-data-processing
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || inputs.manual-release == 'true'
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
       - name: Read Python version
         id: python_version
         run: |
@@ -74,16 +82,11 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
       - name: Install semantic-release
-        run: pip install python-semantic-release
-      - name: Run semantic-release (version, commit, tag)
+        run: pip install python-semantic-release==8.3.0
+      - name: Run semantic-release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          semantic-release version
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml CHANGELOG.md
-          git commit -m "chore(release): version bump [skip ci]" || echo "No changes to commit"
-          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
-          git tag v$VERSION
-          git push origin HEAD:main --follow-tags
+          semantic-release publish

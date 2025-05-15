@@ -19,6 +19,7 @@ The Courier Data Processing library provides a flexible framework for processing
 - **OpenTelemetry Integration**: Export events as OpenTelemetry spans
 - **Flexible & Extensible**: Easy to add new decoders, adapters, and encoders
 - **Type Safety**: Leverages Python type hints and Pydantic for type validation
+- **Continuous Integration/Deployment**: Automated testing, linting, and releases
 
 ## Installation
 
@@ -254,9 +255,42 @@ class CustomEncoder(Encoder[CommonEvent, dict]):
 - **JSONEncoder**: Converts events to JSON format
 - **OtelSpanEncoder**: Converts events to OpenTelemetry spans
 
+## Development
+
+### Commit Conventions
+
+This project follows the [Conventional Commits](https://www.conventionalcommits.org/) specification. All commit messages must follow this format to ensure proper versioning and changelog generation.
+
+See [COMMIT_CONVENTION.md](COMMIT_CONVENTION.md) for detailed guidelines.
+
+### Continuous Integration/Deployment
+
+The project uses GitHub Actions for CI/CD:
+
+- **Automated Testing**: All tests are run automatically on push to main branches
+- **Code Quality**: Black, Flake8, isort, and mypy are used to ensure code quality
+- **Automatic Releases**: New versions are automatically published when:
+  - Code changes are pushed to main
+  - Dependencies are updated
+  - Tests pass successfully
+
+The version number follows semantic versioning and is automatically determined based on commit messages:
+- `fix:` commits trigger a PATCH release
+- `feat:` commits trigger a MINOR release
+- `BREAKING CHANGE:` in commit body triggers a MAJOR release
+
+### Development Process
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Ensure tests pass locally: `poetry run pytest`
+5. Commit using conventional commit format
+6. Submit a Pull Request
+
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request following the guidelines above.
 
 ## License
 

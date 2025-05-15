@@ -45,3 +45,13 @@ import_heading_thirdparty = "Third-party imports"
 import_heading_firstparty = "Local/package imports"
 no_lines_before = ["STDLIB", "LOCALFOLDER"]
 lines_between_types = 1
+
+[tool.semantic_release]
+version_variable = ["pyproject.toml:version"]
+branch = "main"
+upload_to_pypi = false
+upload_to_release = true
+build_command = "poetry build"
+commit_parser = "conventional"
+changelog_file = "CHANGELOG.md"
+commit_message = "chore(release): version bump to v{version}"
