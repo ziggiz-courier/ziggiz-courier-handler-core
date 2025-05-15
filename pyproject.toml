@@ -46,7 +46,6 @@ lines_between_types = 1
 
 [tool.semantic_release]
 version_variable = ["pyproject.toml:version"]
-branches = ["main", "next", "next-major"]
 upload_to_pypi = false
 upload_to_repository = true
 build_command = "poetry build"
@@ -56,9 +55,23 @@ changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): version bump to v{version}"
 commit_author = "github-actions <action@github.com>"
 
+[tool.semantic_release.branches.main]
+match = "(main|master)"
+prerelease = false
+
+[tool.semantic_release.branches.next"]
+match = "^next$"
+prerelease = true
+prerelease_token = "next"
+
+[tool.semantic_release.branches.next-major"]
+match = "^next-major$"
+prerelease = true
+prerelease_token = "next"
+
 # Specify commit parsing and version bump rules
 major_on_zero = false
 [tool.semantic_release.commit_parser_options]
-allowed_tags = ["decoder", "encoder", "model", "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert"]
+allowed_tags = ["decoder", "encoder", "model", "feat", "fix", "docs", "style", "refactor", "perf", "test", "build", "ci", "chore", "revert", "deps"]
 minor_tags = ["feat", "decoder", "encoder", "model"]
-patch_tags = ["fix", "perf"]
+patch_tags = ["fix", "perf","deps"]
