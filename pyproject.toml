@@ -2,7 +2,7 @@
 name = "core-data-processing"
 version = "0.2.0"
 description = "Data processing library for decoding, transforming, and encoding data"
-authors = ["Your Name <you@example.com>"]
+authors = ["Ryan Faircloth <rf@ziggiz.ai>"]
 readme = "README.md"
 packages = [{include = "core_data_processing"}]
 
@@ -50,6 +50,6 @@ branch = "main"
 upload_to_pypi = false
 upload_to_release = true
 build_command = "poetry build"
-commit_parser = "conventional"
+commit_parser = "semantic_release.commit_parser.conventional:ConventionalCommitParser"
 changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): version bump to v{version}"
