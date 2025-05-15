@@ -17,7 +17,7 @@
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
-from core_data_processing.models.message_decoder_plugins import get_message_decoders
+from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
@@ -98,7 +98,11 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
             plugins = get_message_decoders(SyslogRFCBaseModel)
             if plugins and model.message:
                 for plugin in plugins:
-                    if plugin(model, parsing_cache=parsing_cache):
-                        break
+                    if hasattr(plugin, "decode"):  # Class-based plugin
+                        if plugin.decode(model):
+                            break
+                    else:  # Function-based plugin (for backward compatibility)
+                        if plugin(model, parsing_cache=parsing_cache):
+                            break
 
         return model

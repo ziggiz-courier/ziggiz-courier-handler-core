@@ -27,32 +27,49 @@ References:
 # Standard library imports
 import logging
 
+from typing import Any, Dict, Optional
+
 # Local/package imports
+from core_data_processing.decoders.message_decoder_plugins import (
+    register_message_decoder,
+)
+from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
 from core_data_processing.decoders.utils.kv_parser import parse_kv_message
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
 from core_data_processing.models.event_structure_classification import (
     StructuredEventStructureClassification,
-)
-from core_data_processing.models.message_decoder_plugins import (
-    MessageDecoderPlugin,
-    register_message_decoder,
 )
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 logger = logging.getLogger(__name__)
 
 
-class FortigateKVDecoderPlugin(MessageDecoderPlugin):
+class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
     """
     Message decoder plugin for FortiGate key=value syslog messages.
-    Implements the MessageDecoderPlugin ABC.
+    Implements the MessageDecoderPluginBase.
     """
 
-    def decode(self, model: EventEnvelopeBaseModel, raw: object) -> bool:
+    def __init__(self, parsing_cache: Optional[Dict[str, Any]] = None):
+        """
+        Initialize the FortiGate KV decoder.
+
+        Args:
+            parsing_cache (Optional[Dict[str, Any]]): A dictionary for caching parsed message results
+        """
+        super().__init__(parsing_cache)
+
+    def decode(self, model: EventEnvelopeBaseModel) -> bool:
         message = getattr(model, "message", None)
         if not isinstance(message, str):
             return False
-        event_data = parse_kv_message(message)
+
+        # Use parsing cache if available
+        if "parse_kv_message" not in self.parsing_cache:
+            self.parsing_cache["parse_kv_message"] = parse_kv_message(message)
+
+        event_data = self.parsing_cache["parse_kv_message"]
+
         if (
             event_data
             and "eventtime" in event_data
@@ -77,12 +94,8 @@ class FortigateKVDecoderPlugin(MessageDecoderPlugin):
         return False
 
 
-def fortigate_kv(model: EventEnvelopeBaseModel, **kwargs) -> bool:
-    """
-    Adapter function to use FortigateKVDecoderPlugin with the plugin registry.
-    """
-    plugin = FortigateKVDecoderPlugin()
-    return plugin.decode(model, kwargs)
+# Create a singleton instance for registration
+fortigate_kv_decoder = FortigateKVDecoderPlugin()
 
-
-register_message_decoder(SyslogRFCBaseModel)(fortigate_kv)
+# Register the class instance directly
+register_message_decoder(SyslogRFCBaseModel)(fortigate_kv_decoder)

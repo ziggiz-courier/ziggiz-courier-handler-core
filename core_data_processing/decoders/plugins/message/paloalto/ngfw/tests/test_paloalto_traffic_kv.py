@@ -29,7 +29,7 @@ from core_data_processing.decoders.unknown_syslog_decoder import UnknownSyslogDe
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_decode_unknown_paloalto_traffic_rfc3164():
     dt = datetime.now().astimezone()
     date = dt.strftime("%b %d %H:%M:%S")
@@ -50,7 +50,7 @@ def test_decode_unknown_paloalto_traffic_rfc3164():
     assert syslog_result.event_data.get("type", "").lower() == "traffic"
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 def test_decode_unknown_paloalto_traffic_rfc5424():
     dt = datetime.now().astimezone()
     date = dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")

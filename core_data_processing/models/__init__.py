@@ -17,11 +17,6 @@
 
 # Local/package imports
 from core_data_processing.models.event_envelope_base import BaseModel
-from core_data_processing.models.message_decoder_plugins import (
-    MessageDecoderPlugin,
-    get_message_decoders,
-    register_message_decoder,
-)
 from core_data_processing.models.syslog_rfc3164 import (
     SyslogRFC3164Message,
 )
@@ -35,7 +30,4 @@ __all__ = [
     "SyslogRFCBaseModel",
     "SyslogRFC5424Message",
     "SyslogRFC3164Message",
-    "MessageDecoderPlugin",
-    "register_message_decoder",
-    "get_message_decoders",
 ]

@@ -23,11 +23,11 @@ from typing import Optional, Tuple
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
+from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.decoders.syslog_rfc_base_decoder import (
     SyslogRFCBaseDecoder,
 )
 from core_data_processing.decoders.utils.timestamp_parser import TimestampParser
-from core_data_processing.models.message_decoder_plugins import get_message_decoders
 from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
 
 # Compile the regex pattern for parsing hostname, app name, proc id and message at module level
@@ -290,8 +290,12 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
 
             if plugins and model.message:
                 for plugin in plugins:
-                    if plugin(model, parsing_cache=parsing_cache):
-                        break
+                    if hasattr(plugin, "decode"):  # Class-based plugin
+                        if plugin.decode(model):
+                            break
+                    else:  # Function-based plugin (for backward compatibility)
+                        if plugin(model, parsing_cache=parsing_cache):
+                            break
 
             return model
         except ValueError as e:
