@@ -2,10 +2,10 @@ name: PR Check core-data-processing
 
 on:
   pull_request:
-    paths:
-      - "core-data-processing/**"
     branches:
       - main
+      - next
+      - next-major
 
 jobs:
   test-lint:
@@ -22,7 +22,7 @@ jobs:
       - name: Read Python version
         id: python_version
         run: |
-          PY_VERSION=$(cat core-data-processing/.python-version)
+          PY_VERSION=$(cat .python-version)
           echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
         working-directory: .
       - name: Set up Python

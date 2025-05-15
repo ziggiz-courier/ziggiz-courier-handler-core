@@ -2,12 +2,10 @@ name: Release core-data-processing
 
 on:
   push:
-    paths:
-      - "core-data-processing/**"
-      - ".github/workflows/*-core-data-processing.yml"
     branches:
       - main
-
+      - next
+      - next-major
 jobs:
   test-lint:
     name: Test & Lint (CPython & PyPy)
@@ -61,7 +59,7 @@ jobs:
       - name: Read Python version
         id: python_version
         run: |
-          PY_VERSION=$(cat core-data-processing/.python-version)
+          PY_VERSION=$(cat .python-version)
           echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
         working-directory: .
       - name: Set up Python
@@ -81,6 +79,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add pyproject.toml CHANGELOG.md
           git commit -m "chore(release): version bump [skip ci]" || echo "No changes to commit"
-          VERSION=$(python -c "import toml; print(toml.load('core-data-processing/pyproject.toml')['tool']['poetry']['version'])")
-          git tag core-data-processing-v$VERSION
+          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['tool']['poetry']['version'])")
+          git tag v$VERSION
           git push origin HEAD:main --follow-tags
