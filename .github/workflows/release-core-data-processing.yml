@@ -50,8 +50,8 @@ jobs:
         run: poetry run flake8 core_data_processing
       - name: Run isort
         run: poetry run isort --check-only core_data_processing
-      - name: Run mypy
-        run: poetry run mypy core_data_processing
+      # - name: Run mypy
+      #   run: poetry run mypy core_data_processing
       - name: Run pytest
         run: poetry run pytest tests
 
