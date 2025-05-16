@@ -22,7 +22,7 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.generic.leef.plugin import (
+from core_data_processing.decoders.plugins.message.generic.leef1.plugin import (
     GenericLEEFDecoderPlugin,
 )
 from core_data_processing.decoders.unknown_syslog_decoder import UnknownSyslogDecoder
