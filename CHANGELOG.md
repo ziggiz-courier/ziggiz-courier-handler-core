@@ -1,6 +1,27 @@
 # CHANGELOG
 
 
+## v0.6.0 (2025-05-16)
+
+### Features
+
+- **leef2**: Initial leef2 support
+  ([`514bc62`](https://github.com/ziggiz-courier/core-data-processing/commit/514bc6238a43fd472d7ce47dc92ed1be49ebc9ee))
+
+### Refactoring
+
+- Correct names
+  ([`2a74821`](https://github.com/ziggiz-courier/core-data-processing/commit/2a74821ed3a4a090dfbff0eb20c7e88cc505f918))
+
+### Testing
+
+- Improve test consistency
+  ([`604c1a8`](https://github.com/ziggiz-courier/core-data-processing/commit/604c1a82d52c9e11b4b379d8b23c1be62d89f5fa))
+
+- **leef**: Improve test coverage
+  ([`d67b201`](https://github.com/ziggiz-courier/core-data-processing/commit/d67b201248ada664c40b4623ffa423b53a0c4478))
+
+
 ## v0.5.0 (2025-05-16)
 
 ### Features
