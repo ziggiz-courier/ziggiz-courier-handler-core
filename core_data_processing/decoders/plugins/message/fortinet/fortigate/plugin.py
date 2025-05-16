@@ -16,12 +16,18 @@
 """
 FortiGate key=value message plugin for Ziggiz-Courier.
 
-This plugin provides a decoder for Fortinet FortiGate syslog messages in key=value format, as seen in RFC3164 syslog payloads. It parses the message into a dictionary of key-value pairs for downstream processing.
+This plugin provides a decoder for Fortinet FortiGate syslog messages in key=value format, as seen in RFC3164 syslog payloads. It parses the message into a dictionary of key-value pairs for downstream processing and caches results for efficiency.
 
 References:
     - Fortinet FortiGate Syslog Message Formats:
       https://docs.fortinet.com/document/fortigate/latest/administration-guide/333255/syslog-message-formats
     - RFC3164: https://datatracker.ietf.org/doc/html/rfc3164
+
+Example:
+    >>> msg = 'date=2025-05-13 time=12:34:56 devname=fortigate devid=FG100D3G12345678 logid=0100032003 type=event...'
+    >>> decoder = FortinetFortiGateKVDecoderPlugin()
+    >>> decoder.decode(model_with_msg)
+    True
 """
 
 # Standard library imports
@@ -37,9 +43,6 @@ from core_data_processing.decoders.message_decoder_plugins import (
 from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
 from core_data_processing.decoders.utils.kv_parser import parse_kv_message
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
-from core_data_processing.models.event_structure_classification import (
-    StructuredEventStructureClassification,
-)
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 logger = logging.getLogger(__name__)
@@ -47,8 +50,10 @@ logger = logging.getLogger(__name__)
 
 class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
     """
-    Message decoder plugin for FortiGate key=value syslog messages.
-    Implements the MessageDecoderPluginBase.
+    Decoder for Fortinet FortiGate syslog messages in key=value format.
+
+    This decoder parses Fortinet FortiGate syslog messages in key=value format
+    and updates the event model with structured data.
     """
 
     def __init__(self, parsing_cache: Optional[Dict[str, Any]] = None):
@@ -61,6 +66,21 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
         super().__init__(parsing_cache)
 
     def decode(self, model: EventEnvelopeBaseModel) -> bool:
+        """
+        Parse a Fortinet FortiGate syslog message in key=value format into event_data on the model.
+
+        Args:
+            model (EventEnvelopeBaseModel): The event model instance to parse and update.
+
+        Returns:
+            bool: True if the message was parsed as FortiGate key=value format, False otherwise.
+
+        Example:
+            >>> msg = 'date=2025-05-13 time=12:34:56 devname=fortigate devid=FG100D3G12345678 logid=0100032003 type=event...'
+            >>> decoder = FortinetFortiGateKVDecoderPlugin()
+            >>> decoder.decode(model_with_msg)
+            True
+        """
         message = getattr(model, "message", None)
         if not isinstance(message, str):
             return False
@@ -79,17 +99,24 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
             and "logid" in event_data
             and len(event_data["logid"]) == 10
         ):
-            model.structure_classification = StructuredEventStructureClassification(
+            # Get message class by joining type and subtype
+            msgclass = "_".join(
+                [event_data.get("type", ""), event_data.get("subtype", "")]
+            )
+
+            # Use apply_field_mapping method from base class
+            self.apply_field_mapping(
+                model=model,
+                fields=list(event_data.values()),
+                field_names=list(event_data.keys()),
                 vendor="fortinet",
                 product="fortigate",
-                msgclass="_".join(
-                    [event_data.get("type", ""), event_data.get("subtype", "")]
-                ),
-                fields=sorted(list(event_data.keys())),
+                msgclass=msgclass,
             )
-            model.event_data = event_data.copy()
+
             logger.debug(
-                "FortiGate plugin parsed event_data", extra={"event_data": event_data}
+                "FortiGate plugin parsed event_data",
+                extra={"event_data": model.event_data},
             )
             return True
         return False

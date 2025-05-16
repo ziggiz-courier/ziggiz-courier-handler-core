@@ -106,6 +106,10 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                     product="ngfw",
                     msgclass=type_field.lower(),
                 )
+                logger.debug(
+                    "PaloAlto NGFW plugin parsed event_data",
+                    extra={"event_data": model.event_data},
+                )
                 return True
 
         return False
