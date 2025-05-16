@@ -1,6 +1,38 @@
 # CHANGELOG
 
 
+## v0.2.0 (2025-05-16)
+
+### Bug Fixes
+
+- Register plugins as types not instances
+  ([`831acc4`](https://github.com/ziggiz-courier/core-data-processing/commit/831acc405472976dae23cca245c12b01cc739461))
+
+### Chores
+
+- Create dependabot.yml
+  ([`31081df`](https://github.com/ziggiz-courier/core-data-processing/commit/31081dfe0e404baebc7fa44da957eaac7fc6d1f2))
+
+### Features
+
+- Support ordered execution of tests
+  ([`0dfa846`](https://github.com/ziggiz-courier/core-data-processing/commit/0dfa846ab426ff3b13ead7734f5da2bfa351daa2))
+
+### Refactoring
+
+- Better PRI parsing code
+  ([`69b4232`](https://github.com/ziggiz-courier/core-data-processing/commit/69b423267f59222203c23b4b5d01dc80996d628e))
+
+- Import new products without requiring a change at this level
+  ([`1f8d167`](https://github.com/ziggiz-courier/core-data-processing/commit/1f8d167e4982b4f94d05b43fa6337f7748e89cf9))
+
+- Improve class name
+  ([`af0c64c`](https://github.com/ziggiz-courier/core-data-processing/commit/af0c64c62e4b694aa51a8d1abe430c26196c9034))
+
+- Make plugin calls reusable code
+  ([`a4415fa`](https://github.com/ziggiz-courier/core-data-processing/commit/a4415fad9f14f6a27612e3d89834d2764a1762a1))
+
+
 ## v0.1.1 (2025-05-15)
 
 ### Bug Fixes
