@@ -17,7 +17,6 @@
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
-from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
@@ -110,9 +109,5 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         # Create the model using from_priority which handles validation
         model = SyslogRFCBaseModel.from_priority(pri, message=message)
 
-        plugins = get_message_decoders(SyslogRFCBaseModel)
-        if plugins and model.message:
-            for plugin in plugins:
-                if plugin.decode(model):
-                    break
+        self._run_message_decoder_plugins(model, SyslogRFCBaseModel, parsing_cache)
         return model

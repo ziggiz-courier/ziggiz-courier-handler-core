@@ -26,6 +26,34 @@ T = TypeVar("T", bound=EventEnvelopeBaseModel)
 
 
 class Decoder(Generic[T], ABC):
+
+    def _run_message_decoder_plugins(
+        self,
+        model: EventEnvelopeBaseModel,
+        message_decoder_type: type,
+        parsing_cache: dict = None,
+    ) -> None:
+        """
+        Run message decoder plugins for the given model and message decoder type.
+
+        Args:
+            model: The model instance to decode with plugins
+            message_decoder_type: The type to use for plugin lookup (e.g., SyslogRFC3164Message)
+            parsing_cache: Optional dictionary for caching parsing results
+        """
+        # Local/package imports
+        from core_data_processing.decoders.message_decoder_plugins import (
+            get_message_decoders,
+        )
+
+        if parsing_cache is None:
+            parsing_cache = self.event_parsing_cache
+        plugins = get_message_decoders(message_decoder_type)
+        if plugins and getattr(model, "message", None):
+            for plugin in plugins:
+                if plugin.decode(model):
+                    break
+
     """Base class for all decoders."""
 
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):

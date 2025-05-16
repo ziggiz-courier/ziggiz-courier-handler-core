@@ -282,14 +282,9 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             )
 
             # --- Plugin-based event_data decoding ---
-            if parsing_cache is None:
-                parsing_cache = self.event_parsing_cache
-            plugins = get_message_decoders(SyslogRFC3164Message)
-
-            if plugins and model.message:
-                for plugin in plugins:
-                    if plugin.decode(model):
-                        break
+            self._run_message_decoder_plugins(
+                model, SyslogRFC3164Message, parsing_cache
+            )
 
             return model
         except ValueError as e:

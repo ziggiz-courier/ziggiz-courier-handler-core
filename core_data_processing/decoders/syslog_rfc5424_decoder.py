@@ -23,7 +23,6 @@ from typing import Dict, Optional
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
-from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.decoders.syslog_rfc_base_decoder import (
     SyslogRFCBaseDecoder,
 )
@@ -98,13 +97,9 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             )
 
             # --- Plugin-based event_data decoding ---
-            if parsing_cache is None:
-                parsing_cache = self.event_parsing_cache
-            plugins = get_message_decoders(SyslogRFC5424Message)
-            if plugins and model.message:
-                for plugin in plugins:
-                    if plugin.decode(model):
-                        break
+            self._run_message_decoder_plugins(
+                model, SyslogRFC5424Message, parsing_cache
+            )
             return model
         except ValueError as e:
             # Maintain original error format for compatibility
