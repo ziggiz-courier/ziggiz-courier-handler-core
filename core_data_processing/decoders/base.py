@@ -17,7 +17,7 @@
 
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 # Local/package imports
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
@@ -26,6 +26,45 @@ T = TypeVar("T", bound=EventEnvelopeBaseModel)
 
 
 class Decoder(Generic[T], ABC):
+
+    def _run_message_decoder_plugins(
+        self,
+        model: EventEnvelopeBaseModel,
+        message_decoder_type: type,
+        parsing_cache: Optional[dict] = None,
+    ) -> None:
+        """
+        Run message decoder plugins for the given model and message decoder type, by stage.
+
+        Args:
+            model: The model instance to decode with plugins
+            message_decoder_type: The type to use for plugin lookup (e.g., SyslogRFC3164Message)
+            parsing_cache: Optional dictionary for caching parsing results
+        """
+        # Local/package imports
+        from core_data_processing.decoders.message_decoder_plugins import (
+            MessagePluginStage,
+            get_message_decoders_by_stage,
+        )
+
+        if parsing_cache is None:
+            parsing_cache = (
+                self.event_parsing_cache if hasattr(self, "event_parsing_cache") else {}
+            )
+        plugin_groups = get_message_decoders_by_stage(message_decoder_type)
+        if plugin_groups and getattr(model, "message", None):
+            # Enforced stage order
+            for stage in [
+                MessagePluginStage.FIRST_PASS,
+                MessagePluginStage.SECOND_PASS,
+                MessagePluginStage.UNPROCESSED_STRUCTURED,
+                MessagePluginStage.UNPROCESSED_MESSAGES,
+            ]:
+                for plugin_cls in plugin_groups.get(stage, []):
+                    plugin = plugin_cls(parsing_cache)
+                    if plugin.decode(model):
+                        return
+
     """Base class for all decoders."""
 
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):

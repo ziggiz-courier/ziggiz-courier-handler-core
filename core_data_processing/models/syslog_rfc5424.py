@@ -45,3 +45,18 @@ class SyslogRFC5424Message(SyslogRFCCommonModel):
     # Structured data as defined in RFC5424 section 6.3
     # Format: {SD_ID: {PARAM_NAME: PARAM_VALUE, ...}, ...}
     structured_data: Optional[Dict[str, Dict[str, str]]] = None
+
+    @classmethod
+    def from_priority(cls, pri, **kwargs):
+        base = super().from_priority(pri, **kwargs)
+        return cls(
+            facility=base.facility,
+            severity=base.severity,
+            message=getattr(base, "message", None),
+            timestamp=getattr(base, "timestamp", None),
+            hostname=getattr(base, "hostname", None),
+            app_name=getattr(base, "app_name", None),
+            proc_id=getattr(base, "proc_id", None),
+            msg_id=getattr(base, "msg_id", None),
+            structured_data=getattr(base, "structured_data", None),
+        )

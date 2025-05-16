@@ -17,7 +17,6 @@
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
-from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
@@ -36,27 +35,20 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
     compared to regex-based parsing.
     """
 
-    def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFCBaseModel:
+    @staticmethod
+    def extract_pri_and_content(raw_data: str) -> tuple[str | None, str]:
         """
-        Decode a syslog message by extracting the PRI field and remaining message.
-
-        This optimized decoder extracts the priority value and returns the message
-        content starting with the first non-space character after the closing
-        angle bracket, using character-by-character parsing instead of regex.
+        Extract the PRI value and remaining message content from a syslog message.
 
         Args:
             raw_data: The raw syslog message as string
-            parsing_cache: Optional dictionary for caching parsing data
 
         Returns:
-            A SyslogRFCBaseModel instance representing the decoded data
+            Tuple of (pri, message_content)
 
         Raises:
             ValueError: If the raw_data does not match basic syslog format
         """
-        if parsing_cache is None:
-            parsing_cache = self.event_parsing_cache
-
         if not raw_data or len(raw_data) < 3:  # Needs at least <>x
             raise ValueError(f"Invalid syslog format: {raw_data}")
 
@@ -89,20 +81,33 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
 
         # Extract message (everything after the closing > and any whitespace)
         message = raw_data[message_start:] if message_start < message_len else ""
+        return pri, message
+
+    def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFCBaseModel:
+        """
+        Decode a syslog message by extracting the PRI field and remaining message.
+
+        This optimized decoder extracts the priority value and returns the message
+        content starting with the first non-space character after the closing
+        angle bracket, using character-by-character parsing instead of regex.
+
+        Args:
+            raw_data: The raw syslog message as string
+            parsing_cache: Optional dictionary for caching parsing data
+
+        Returns:
+            A SyslogRFCBaseModel instance representing the decoded data
+
+        Raises:
+            ValueError: If the raw_data does not match basic syslog format
+        """
+        if parsing_cache is None:
+            parsing_cache = self.event_parsing_cache
+
+        pri, message = self.extract_pri_and_content(raw_data)
 
         # Create the model using from_priority which handles validation
         model = SyslogRFCBaseModel.from_priority(pri, message=message)
 
-        # --- Plugin-based event_data decoding ---
-        if self.__class__ is SyslogRFCBaseDecoder:
-            plugins = get_message_decoders(SyslogRFCBaseModel)
-            if plugins and model.message:
-                for plugin in plugins:
-                    if hasattr(plugin, "decode"):  # Class-based plugin
-                        if plugin.decode(model):
-                            break
-                    else:  # Function-based plugin (for backward compatibility)
-                        if plugin(model, parsing_cache=parsing_cache):
-                            break
-
+        self._run_message_decoder_plugins(model, SyslogRFCBaseModel, parsing_cache)
         return model

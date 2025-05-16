@@ -119,9 +119,6 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         "panic",
     }
 
-    # Use the base decoder for efficient PRI extraction
-    _base_decoder = SyslogRFCBaseDecoder()
-
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
         """
         Initialize the decoder.
@@ -250,10 +247,10 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         proc_id = None  # content after tag in RFC3164 terminology
 
         try:
-            # Use the base decoder for efficient PRI extraction
-            base_result = self._base_decoder.decode(raw_data)
-
-            message_content = base_result.message
+            # Extract PRI and message content using the reusable method
+            pri, message_content = SyslogRFCBaseDecoder.extract_pri_and_content(
+                raw_data
+            )
 
             # Try to parse timestamp
             timestamp, remaining = self._try_parse_timestamp(message_content)
@@ -262,6 +259,8 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 hostname, app_name, proc_id, message_content = self._parse_hostname_tag(
                     remaining
                 )
+            else:
+                hostname = app_name = proc_id = None
 
             # Create the RFC3164 message model
             if (
@@ -273,9 +272,8 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 # This is a simple <PRI>MESSAGE format
                 raise ValueError(f"Invalid BSD-style syslog format: {raw_data}")
 
-            model = SyslogRFC3164Message(
-                facility=base_result.facility,
-                severity=base_result.severity,
+            model = SyslogRFC3164Message.from_priority(
+                pri,
                 message=message_content,
                 timestamp=timestamp,
                 hostname=hostname,
@@ -284,18 +282,9 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             )
 
             # --- Plugin-based event_data decoding ---
-            if parsing_cache is None:
-                parsing_cache = self.event_parsing_cache
-            plugins = get_message_decoders(SyslogRFC3164Message)
-
-            if plugins and model.message:
-                for plugin in plugins:
-                    if hasattr(plugin, "decode"):  # Class-based plugin
-                        if plugin.decode(model):
-                            break
-                    else:  # Function-based plugin (for backward compatibility)
-                        if plugin(model, parsing_cache=parsing_cache):
-                            break
+            self._run_message_decoder_plugins(
+                model, SyslogRFC3164Message, parsing_cache
+            )
 
             return model
         except ValueError as e:

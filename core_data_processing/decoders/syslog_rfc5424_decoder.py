@@ -23,7 +23,6 @@ from typing import Dict, Optional
 
 # Local/package imports
 from core_data_processing.decoders.base import Decoder
-from core_data_processing.decoders.message_decoder_plugins import get_message_decoders
 from core_data_processing.decoders.syslog_rfc_base_decoder import (
     SyslogRFCBaseDecoder,
 )
@@ -41,9 +40,6 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
         r"(?P<hostname>\S+) (?P<app_name>\S+) (?P<proc_id>\S+) "
         r"(?P<msg_id>\S+) (?P<structured_data>(?:\[.*?\])+|-) (?P<message>.*)"
     )
-
-    # Use the base decoder for efficient PRI extraction
-    _base_decoder = SyslogRFCBaseDecoder()
 
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
         """
@@ -75,23 +71,22 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             ValueError: If the raw_data does not match syslog format
         """
         try:
-            # Use the base decoder for efficient PRI extraction
-            base_result = self._base_decoder.decode(raw_data)
+            # Extract PRI and message content using the reusable method
+            pri, message_content = SyslogRFCBaseDecoder.extract_pri_and_content(
+                raw_data
+            )
 
             # Parse the rest of the message using the message pattern
-            match = self.MESSAGE_PATTERN.match(base_result.message)
+            match = self.MESSAGE_PATTERN.match(message_content)
             if not match:
-                raise ValueError(
-                    f"Invalid RFC5424 format after PRI: {base_result.message}"
-                )
+                raise ValueError(f"Invalid RFC5424 format after PRI: {message_content}")
 
             data = match.groupdict()
             structured_data = self._parse_structured_data(data["structured_data"])
 
-            # Create RFC5424 message with extracted data
-            model = SyslogRFC5424Message(
-                facility=base_result.facility,
-                severity=base_result.severity,
+            # Create RFC5424 message with extracted data using from_priority
+            model = SyslogRFC5424Message.from_priority(
+                pri,
                 timestamp=self._parse_timestamp(data["timestamp"]),
                 hostname=self._normalize_hostname(data["hostname"]),
                 app_name=None if data["app_name"] == "-" else data["app_name"],
@@ -102,17 +97,9 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             )
 
             # --- Plugin-based event_data decoding ---
-            if parsing_cache is None:
-                parsing_cache = self.event_parsing_cache
-            plugins = get_message_decoders(SyslogRFC5424Message)
-            if plugins and model.message:
-                for plugin in plugins:
-                    if hasattr(plugin, "decode"):  # Class-based plugin
-                        if plugin.decode(model):
-                            break
-                    else:  # Function-based plugin (for backward compatibility)
-                        if plugin(model, parsing_cache=parsing_cache):
-                            break
+            self._run_message_decoder_plugins(
+                model, SyslogRFC5424Message, parsing_cache
+            )
             return model
         except ValueError as e:
             # Maintain original error format for compatibility

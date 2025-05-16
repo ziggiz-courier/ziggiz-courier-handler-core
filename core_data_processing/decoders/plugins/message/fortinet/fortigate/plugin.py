@@ -31,6 +31,7 @@ from typing import Any, Dict, Optional
 
 # Local/package imports
 from core_data_processing.decoders.message_decoder_plugins import (
+    MessagePluginStage,
     register_message_decoder,
 )
 from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
@@ -44,7 +45,7 @@ from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 logger = logging.getLogger(__name__)
 
 
-class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
+class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
     """
     Message decoder plugin for FortiGate key=value syslog messages.
     Implements the MessageDecoderPluginBase.
@@ -94,8 +95,7 @@ class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
         return False
 
 
-# Create a singleton instance for registration
-fortigate_kv_decoder = FortigateKVDecoderPlugin()
-
-# Register the class instance directly
-register_message_decoder(SyslogRFCBaseModel)(fortigate_kv_decoder)
+# Register the class type directly (thread-safe)
+register_message_decoder(SyslogRFCBaseModel, MessagePluginStage.SECOND_PASS)(
+    FortinetFortiGateKVDecoderPlugin
+)
