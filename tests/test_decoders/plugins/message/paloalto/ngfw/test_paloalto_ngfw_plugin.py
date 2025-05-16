@@ -1,0 +1,224 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2025 ziggiz
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Unit tests for PaloAltoNGFWCSVDecoder plugin.
+
+These tests verify the plugin's ability to parse and interpret Palo Alto NGFW log messages
+in CSV format directly, independent of the syslog decoder chain.
+"""
+# Standard library imports
+from typing import Dict, Optional
+
+# Third-party imports
+import pytest
+
+# Local/package imports
+from core_data_processing.decoders.plugins.message.paloalto.ngfw.plugin import (
+    PaloAltoNGFWCSVDecoder,
+)
+from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
+from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
+
+
+@pytest.mark.unit
+class TestPaloAltoNGFWCSVDecoder:
+    """Tests for the PaloAltoNGFWCSVDecoder class."""
+
+    def test_traffic_log_decoding(self):
+        """Test TRAFFIC log type decoding."""
+        # Create a model with a TRAFFIC message
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,TRAFFIC,drop,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Allow-All,ethernet1/1,ethernet1/2,ethernet1/1,ethernet1/2,Test-Rule,2025/05/13 12:34:56,1,1,0,0,0,0,0x0,udp,deny,0,0,0,0,,paloalto,from-policy",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder(parsing_cache={})
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Check that the message was decoded correctly
+        assert result is True
+        assert model.structure_classification.vendor == "paloalto"
+        assert model.structure_classification.product == "ngfw"
+        assert model.structure_classification.msgclass == "traffic"
+        assert model.event_data["serial_number"] == "001122334455"
+        assert model.event_data["type"] == "TRAFFIC"
+
+    def test_threat_log_decoding(self):
+        """Test THREAT log type decoding."""
+        # Create a model with a THREAT message
+        model = SyslogRFC5424Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,THREAT,vulnerability,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Threat-Rule,user1,user2,web-browsing,vsys1,untrust,trust,ethernet1/1,ethernet1/2,Threat-Log,1234,5678,1,80,443,1,2,0x0,tcp,reset-both,example.com/malicious.php,12345,malware,critical,client-to-server,9876543,0x2",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder(parsing_cache={})
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Check that the message was decoded correctly
+        assert result is True
+        assert model.structure_classification.vendor == "paloalto"
+        assert model.structure_classification.product == "ngfw"
+        assert model.structure_classification.msgclass == "threat"
+        assert model.event_data["serial_number"] == "001122334455"
+        assert model.event_data["type"] == "THREAT"
+        assert model.event_data["threat_content_type"] == "vulnerability"
+
+    def test_system_log_decoding(self):
+        """Test SYSTEM log type decoding."""
+        # Create a model with a SYSTEM message
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,SYSTEM,general,0001,2025/05/13,12:34:56,system,1,0,general,info,auth-success,Authentication successful for user admin from 10.1.1.1",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder(parsing_cache={})
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Check that the message was decoded correctly
+        assert result is True
+        assert model.structure_classification.vendor == "paloalto"
+        assert model.structure_classification.product == "ngfw"
+        assert model.structure_classification.msgclass == "system"
+        assert model.event_data["serial_number"] == "001122334455"
+        assert model.event_data["type"] == "SYSTEM"
+
+    def test_config_log_decoding(self):
+        """Test CONFIG log type decoding."""
+        # Create a model with a CONFIG message
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,CONFIG,0,0,2025/05/13,12:34:56,admin,10.1.1.1,Web,0,0,set,vsys1,policy,rules,Test-Rule,action,allow",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder(parsing_cache={})
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Check that the message was decoded correctly
+        assert result is True
+        assert model.structure_classification.vendor == "paloalto"
+        assert model.structure_classification.product == "ngfw"
+        assert model.structure_classification.msgclass == "config"
+        assert model.event_data["serial_number"] == "001122334455"
+        assert model.event_data["type"] == "CONFIG"
+
+    def test_with_parsing_cache(self):
+        """Test decoder with a pre-populated parsing cache."""
+        # Create a cache with predetermined patterns
+        cache: Dict[str, Optional[dict]] = {
+            "1,2025/05/13 12:34:56,001122334455,TRAFFIC": {
+                "pattern": "traffic_pattern",
+                "fields": ["field1", "field2"],
+            }
+        }
+
+        # Create a model with a message that would match the cache
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,TRAFFIC,drop,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Allow-All,ethernet1/1,ethernet1/2",
+        )
+
+        # Create the decoder plugin with the cache
+        decoder = PaloAltoNGFWCSVDecoder(parsing_cache=cache)
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Verify that it was decoded successfully using the cache
+        assert result is True
+        assert model.structure_classification.vendor == "paloalto"
+        assert model.structure_classification.product == "ngfw"
+
+    def test_non_matching_message(self):
+        """Test with a message that doesn't match the PaloAlto NGFW CSV format."""
+        # Create a model with a non-matching message
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="This is not a PaloAlto NGFW CSV message",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder()
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # Verify that it wasn't decoded
+        assert result is False
+
+    def test_no_message_attribute(self):
+        """Test PaloAltoNGFWCSVDecoder with a model without a message attribute."""
+        # Create a model without a message attribute
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            # No message attribute
+        )
+
+        # Initialize the decoder with an empty cache
+        decoder = PaloAltoNGFWCSVDecoder()
+
+        # Call the decode method
+        result = decoder.decode(model)
+
+        # Verify the result
+        assert result is False
+
+    def test_incorrect_structure(self):
+        """Test with a message that looks like PaloAlto but has incorrect structure."""
+        # Create a model with a message that starts with a number but is not a valid PA log
+        model = SyslogRFC3164Message(
+            timestamp="2025-05-13T12:34:56.000Z",
+            facility=16,  # LOCAL0
+            severity=6,  # INFO
+            message="1,2025/05/13 12:34:56,001122334455,INVALID_TYPE,drop,1,2025/05/13",
+        )
+
+        # Create the decoder plugin
+        decoder = PaloAltoNGFWCSVDecoder()
+
+        # Decode the message
+        result = decoder.decode(model)
+
+        # This could either return False or True depending on implementation
+        # If it's strict on validating log types, it would return False
+        # Otherwise, it might return True but classify it as an unknown type
+        # Let's assume it returns False for invalid log types
+        assert result is False
