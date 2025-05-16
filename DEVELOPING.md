@@ -119,6 +119,8 @@ class YourPluginClassName(MessageDecoderPluginBase):
 
         Returns:
             bool: True if the message was parsed as [Product] [Format] format, False otherwise.
+            When returning True, the plugin should have updated the model's structure_classification
+            and event_data attributes accordingly.
 
         Example:
             >>> msg = 'example message format...'
@@ -254,6 +256,27 @@ self.apply_field_mapping(
 )
 ```
 
+#### Dynamic Field Mapping with Values from Parsed Data (CEF approach)
+
+For formats where vendor, product, and message class information is contained within the data:
+
+```python
+# Extract vendor, product, and msgclass from the parsed data
+vendor = parsed_data.get("device_vendor", "unknown").lower()
+product = parsed_data.get("device_product", "unknown").lower()
+msgclass = parsed_data.get("name", "unknown").lower()
+
+# Use dynamic values from the parsed data
+self.apply_field_mapping(
+    model=model,
+    fields=list(parsed_data.values()),
+    field_names=list(parsed_data.keys()),
+    vendor=vendor,
+    product=product,
+    msgclass=msgclass,
+)
+```
+
 #### Static Field Mapping (PaloAlto approach)
 
 For formats with predefined field positions (like CSV):
@@ -311,8 +334,33 @@ register_message_decoder(SyslogRFCBaseModel, MessagePluginStage.SECOND_PASS)(
 )
 ```
 
-For specific message formats:
+#### Processing Stages
+
+The framework executes plugins in a specific order based on their registered stage:
+
+1. **FIRST_PASS**: Initial processing of the message, typically used for very basic or high-priority format detection
+2. **SECOND_PASS**: Main processing stage for most vendor-specific message formats
+3. **UNPROCESSED_STRUCTURED**: Used for structured formats (like CEF, JSON) that may appear in any syslog message
+4. **UNPROCESSED_MESSAGES**: Final fallback for any messages not processed by earlier stages
+
+Choose the appropriate stage based on when your plugin should execute in the pipeline:
+
+- Use **SECOND_PASS** for most vendor-specific format parsers (default for most plugins)
+- Use **UNPROCESSED_STRUCTURED** for format parsers that should run across all message types (e.g., CEF, JSON)
+- Use **FIRST_PASS** only for critical pre-processing that must happen before other plugins
+- Use **UNPROCESSED_MESSAGES** for fallback parsers that should run only if other plugins don't match
+
+#### Registering for Multiple Message Types
+
+For plugins that can handle multiple message formats, register them separately for each type:
+
 ```python
+# Register for base syslog messages
+register_message_decoder(SyslogRFCBaseModel, MessagePluginStage.SECOND_PASS)(
+    YourPluginClassName
+)
+
+# Register for specific formats
 register_message_decoder(SyslogRFC3164Message, MessagePluginStage.SECOND_PASS)(
     YourPluginClassName
 )
@@ -320,6 +368,74 @@ register_message_decoder(SyslogRFC5424Message, MessagePluginStage.SECOND_PASS)(
     YourPluginClassName
 )
 ```
+
+#### Model Type Selection Guidelines
+
+Consider these guidelines when choosing which model types to register your plugin for:
+
+1. **SyslogRFCBaseModel**:
+   - Register for this type when your plugin can process any type of syslog message
+   - Used for generic formats that could appear in any syslog message
+   - Example: CEF format appears in various syslog message types
+
+2. **SyslogRFC3164Message**:
+   - Register for this type when your plugin is specifically for BSD-style syslog format
+   - Has fields like hostname, app_name, and proc_id
+   - Example: Legacy firewall logs with BSD syslog format
+
+3. **SyslogRFC5424Message**:
+   - Register for this type when your plugin is specifically for modern syslog format
+   - Has additional structured fields like msg_id and structured_data
+   - Example: Modern application logs using structured syslog
+
+If your plugin needs fields specific to RFC3164 or RFC5424 (like structured_data), register only for those types. If it works with any syslog message format, register for all three types.
+
+#### Registration Order and Plugin Chain
+
+Important notes about plugin registration and execution:
+
+1. Plugins are executed in the order they are registered within each stage
+2. When a plugin successfully decodes a message (returns `True`), it updates the model's structure and event data
+3. Multiple plugins may run on the same message if they all return `True` (accumulating fields)
+4. Later plugins can see and build upon the results of earlier plugins
+5. The plugin chain continues even after successful matches, allowing multiple plugins to contribute to the final result
+
+### 6. Understanding the Parsing Cache
+
+The `parsing_cache` is a critical component for plugin performance optimization:
+
+```python
+def decode(self, model: EventEnvelopeBaseModel) -> bool:
+    message = getattr(model, "message", None)
+    if not isinstance(message, str):
+        return False
+
+    # Use parsing cache if available
+    if "parse_xxx_message" not in self.parsing_cache:
+        self.parsing_cache["parse_xxx_message"] = parse_xxx_message(message)
+
+    parsed_data = self.parsing_cache["parse_xxx_message"]
+
+    # Use the parsed data...
+```
+
+#### Parsing Cache Best Practices
+
+1. **Unique Cache Keys**: Use descriptive, unique cache keys prefixed with the parsing function name
+2. **Expensive Operations Only**: Cache results of expensive operations like regex parsing
+3. **Check Before Parsing**: Always check if data exists in the cache before parsing
+4. **Cache Raw Results**: Store the full parsing result, not just parts of it
+5. **Don't Cache Transformations**: Only cache the original parsing result, not derived data
+
+#### Cache Persistence
+
+The `parsing_cache` dictionary:
+- Is passed to the plugin constructor
+- Is shared across multiple decode() calls within the same decoder instance
+- May be shared across multiple plugins in a chain
+- Persists for the lifetime of the decoder but not across process restarts
+
+This allows efficient processing of large batches of similar messages without redundant parsing.
 
 ## Testing Your Plugin
 

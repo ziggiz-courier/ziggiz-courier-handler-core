@@ -1,0 +1,128 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2025 ziggiz
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Unit tests for GenericCEFDecoderPlugin.
+"""
+# Third-party imports
+import pytest
+
+# Local/package imports
+from core_data_processing.decoders.plugins.message.generic.cef.plugin import (
+    GenericCEFDecoderPlugin,
+)
+from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
+
+
+@pytest.mark.unit
+def test_generic_cef_basic_case():
+    """Test GenericCEFDecoderPlugin with basic CEF message format."""
+    # Create a model with a test CEF message
+    msg = "CEF:1|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232"
+    model = SyslogRFCBaseModel(
+        timestamp="2025-05-13T12:34:56.000Z",
+        facility=16,  # LOCAL0
+        severity=6,  # INFO
+        message=msg,
+    )
+
+    # Initialize the decoder with an empty cache
+    decoder = GenericCEFDecoderPlugin()
+
+    # Call the decode method
+    result = decoder.decode(model)
+
+    # Verify the result
+    assert result is True
+    assert model.structure_classification.vendor == "security"
+    assert model.structure_classification.product == "threatmanager"
+    assert model.structure_classification.msgclass == "worm successfully stopped"
+
+    # Verify specific fields in the parsed data
+    assert "cef_version" in model.event_data
+    assert model.event_data["cef_version"] == "1"
+    assert model.event_data["src"] == "10.0.0.1"
+    assert model.event_data["dst"] == "2.1.2.2"
+    assert model.event_data["spt"] == "1232"
+
+
+@pytest.mark.unit
+def test_generic_cef_with_custom_fields():
+    """Test GenericCEFDecoderPlugin with custom fields."""
+    # Create a model with a test CEF message with custom fields
+    msg = "CEF:1|Vendor|Product|1.0|100|Name|10|src=10.0.0.1 customField=customValue"
+    model = SyslogRFCBaseModel(
+        timestamp="2025-05-13T12:34:56.000Z",
+        facility=16,
+        severity=6,
+        message=msg,
+    )
+
+    # Initialize the decoder
+    decoder = GenericCEFDecoderPlugin()
+
+    # Call the decode method
+    result = decoder.decode(model)
+
+    # Verify the result
+    assert result is True
+    assert model.structure_classification.vendor == "vendor"
+    assert model.structure_classification.product == "product"
+    assert "customField" in model.event_data
+    assert model.event_data["customField"] == "customValue"
+
+
+@pytest.mark.unit
+def test_generic_cef_negative_case():
+    """Test GenericCEFDecoderPlugin with non-matching message format."""
+    # Create a model with a message that should not match CEF format
+    msg = "This is not a CEF format message"
+    model = SyslogRFCBaseModel(
+        timestamp="2025-05-13T12:34:56.000Z",
+        facility=16,
+        severity=6,
+        message=msg,
+    )
+
+    # Initialize the decoder
+    decoder = GenericCEFDecoderPlugin()
+
+    # Call the decode method
+    result = decoder.decode(model)
+
+    # Verify the result is False (no match)
+    assert result is False
+
+
+@pytest.mark.unit
+def test_generic_cef_with_wrong_version():
+    """Test GenericCEFDecoderPlugin with wrong CEF version."""
+    # Create a model with a CEF message with a wrong version
+    msg = "CEF:0|Vendor|Product|1.0|100|Name|10|src=10.0.0.1"
+    model = SyslogRFCBaseModel(
+        timestamp="2025-05-13T12:34:56.000Z",
+        facility=16,
+        severity=6,
+        message=msg,
+    )
+
+    # Initialize the decoder
+    decoder = GenericCEFDecoderPlugin()
+
+    # Call the decode method
+    result = decoder.decode(model)
+
+    # Verify the result is False (wrong version)
+    assert result is False
