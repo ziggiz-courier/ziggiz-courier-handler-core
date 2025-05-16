@@ -43,6 +43,41 @@ class SyslogRFC3164Message(SyslogRFCCommonModel):
 
     # Inherits hostname, app_name, and proc_id from SyslogRFCCommonModel
 
+    def __init__(
+        self,
+        facility: int,
+        severity: int,
+        message=None,
+        timestamp=None,
+        hostname=None,
+        app_name=None,
+        proc_id=None,
+        **kwargs
+    ):
+        super().__init__(
+            facility=facility,
+            severity=severity,
+            message=message,
+            timestamp=timestamp,
+            hostname=hostname,
+            app_name=app_name,
+            proc_id=proc_id,
+            **kwargs
+        )
+
+    @classmethod
+    def from_priority(cls, pri, **kwargs):
+        base = super().from_priority(pri, **kwargs)
+        return cls(
+            facility=base.facility,
+            severity=base.severity,
+            message=base.message,
+            timestamp=getattr(base, "timestamp", None),
+            hostname=getattr(base, "hostname", None),
+            app_name=getattr(base, "app_name", None),
+            proc_id=getattr(base, "proc_id", None),
+        )
+
 
 # from core_data_processing.models.base import BaseEventStructureClassification
 # SyslogRFC3164Message.model_rebuild()
