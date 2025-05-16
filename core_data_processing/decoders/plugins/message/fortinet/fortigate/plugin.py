@@ -31,6 +31,7 @@ from typing import Any, Dict, Optional
 
 # Local/package imports
 from core_data_processing.decoders.message_decoder_plugins import (
+    MessagePluginStage,
     register_message_decoder,
 )
 from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
@@ -95,4 +96,6 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
 
 
 # Register the class type directly (thread-safe)
-register_message_decoder(SyslogRFCBaseModel)(FortinetFortiGateKVDecoderPlugin)
+register_message_decoder(SyslogRFCBaseModel, MessagePluginStage.SECOND_PASS)(
+    FortinetFortiGateKVDecoderPlugin
+)

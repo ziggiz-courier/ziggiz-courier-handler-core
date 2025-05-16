@@ -34,7 +34,7 @@ class Decoder(Generic[T], ABC):
         parsing_cache: Optional[dict] = None,
     ) -> None:
         """
-        Run message decoder plugins for the given model and message decoder type.
+        Run message decoder plugins for the given model and message decoder type, by stage.
 
         Args:
             model: The model instance to decode with plugins
@@ -43,19 +43,27 @@ class Decoder(Generic[T], ABC):
         """
         # Local/package imports
         from core_data_processing.decoders.message_decoder_plugins import (
-            get_message_decoders,
+            MessagePluginStage,
+            get_message_decoders_by_stage,
         )
 
         if parsing_cache is None:
             parsing_cache = (
                 self.event_parsing_cache if hasattr(self, "event_parsing_cache") else {}
             )
-        plugin_classes = get_message_decoders(message_decoder_type)
-        if plugin_classes and getattr(model, "message", None):
-            for plugin_cls in plugin_classes:
-                plugin = plugin_cls(parsing_cache)
-                if plugin.decode(model):
-                    break
+        plugin_groups = get_message_decoders_by_stage(message_decoder_type)
+        if plugin_groups and getattr(model, "message", None):
+            # Enforced stage order
+            for stage in [
+                MessagePluginStage.FIRST_PASS,
+                MessagePluginStage.SECOND_PASS,
+                MessagePluginStage.UNPROCESSED_STRUCTURED,
+                MessagePluginStage.UNPROCESSED_MESSAGES,
+            ]:
+                for plugin_cls in plugin_groups.get(stage, []):
+                    plugin = plugin_cls(parsing_cache)
+                    if plugin.decode(model):
+                        return
 
     """Base class for all decoders."""
 

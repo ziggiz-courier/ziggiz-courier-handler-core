@@ -33,6 +33,7 @@ from typing import Any, Dict, Optional
 
 # Local/package imports
 from core_data_processing.decoders.message_decoder_plugins import (
+    MessagePluginStage,
     register_message_decoder,
 )
 from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
@@ -111,5 +112,9 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
 
 
 # Register the class type directly (thread-safe)
-register_message_decoder(SyslogRFC3164Message)(PaloAltoNGFWCSVDecoder)
-register_message_decoder(SyslogRFC5424Message)(PaloAltoNGFWCSVDecoder)
+register_message_decoder(SyslogRFC3164Message, MessagePluginStage.SECOND_PASS)(
+    PaloAltoNGFWCSVDecoder
+)
+register_message_decoder(SyslogRFC5424Message, MessagePluginStage.SECOND_PASS)(
+    PaloAltoNGFWCSVDecoder
+)
