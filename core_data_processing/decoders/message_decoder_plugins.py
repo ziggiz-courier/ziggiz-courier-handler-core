@@ -17,15 +17,15 @@
 
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Type, Union
+from typing import Dict, List, Type
 
 # Local/package imports
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
 
-# Registry: model class -> plugin class instances
+# Registry: model class -> plugin class types
 _message_decoder_plugins: Dict[
     Type[EventEnvelopeBaseModel],
-    list[Union["MessageDecoderPlugin", Callable[[EventEnvelopeBaseModel, Any], bool]]],
+    list[Type["MessageDecoderPlugin"]],
 ] = {}
 
 
@@ -48,36 +48,30 @@ class MessageDecoderPlugin(ABC):
 
 def register_message_decoder(model_cls: Type[EventEnvelopeBaseModel]):
     """
-    Decorator to register a message decoder plugin for a specific EventEnvelopeBaseModel subclass.
-
-    This can be used as a decorator on functions or a direct function to register plugin class instances.
+    Decorator to register a message decoder plugin class for a specific EventEnvelopeBaseModel subclass.
 
     Args:
         model_cls: The subclass of EventEnvelopeBaseModel this plugin handles.
 
     Returns:
-        Decorator that registers the function or class instance as a plugin.
+        Decorator that registers the plugin class.
     """
 
-    def decorator(
-        plugin_or_func: Union[
-            MessageDecoderPlugin, Callable[[EventEnvelopeBaseModel, Any], bool]
-        ],
-    ):
-        _message_decoder_plugins.setdefault(model_cls, []).append(plugin_or_func)
-        return plugin_or_func
+    def decorator(plugin_cls: Type[MessageDecoderPlugin]):
+        _message_decoder_plugins.setdefault(model_cls, []).append(plugin_cls)
+        return plugin_cls
 
     return decorator
 
 
 def get_message_decoders(
     model_cls: Type[EventEnvelopeBaseModel],
-) -> List[Union[MessageDecoderPlugin, Callable[[EventEnvelopeBaseModel, Any], bool]]]:
+) -> List[Type[MessageDecoderPlugin]]:
     """
-    Retrieve the message decoder plugins for a given model class.
+    Retrieve the message decoder plugin classes for a given model class.
     Args:
         model_cls: The subclass of EventEnvelopeBaseModel.
     Returns:
-        List of plugin functions or class instances.
+        List of plugin classes.
     """
     return _message_decoder_plugins.get(model_cls, [])

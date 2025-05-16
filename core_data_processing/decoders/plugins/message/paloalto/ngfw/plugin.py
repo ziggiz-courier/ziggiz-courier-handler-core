@@ -110,10 +110,6 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
         return False
 
 
-# Create singleton instances for registration
-paloalto_decoder_rfc3164 = PaloAltoNGFWCSVDecoder()
-paloalto_decoder_rfc5424 = PaloAltoNGFWCSVDecoder()
-
-# Register the class instances directly
-register_message_decoder(SyslogRFC3164Message)(paloalto_decoder_rfc3164)
-register_message_decoder(SyslogRFC5424Message)(paloalto_decoder_rfc5424)
+# Register the class type directly (thread-safe)
+register_message_decoder(SyslogRFC3164Message)(PaloAltoNGFWCSVDecoder)
+register_message_decoder(SyslogRFC5424Message)(PaloAltoNGFWCSVDecoder)

@@ -17,7 +17,7 @@
 
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 # Local/package imports
 from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
@@ -31,7 +31,7 @@ class Decoder(Generic[T], ABC):
         self,
         model: EventEnvelopeBaseModel,
         message_decoder_type: type,
-        parsing_cache: dict = None,
+        parsing_cache: Optional[dict] = None,
     ) -> None:
         """
         Run message decoder plugins for the given model and message decoder type.
@@ -47,10 +47,13 @@ class Decoder(Generic[T], ABC):
         )
 
         if parsing_cache is None:
-            parsing_cache = self.event_parsing_cache
-        plugins = get_message_decoders(message_decoder_type)
-        if plugins and getattr(model, "message", None):
-            for plugin in plugins:
+            parsing_cache = (
+                self.event_parsing_cache if hasattr(self, "event_parsing_cache") else {}
+            )
+        plugin_classes = get_message_decoders(message_decoder_type)
+        if plugin_classes and getattr(model, "message", None):
+            for plugin_cls in plugin_classes:
+                plugin = plugin_cls(parsing_cache)
                 if plugin.decode(model):
                     break
 

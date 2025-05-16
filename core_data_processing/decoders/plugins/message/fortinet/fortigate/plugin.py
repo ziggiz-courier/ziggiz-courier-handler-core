@@ -94,8 +94,5 @@ class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
         return False
 
 
-# Create a singleton instance for registration
-fortigate_kv_decoder = FortigateKVDecoderPlugin()
-
-# Register the class instance directly
-register_message_decoder(SyslogRFCBaseModel)(fortigate_kv_decoder)
+# Register the class type directly (thread-safe)
+register_message_decoder(SyslogRFCBaseModel)(FortigateKVDecoderPlugin)
