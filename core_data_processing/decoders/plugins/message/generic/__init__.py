@@ -13,10 +13,5 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-# Import plugins and base classes
-from .base import MessageDecoderPluginBase
-from .fortinet import *
-from .generic import *
-from .paloalto import *
-
-__all__ = ["MessageDecoderPluginBase", "paloalto", "fortinet", "generic"]
+# generic vendor plugin for message decoder
+# Add your generic vendor plugin implementations here.
