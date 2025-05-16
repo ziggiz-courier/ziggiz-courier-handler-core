@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Import plugins and base classes
 from .base import MessageDecoderPluginBase
-from .fortinet import fortigate
-from .paloalto import ngfw
+from .fortinet import *
+from .paloalto import *
 
-__all__ = ["MessageDecoderPluginBase", "paloalto", "fortigate"]
+__all__ = ["MessageDecoderPluginBase", "paloalto", "fortinet"]
