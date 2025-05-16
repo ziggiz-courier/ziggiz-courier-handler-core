@@ -1,6 +1,24 @@
 # CHANGELOG
 
 
+## v0.4.0 (2025-05-16)
+
+### Features
+
+- Fully support cef
+  ([`032e01d`](https://github.com/ziggiz-courier/core-data-processing/commit/032e01d0931960887c1e5b3bfea53e3b48c8d819))
+
+### Refactoring
+
+- Cleanup work
+  ([`d6fdc0b`](https://github.com/ziggiz-courier/core-data-processing/commit/d6fdc0bdd4585014855d2163063249ca7801e3e9))
+
+### Testing
+
+- Reorganize tests per best practices
+  ([`be18f99`](https://github.com/ziggiz-courier/core-data-processing/commit/be18f99f480a1baeaddde92632b3d98ac8193aff))
+
+
 ## v0.3.0 (2025-05-16)
 
 ### Features
