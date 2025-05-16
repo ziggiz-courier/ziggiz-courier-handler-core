@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.5.0 (2025-05-16)
+
+### Features
+
+- **leef1**: Support IBM LEEF 1.0
+  ([`6ff6851`](https://github.com/ziggiz-courier/core-data-processing/commit/6ff6851ae8c4dab576511826f5d5dd2db2e9c768))
+
+
 ## v0.4.0 (2025-05-16)
 
 ### Features
