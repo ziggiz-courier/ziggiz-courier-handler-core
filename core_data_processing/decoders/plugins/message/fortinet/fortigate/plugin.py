@@ -44,7 +44,7 @@ from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
 logger = logging.getLogger(__name__)
 
 
-class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
+class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
     """
     Message decoder plugin for FortiGate key=value syslog messages.
     Implements the MessageDecoderPluginBase.
@@ -95,4 +95,4 @@ class FortigateKVDecoderPlugin(MessageDecoderPluginBase):
 
 
 # Register the class type directly (thread-safe)
-register_message_decoder(SyslogRFCBaseModel)(FortigateKVDecoderPlugin)
+register_message_decoder(SyslogRFCBaseModel)(FortinetFortiGateKVDecoderPlugin)

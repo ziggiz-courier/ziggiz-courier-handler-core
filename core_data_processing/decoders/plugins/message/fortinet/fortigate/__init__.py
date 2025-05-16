@@ -14,6 +14,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Directory marker for FortiGate plugins
-from .plugin import FortigateKVDecoderPlugin
+from .plugin import FortinetFortiGateKVDecoderPlugin
 
-__all__ = ["FortigateKVDecoderPlugin"]
+__all__ = ["FortinetFortiGateKVDecoderPlugin"]
