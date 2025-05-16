@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.3.0 (2025-05-16)
+
+### Features
+
+- Add Generic Vendor
+  ([`fddb435`](https://github.com/ziggiz-courier/core-data-processing/commit/fddb4350cb7aaa44398782688876ffe8675c5dce))
+
+
 ## v0.2.0 (2025-05-16)
 
 ### Bug Fixes
