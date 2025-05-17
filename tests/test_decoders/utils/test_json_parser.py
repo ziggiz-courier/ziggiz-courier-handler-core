@@ -295,3 +295,103 @@ def test_parse_json_recovery_from_malformed_unicode():
     assert result is not None
     assert "Valid unicode: " in result["good_escape"]
     assert result["valid"] == "This is valid"
+
+
+@pytest.mark.unit
+def test_parse_json_with_double_escaped_sequences():
+    """Test JSON message parsing with double escaped sequences.
+
+    This tests cases where a string has been escaped multiple times,
+    which can happen when JSON is serialized repeatedly.
+    """
+    # Double escaped backslashes and quotes
+    msg = '{"double_escaped": "This has \\\\\\\\ double escaped backslashes and \\\\\\" quotes"}'
+
+    result = parse_json_message(msg)
+    assert result is not None
+    assert (
+        result["double_escaped"]
+        == 'This has \\\\ double escaped backslashes and \\" quotes'
+    )
+
+    # Triple nested JSON (a JSON string inside a JSON string inside a JSON object)
+    triple_nested = '{"nested_json_string": "{\\"data\\":\\"{\\\\\\"innermost\\\\\\":\\\\\\"value\\\\\\"}\\",\\"level\\":\\"2\\"}"}'
+
+    result = parse_json_message(triple_nested)
+    assert result is not None
+    assert (
+        result["nested_json_string"]
+        == '{"data":"{\\"innermost\\":\\"value\\"}","level":"2"}'
+    )
+
+
+@pytest.mark.unit
+def test_parse_json_with_js_style_comments():
+    """Test parser behavior with JavaScript-style comments (not valid in JSON).
+
+    Standard JSON does not support comments, but some parsers allow them.
+    This test verifies the parser correctly rejects JSON with comments.
+    """
+    # JSON with JavaScript-style comments
+    json_with_line_comment = '{"key": "value" // This is a comment\n}'
+    result = parse_json_message(json_with_line_comment)
+    assert result is None  # Should reject invalid JSON with comments
+
+    json_with_block_comment = '{"key": /* block comment */ "value"}'
+    result = parse_json_message(json_with_block_comment)
+    assert result is None  # Should reject invalid JSON with comments
+
+    # Valid JSON without comments
+    valid_json = '{"key": "value"}'
+    result = parse_json_message(valid_json)
+    assert result is not None
+    assert result["key"] == "value"
+
+
+@pytest.mark.unit
+def test_parse_json_with_special_numeric_values():
+    """Test JSON message parsing with special numeric values.
+
+    This test covers handling of special numeric values like Infinity, -Infinity, and NaN,
+    which are valid in JavaScript but not in standard JSON.
+
+    Note: orjson (used in our implementation) supports parsing these values
+    unlike the standard JSON specification.
+    """
+    # JSON with non-standard JavaScript numeric values
+    js_numeric_values = (
+        '{"special": Infinity, "negative": -Infinity, "not_a_number": NaN}'
+    )
+    result = parse_json_message(js_numeric_values)
+    assert result is not None
+    assert "special" in result
+    assert "negative" in result
+    assert "not_a_number" in result
+    # Standard library imports
+    import math
+
+    assert math.isinf(result["special"]) and result["special"] > 0
+    assert math.isinf(result["negative"]) and result["negative"] < 0
+    assert math.isnan(result["not_a_number"])
+
+    # Valid JSON with standard numeric values
+    valid_json = '{"int": 123, "float": 123.456, "scientific": 1.23e-4}'
+    result = parse_json_message(valid_json)
+    assert result is not None
+    assert result["int"] == 123
+    assert result["float"] == 123.456
+    assert result["scientific"] == 1.23e-4
+
+
+@pytest.mark.unit
+def test_parse_json_with_empty_structures():
+    """Test JSON message parsing with empty objects and arrays."""
+    # JSON with empty structures
+    msg = '{"empty_object": {}, "empty_array": [], "nested_empty": {"empty": {}, "also_empty": []}}'
+
+    result = parse_json_message(msg)
+    assert result is not None
+    assert result["empty_object"] == {}
+    assert result["empty_array"] == []
+    assert result["nested_empty"]["empty"] == {}
+    assert result["nested_empty"]["also_empty"] == []
