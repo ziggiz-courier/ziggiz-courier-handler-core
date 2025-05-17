@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.9.0 (2025-05-17)
+
+### Features
+
+- **kv**: Support generic kv
+  ([`79e455c`](https://github.com/ziggiz-courier/core-data-processing/commit/79e455cf2de0a051ced6bb1a107073c0b2d96ce2))
+
+
 ## v0.8.0 (2025-05-17)
 
 ### Features

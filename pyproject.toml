@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "core-data-processing"
-version = "0.8.0"
+version = "0.9.0"
 description = "Data processing library for decoding, transforming, and encoding data"
 authors = ["Ryan Faircloth <rf@ziggiz.ai>"]
 readme = "README.md"
