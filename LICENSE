@@ -1,0 +1,39 @@
+SPDX-License-Identifier: BSL-1.1
+Copyright (c) 2025 Ziggiz Inc.
+
+Business Source License 1.1
+
+Licensor: Ziggiz Inc.
+Licensed Work: ziggiz-courier-ziggiz-courier-handler-core
+Change Date: 3 years after the date of each version release
+Change License: Apache License 2.0
+
+Use Limitation: Production use by entities not qualifying as a Qualified Entity.
+
+Definitions:
+
+1. "Qualified Entity" means either:
+   a. A legal entity (including any affiliates or parent organizations) with fewer
+      than 50 total employees and less than USD $4,000,000 in total annual gross
+      revenue, or
+   b. A non-profit organization or public benefit corporation providing health
+      care services, as recognized under applicable laws or IRS Section 501(c)(3)
+      status.
+
+2. "Production Use" means any use of the Licensed Work to provide services,
+   operate a commercial product, or support internal business operations—whether
+   hosted, embedded, or internal.
+
+3. "Change Date" is the date 3 years after the public release of a specific
+   version of the Licensed Work. On or after this date, that version becomes
+   available under the Apache License 2.0.
+
+Grant:
+
+Subject to the limitations above, the Licensor grants you a non-exclusive,
+worldwide, royalty-free license to use, modify, and distribute the Licensed Work.
+
+Production Use by entities not qualifying as a "Qualified Entity" requires a
+commercial license from the Licensor.
+
+Contact: licensing@ziggiz.ai

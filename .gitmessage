@@ -1,0 +1,20 @@
+# Semantic Commit Message Format
+# type(scope): subject
+#
+# Types:
+# feat     - new feature or enhancement
+# fix      - bug fix
+# docs     - changes to documentation
+# style    - formatting, missing semicolons, etc; no code change
+# refactor - refactoring production code
+# test     - adding missing tests, refactoring tests; no production code change
+# chore    - updating build tasks, package manager configs, etc; no production code change
+#
+# Example:
+# feat(syslog): add support for RFC3164 format
+#
+# Include detailed description of changes here, explaining the
+# motivation for the change and possibly comparative code examples.
+#
+# Breaking changes should be noted with "BREAKING CHANGE:" prefix.
+# References to issues should be noted with "Fixes #123" or "Closes #123".
