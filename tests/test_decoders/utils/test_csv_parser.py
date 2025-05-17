@@ -13,7 +13,9 @@ Unit tests for parse_quoted_csv_message utility.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.utils.csv_parser import parse_quoted_csv_message
+from ziggiz_courier_handler_core.decoders.utils.csv_parser import (
+    parse_quoted_csv_message,
+)
 
 
 @pytest.mark.unit

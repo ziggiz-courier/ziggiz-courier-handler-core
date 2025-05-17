@@ -13,7 +13,7 @@ Unit tests for XML parser utilities.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.utils.xml_parser import parse_xml_message
+from ziggiz_courier_handler_core.decoders.utils.xml_parser import parse_xml_message
 
 
 @pytest.mark.unit

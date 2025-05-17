@@ -62,7 +62,7 @@ repos:
   #       language: python
   #       types: [python]
   #       additional_dependencies: [mypy]
-  #       args: [core-data-processing/core_data_processing]
+  #       args: [ziggiz-courier-handler-core/ziggiz_courier_handler_core]
 # Remeber black should be last
   - repo: https://github.com/psf/black
     rev: 25.1.0

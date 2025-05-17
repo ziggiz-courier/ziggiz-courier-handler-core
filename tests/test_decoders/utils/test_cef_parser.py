@@ -14,7 +14,7 @@ Covers ArcSight Common Event Format messages.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.utils.cef_parser import parse_cef_message
+from ziggiz_courier_handler_core.decoders.utils.cef_parser import parse_cef_message
 
 
 @pytest.mark.unit

@@ -15,13 +15,15 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.generic.cef.plugin import (
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.cef.plugin import (
     GenericCEFDecoderPlugin,
 )
-from core_data_processing.decoders.unknown_syslog_decoder import UnknownSyslogDecoder
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
-from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
-from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
+from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
+    UnknownSyslogDecoder,
+)
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
 @pytest.mark.integration

@@ -6,16 +6,27 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# # SPDX-License-Identifier: BSL-1.1
+# # Copyright (c) 2025 Ziggiz Inc.
+# #
+# # This file is part of the ziggiz-courier-ziggiz-courier-handler-core and is licensed under the
+# # Business Source License 1.1. You may not use this file except in
+# # compliance with the License. You may obtain a copy of the License at:
+# # https://github.com/ziggiz-courier/ziggiz-courier-ziggiz-courier-handler-core/blob/main/LICENSE
 """Unit tests for UnknownSyslogDecoder."""
 # Third-party imports
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.unknown_syslog_decoder import UnknownSyslogDecoder
-from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
-from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
-from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
+from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
+    UnknownSyslogDecoder,
+)
+from ziggiz_courier_handler_core.models.event_envelope_base import (
+    EventEnvelopeBaseModel,
+)
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
 @pytest.mark.unit

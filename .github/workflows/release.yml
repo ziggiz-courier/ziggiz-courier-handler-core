@@ -1,0 +1,132 @@
+name: Release ziggiz-courier-handler-core
+
+on:
+  workflow_dispatch:
+    inputs:
+      manual-release:
+        description: "Manually trigger a release"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+  push:
+    branches:
+      - main
+      - next
+      - next-major
+    paths:
+      - "ziggiz_courier_handler_core/**"
+      - "poetry.lock"
+      - "pyproject.toml"
+      - ".github/workflows/release-ziggiz-courier-handler-core.yml"
+      - "tests/**"
+jobs:
+  test-lint:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read Python version
+        id: python_version
+        run: |
+          PY_VERSION=$(head -n 1 .python-version | tr -d '\n')
+          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python_version.outputs.version }}
+          cache: "pip"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.in-project true
+      - name: Set up Poetry cache
+        uses: actions/cache@v3
+        id: poetry-cache
+        with:
+          path: ./.venv
+          key: poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
+      - name: Install dependencies
+        if: steps.poetry-cache.outputs.cache-hit != 'true'
+        run: poetry install
+      - name: Run black
+        run: poetry run black --check ziggiz_courier_handler_core
+      - name: Run flake8
+        run: poetry run flake8 ziggiz_courier_handler_core
+      - name: Run isort
+        run: poetry run isort --check-only ziggiz_courier_handler_core
+      # - name: Run mypy
+      #   run: poetry run mypy ziggiz_courier_handler_core
+      - name: Run pytest
+        run: poetry run pytest
+
+  release:
+    name: Version, Commit & Tag
+    needs: test-lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    if: github.ref == 'refs/heads/main' || inputs.manual-release == 'true'
+    concurrency:
+      group: ${{ github.workflow }}-release-${{ github.ref_name }}
+      cancel-in-progress: true
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      - name: Read Python version
+        id: python_version
+        run: |
+          PY_VERSION=$(head -n 1 .python-version | tr -d '\n')
+          echo "version=${PY_VERSION}" >> $GITHUB_OUTPUT
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.python_version.outputs.version }}
+          cache: "pip"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.in-project true
+      - name: Set up Poetry cache
+        uses: actions/cache@v3
+        id: poetry-cache
+        with:
+          path: ./.venv
+          key: poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        if: steps.poetry-cache.outputs.cache-hit != 'true'
+        run: poetry install
+      - name: Action | Semantic Version Release
+        id: release
+        # Adjust tag with desired version if applicable.
+        uses: python-semantic-release/python-semantic-release@v9.21.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_committer_name: "github-actions"
+          git_committer_email: "actions@users.noreply.github.com"
+      - name: Publish | Upload to GitHub Release Assets
+        uses: python-semantic-release/publish-action@v9.21.1
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.release.outputs.tag }}

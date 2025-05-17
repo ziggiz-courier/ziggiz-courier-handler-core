@@ -17,8 +17,8 @@ from datetime import datetime, timezone
 import pytest
 
 # Local/package imports
-from core_data_processing.encoders.json_encoder import JSONEncoder
-from core_data_processing.models.common import CommonEvent
+from ziggiz_courier_handler_core.encoders.json_encoder import JSONEncoder
+from ziggiz_courier_handler_core.models.common import CommonEvent
 
 
 @pytest.mark.unit

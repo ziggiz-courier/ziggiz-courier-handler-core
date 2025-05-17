@@ -20,7 +20,7 @@ Message decoder plugins are a critical component for handling specific message f
 Plugins are organized by vendor and product:
 
 ```
-core_data_processing/
+ziggiz_courier_handler_core/
   decoders/
     plugins/
       message/
@@ -34,7 +34,7 @@ core_data_processing/
 
 Example for a Cisco ASA plugin:
 ```
-core_data_processing/decoders/plugins/message/cisco/asa/plugin.py
+ziggiz_courier_handler_core/decoders/plugins/message/cisco/asa/plugin.py
 ```
 
 ### 2. Basic Plugin Structure
@@ -81,14 +81,14 @@ import logging
 from typing import Any, Dict, Optional
 
 # Local/package imports
-from core_data_processing.decoders.message_decoder_plugins import (
+from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessagePluginStage,
     register_message_decoder,
 )
-from core_data_processing.decoders.plugins.message.base import MessageDecoderPluginBase
-from core_data_processing.decoders.utils.xxx_parser import parse_xxx_message  # Choose appropriate parser
-from core_data_processing.models.event_envelope_base import EventEnvelopeBaseModel
-from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel  # Or other appropriate model
+from ziggiz_courier_handler_core.decoders.plugins.message.base import MessageDecoderPluginBase
+from ziggiz_courier_handler_core.decoders.utils.xxx_parser import parse_xxx_message  # Choose appropriate parser
+from ziggiz_courier_handler_core.models.event_envelope_base import EventEnvelopeBaseModel
+from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel  # Or other appropriate model
 
 logger = logging.getLogger(__name__)
 
@@ -225,16 +225,16 @@ Choose the appropriate parser based on your message format:
 
 1. **Key-Value Parser** (for key=value formats like Fortinet):
    ```python
-   from core_data_processing.decoders.utils.kv_parser import parse_kv_message
+   from ziggiz_courier_handler_core.decoders.utils.kv_parser import parse_kv_message
    ```
 
 2. **CSV Parser** (for comma-separated formats like PaloAlto):
    ```python
-   from core_data_processing.decoders.utils.csv_parser import parse_quoted_csv_message
+   from ziggiz_courier_handler_core.decoders.utils.csv_parser import parse_quoted_csv_message
    ```
 
 3. **Custom Parser** (if needed):
-   - Create a new parser in `core_data_processing/decoders/utils/` for unique formats
+   - Create a new parser in `ziggiz_courier_handler_core/decoders/utils/` for unique formats
 
 ### 4. Field Mapping
 
@@ -473,8 +473,8 @@ Unit tests for YourPluginClassName.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.vendor.product.plugin import YourPluginClassName
-from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
+from ziggiz_courier_handler_core.decoders.plugins.message.vendor.product.plugin import YourPluginClassName
+from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 # Import other models as needed
 
 

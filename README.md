@@ -25,10 +25,10 @@ The Courier Data Processing library provides a flexible framework for processing
 
 ```bash
 # Using Poetry (recommended)
-poetry add core-data-processing
+poetry add ziggiz-courier-handler-core
 
 # Using pip
-pip install core-data-processing
+pip install ziggiz-courier-handler-core
 ```
 
 ## Quick Start
@@ -36,7 +36,7 @@ pip install core-data-processing
 ### Process a Syslog Message to JSON
 
 ```python
-from core_data_processing import SyslogRFC5424Decoder, SyslogToCommonEventAdapter, JSONEncoder
+from ziggiz_courier_handler_core import SyslogRFC5424Decoder, SyslogToCommonEventAdapter, JSONEncoder
 
 # Create the components
 decoder = SyslogRFC5424Decoder()
@@ -57,7 +57,7 @@ print(json_output)
 ### Process JSON Data
 
 ```python
-from core_data_processing import JSONLogDecoder, JSONEncoder
+from ziggiz_courier_handler_core import JSONLogDecoder, JSONEncoder
 
 # Create the components
 decoder = JSONLogDecoder()
@@ -76,7 +76,7 @@ print(json_output)
 ### Process CSV Data
 
 ```python
-from core_data_processing import CSVLogDecoder, JSONEncoder
+from ziggiz_courier_handler_core import CSVLogDecoder, JSONEncoder
 
 # Create the components
 decoder = CSVLogDecoder()
@@ -96,7 +96,7 @@ for event in events:
 ### Process XML Data
 
 ```python
-from core_data_processing import XMLLogDecoder, JSONEncoder
+from ziggiz_courier_handler_core import XMLLogDecoder, JSONEncoder
 
 # Create the components
 decoder = XMLLogDecoder()
@@ -125,7 +125,7 @@ for event in events:
 
 ```python
 from opentelemetry.sdk.trace import TracerProvider
-from core_data_processing import SyslogRFC5424Decoder, SyslogToCommonEventAdapter, OtelSpanEncoder
+from ziggiz_courier_handler_core import SyslogRFC5424Decoder, SyslogToCommonEventAdapter, OtelSpanEncoder
 
 # Initialize OpenTelemetry
 tracer_provider = TracerProvider()
@@ -155,7 +155,7 @@ Here's an example of a complete data processing pipeline that:
 3. Encodes it to a destination format
 
 ```python
-from core_data_processing import (
+from ziggiz_courier_handler_core import (
     SyslogRFC5424Decoder, SyslogToCommonEventAdapter,
     JSONEncoder, OtelSpanEncoder
 )
@@ -192,7 +192,7 @@ The library is designed around the following components:
 Decoders transform raw data (strings, bytes, etc.) into structured data models:
 
 ```python
-from core_data_processing import Decoder, SyslogRFC5424Message
+from ziggiz_courier_handler_core import Decoder, SyslogRFC5424Message
 
 class CustomDecoder(Decoder[SyslogRFC5424Message]):
     def decode(self, raw_data: str) -> SyslogRFC5424Message:
@@ -206,7 +206,7 @@ class CustomDecoder(Decoder[SyslogRFC5424Message]):
 Models are Pydantic classes that represent data structures with validation:
 
 ```python
-from core_data_processing import EventEnvelopeBaseModel
+from ziggiz_courier_handler_core import EventEnvelopeBaseModel
 from typing import Optional
 
 class CustomModel(EventEnvelopeBaseModel):
@@ -220,7 +220,7 @@ class CustomModel(EventEnvelopeBaseModel):
 Adapters transform between different model types:
 
 ```python
-from core_data_processing import Adapter, SyslogRFC5424Message, CommonEvent
+from ziggiz_courier_handler_core import Adapter, SyslogRFC5424Message, CommonEvent
 
 class CustomAdapter(Adapter[SyslogRFC5424Message, CommonEvent]):
     def transform(self, source: SyslogRFC5424Message) -> CommonEvent:
@@ -234,7 +234,7 @@ class CustomAdapter(Adapter[SyslogRFC5424Message, CommonEvent]):
 Encoders convert models to different output formats:
 
 ```python
-from core_data_processing import Encoder, CommonEvent
+from ziggiz_courier_handler_core import Encoder, CommonEvent
 
 class CustomEncoder(Encoder[CommonEvent, dict]):
     def encode(self, model: CommonEvent) -> dict:

@@ -16,10 +16,10 @@ from typing import Dict, Optional
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.generic.leef2.plugin import (
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef2.plugin import (
     GenericLEEF2DecoderPlugin,
 )
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
 
 @pytest.mark.unit

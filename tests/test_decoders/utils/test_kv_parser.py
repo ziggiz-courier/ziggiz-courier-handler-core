@@ -14,7 +14,7 @@ Covers FortiGate and generic log formats.
 import pytest
 
 # Local/package imports
-from core_data_processing.utils.kv_parser import parse_kv_message
+from ziggiz_courier_handler_core.utils.kv_parser import parse_kv_message
 
 
 @pytest.mark.unit

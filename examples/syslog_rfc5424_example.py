@@ -7,6 +7,13 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# # SPDX-License-Identifier: BSL-1.1
+# # Copyright (c) 2025 Ziggiz Inc.
+# #
+# # This file is part of the ziggiz-courier-ziggiz-courier-handler-core and is licensed under the
+# # Business Source License 1.1. You may not use this file except in
+# # compliance with the License. You may obtain a copy of the License at:
+# # https://github.com/ziggiz-courier/ziggiz-courier-ziggiz-courier-handler-core/blob/main/LICENSE
 """
 Example usage for Courier Data Processing Syslog RFC5424 components.
 
@@ -15,14 +22,14 @@ the backward compatibility provided by the old names.
 """
 
 # Local/package imports
-from core_data_processing import (
+from ziggiz_courier_handler_core import (
     JSONEncoder,
     SyslogRFC5424Decoder,
     SyslogToCommonEventAdapter,
 )
 
 # Note: For backward compatibility, you can still use the old names:
-# from core_data_processing import SyslogMessage, SyslogDecoder
+# from ziggiz_courier_handler_core import SyslogMessage, SyslogDecoder
 
 
 def parse_and_process_syslog():

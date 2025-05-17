@@ -6,6 +6,13 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# # SPDX-License-Identifier: BSL-1.1
+# # Copyright (c) 2025 Ziggiz Inc.
+# #
+# # This file is part of the ziggiz-courier-ziggiz-courier-handler-core and is licensed under the
+# # Business Source License 1.1. You may not use this file except in
+# # compliance with the License. You may obtain a copy of the License at:
+# # https://github.com/ziggiz-courier/ziggiz-courier-ziggiz-courier-handler-core/blob/main/LICENSE
 """Tests for the syslog RFC3164 decoder."""
 
 # Standard library imports
@@ -23,7 +30,9 @@ from tests.test_decoders.utils.test_timestamp_parser import TIMESTAMP_PARSE_CASE
 from tests.test_models.test_syslog_rfc_base import FROM_PRIORITY_TEST_CASES
 
 # Local/package imports
-from core_data_processing.decoders.syslog_rfc3164_decoder import SyslogRFC3164Decoder
+from ziggiz_courier_handler_core.decoders.syslog_rfc3164_decoder import (
+    SyslogRFC3164Decoder,
+)
 
 
 def _random_mixed_case_hostname():

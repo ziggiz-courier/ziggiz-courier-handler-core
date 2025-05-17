@@ -6,6 +6,13 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# # SPDX-License-Identifier: BSL-1.1
+# # Copyright (c) 2025 Ziggiz Inc.
+# #
+# # This file is part of the ziggiz-courier-ziggiz-courier-handler-core and is licensed under the
+# # Business Source License 1.1. You may not use this file except in
+# # compliance with the License. You may obtain a copy of the License at:
+# # https://github.com/ziggiz-courier/ziggiz-courier-ziggiz-courier-handler-core/blob/main/LICENSE
 """Class detection tests for UnknownSyslogDecoder using RFC3164 test matrix."""
 # Third-party imports
 import pytest
@@ -18,8 +25,10 @@ from tests.test_decoders.utils.test_timestamp_parser import TIMESTAMP_PARSE_CASE
 from tests.test_models.test_syslog_rfc_base import FROM_PRIORITY_TEST_CASES
 
 # Local/package imports
-from core_data_processing.decoders.unknown_syslog_decoder import UnknownSyslogDecoder
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
+    UnknownSyslogDecoder,
+)
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
 
 @pytest.mark.unit
@@ -149,7 +158,7 @@ def test_unknown_decoder_returns_rfc5424_class_matrix(
 ):
     """Test UnknownSyslogDecoder returns SyslogRFC5424Message for valid RFC5424 messages using the full parameter matrix."""
     # Local/package imports
-    from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
+    from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 
     decoder = UnknownSyslogDecoder()
     raw_syslog = f'<{pri}>1 {timestamp} {hostname} {app_name} {proc_id} {msg_id} [test@32473 iut="3"] This is a test message with {test_id}'
@@ -187,7 +196,7 @@ def benchmark_unknown_syslog_decoder_rfc3164():
     import time
 
     # Local/package imports
-    from core_data_processing.decoders.unknown_syslog_decoder import (
+    from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
         UnknownSyslogDecoder,
     )
 
@@ -236,7 +245,7 @@ def benchmark_unknown_syslog_decoder_rfc5424():
     import time
 
     # Local/package imports
-    from core_data_processing.decoders.unknown_syslog_decoder import (
+    from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
         UnknownSyslogDecoder,
     )
 

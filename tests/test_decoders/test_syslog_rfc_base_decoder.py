@@ -6,6 +6,13 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# # SPDX-License-Identifier: BSL-1.1
+# # Copyright (c) 2025 Ziggiz Inc.
+# #
+# # This file is part of the ziggiz-courier-ziggiz-courier-handler-core and is licensed under the
+# # Business Source License 1.1. You may not use this file except in
+# # compliance with the License. You may obtain a copy of the License at:
+# # https://github.com/ziggiz-courier/ziggiz-courier-ziggiz-courier-handler-core/blob/main/LICENSE
 """Tests for the syslog RFC base decoder."""
 
 # Standard library imports
@@ -19,10 +26,10 @@ from tests.test_models.test_syslog_rfc_base import (
 )
 
 # Local/package imports
-from core_data_processing.decoders.syslog_rfc_base_decoder import (
+from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
     SyslogRFCBaseDecoder,
 )
-from core_data_processing.models.syslog_rfc_base import Facility, Severity
+from ziggiz_courier_handler_core.models.syslog_rfc_base import Facility, Severity
 
 
 @pytest.mark.unit

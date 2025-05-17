@@ -15,9 +15,11 @@ import json
 import pytest
 
 # Local/package imports
-from core_data_processing.adapters.transformers import SyslogToCommonEventAdapter
-from core_data_processing.decoders.syslog_rfc5424_decoder import SyslogRFC5424Decoder
-from core_data_processing.encoders.json_encoder import JSONEncoder
+from ziggiz_courier_handler_core.adapters.transformers import SyslogToCommonEventAdapter
+from ziggiz_courier_handler_core.decoders.syslog_rfc5424_decoder import (
+    SyslogRFC5424Decoder,
+)
+from ziggiz_courier_handler_core.encoders.json_encoder import JSONEncoder
 
 
 class TestIntegration:

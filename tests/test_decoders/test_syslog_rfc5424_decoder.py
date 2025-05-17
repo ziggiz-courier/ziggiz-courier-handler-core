@@ -20,7 +20,9 @@ from tests.test_models.test_syslog_rfc_base import (
 )
 
 # Local/package imports
-from core_data_processing.decoders.syslog_rfc5424_decoder import SyslogRFC5424Decoder
+from ziggiz_courier_handler_core.decoders.syslog_rfc5424_decoder import (
+    SyslogRFC5424Decoder,
+)
 
 
 @pytest.mark.unit

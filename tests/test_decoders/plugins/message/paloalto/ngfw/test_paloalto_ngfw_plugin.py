@@ -19,11 +19,11 @@ from typing import Dict, Optional
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.paloalto.ngfw.plugin import (
+from ziggiz_courier_handler_core.decoders.plugins.message.paloalto.ngfw.plugin import (
     PaloAltoNGFWCSVDecoder,
 )
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
-from core_data_processing.models.syslog_rfc5424 import SyslogRFC5424Message
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 
 
 @pytest.mark.unit

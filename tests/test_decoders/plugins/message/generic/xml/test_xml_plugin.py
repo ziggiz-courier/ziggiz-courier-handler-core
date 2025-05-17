@@ -13,10 +13,10 @@ Unit tests for GenericXMLDecoderPlugin.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.plugins.message.generic.xml.plugin import (
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
     GenericXMLDecoderPlugin,
 )
-from core_data_processing.models.syslog_rfc_base import SyslogRFCBaseModel
+from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 
 
 @pytest.mark.unit

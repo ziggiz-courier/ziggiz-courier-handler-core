@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.utils.timestamp_parser import TimestampParser
+from ziggiz_courier_handler_core.decoders.utils.timestamp_parser import TimestampParser
 
 # Module-level test cases for timestamp parsing
 TIMESTAMP_PARSE_CASES = [

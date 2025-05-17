@@ -14,7 +14,7 @@
 import pytest
 
 # Local/package imports
-from core_data_processing.models.syslog_rfc_base import (
+from ziggiz_courier_handler_core.models.syslog_rfc_base import (
     Facility,
     Severity,
     SyslogRFCBaseModel,

@@ -14,7 +14,7 @@ Covers IBM QRadar Log Event Extended Format messages.
 import pytest
 
 # Local/package imports
-from core_data_processing.decoders.utils.leef_1_parser import parse_leef_message
+from ziggiz_courier_handler_core.decoders.utils.leef_1_parser import parse_leef_message
 
 
 @pytest.mark.unit

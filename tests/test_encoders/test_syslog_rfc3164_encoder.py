@@ -14,8 +14,10 @@
 import pytest
 
 # Local/package imports
-from core_data_processing.encoders.syslog_rfc3164_encoder import SyslogRFC3164Encoder
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.encoders.syslog_rfc3164_encoder import (
+    SyslogRFC3164Encoder,
+)
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
 
 @pytest.mark.unit

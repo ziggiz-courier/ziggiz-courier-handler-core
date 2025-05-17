@@ -15,7 +15,7 @@ from datetime import datetime
 import pytest
 
 # Local/package imports
-from core_data_processing.models.syslog_rfc3164 import SyslogRFC3164Message
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
 
 @pytest.mark.unit
