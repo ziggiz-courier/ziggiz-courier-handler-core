@@ -1,15 +1,18 @@
-# Courier Data Processing
 
-A Python library for decoding, transforming, and encoding data in various formats.
+# Ziggiz-Courier Data Processing
 
-## Overview
+Ziggiz-Courier implements data processing pipelines for transforming various log formats, focusing on syslog (RFC3164, RFC5424), JSON, CSV, and XML.
 
-The Courier Data Processing library provides a flexible framework for processing data across different formats and protocols. It follows a modular architecture with:
+## Project Overview
 
-- **Decoders**: Convert raw input data (strings, bytes, etc.) into strongly-typed data models
-- **Models**: Pydantic-based data classes with validation
-- **Adapters**: Transform data between different model types
-- **Encoders**: Convert models to different output formats
+The project is organized into Decoders (parsing raw logs), Models (structured representations), Adapters (model-to-model transformations), and Encoders (output formatting). See [`DEVELOPING.md`](DEVELOPING.md) for plugin development details.
+
+## Code Structure
+
+- **Decoders**: Parse raw log formats into structured model objects.
+- **Models**: Data structures representing parsed log messages.
+- **Adapters**: Transform between different model formats.
+- **Encoders**: Convert model objects to output formats (e.g., JSON).
 
 ## Features
 
@@ -20,6 +23,31 @@ The Courier Data Processing library provides a flexible framework for processing
 - **Flexible & Extensible**: Easy to add new decoders, adapters, and encoders
 - **Type Safety**: Leverages Python type hints and Pydantic for type validation
 - **Continuous Integration/Deployment**: Automated testing, linting, and releases
+
+## Development Standards
+
+- Follows PEP 8, uses type hints, and enforces code quality with `black`, `flake8`, `isort`, and `mypy`.
+- Logging uses the `logging` module with structured (JSON) output and context via the `extra` argument.
+- Regex patterns use raw strings, named groups, and are compiled for performance.
+- Exception handling uses custom exceptions, context managers, and detailed logging.
+- Testing uses `pytest` with markers for unit, integration, and format-specific tests.
+- All public classes and methods are documented with docstrings.
+
+## How to Extend
+
+To add support for new log formats or processing logic, see [`DEVELOPING.md`](DEVELOPING.md) for plugin development guidelines and best practices.
+
+## Code Quality
+
+- Format code with `black`
+- Lint with `flake8`
+- Sort imports with `isort`
+- Type-check with `mypy`
+- Test with `pytest`
+
+## Commit Conventions
+
+Follow [COMMIT_CONVENTION.md](COMMIT_CONVENTION.md). Custom types like `decoder`, `encoder`, and `model` are supported.
 
 ## Installation
 
@@ -294,4 +322,4 @@ Contributions are welcome! Please feel free to submit a Pull Request following t
 
 ## License
 
-[MIT License](LICENSE)
+[BSL-1.1](LICENSE)

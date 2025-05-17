@@ -1,17 +1,124 @@
-# Ziggiz-Courier Plugin Development Guide
 
-This guide explains how to develop message decoder plugins for the Ziggiz-Courier data processing framework. It outlines the architecture, requirements, and best practices to create effective plugins that conform to our project standards.
+# Developing for Ziggiz-Courier
 
-## Plugin Architecture Overview
+## Coding Standards
 
-The Ziggiz-Courier project follows a modular architecture consisting of:
+- Follow PEP 8 and use type hints everywhere.
+- Use `isinstance()` for type checks.
+- Avoid `eval()` and `exec()`.
+- Use `with` statements for file handling.
+- Use `logging` (not print) with structured (JSON) output and the `extra` argument for context.
+- Use f-strings only as a last resort; never in logging messages.
+- Use `pytest` for all tests, `mypy` for type checking, `black` for formatting, `flake8` for linting, and `isort` for import sorting.
 
-1. **Decoders**: Parse raw input into structured models
-2. **Models**: Structured data representations
-3. **Adapters**: Transform between different model formats
-4. **Encoders**: Convert models to output formats
+## Regex Guidelines
 
-Message decoder plugins are a critical component for handling specific message formats (e.g., syslog messages from different vendors).
+- Use raw strings: `r"pattern"`
+- Use named groups: `(?P<name>pattern)`
+- Compile patterns with `re.compile()`
+- Document each pattern with a comment
+- Use `re.match()` for start-of-string, `re.search()` for anywhere, and `re.fullmatch()` for entire string matches.
+
+## Logging
+
+- Always use `logging.getLogger(__name__)`
+- Configure logging with `logging.basicConfig()` and `logging.StreamHandler` for console output.
+- Format logs as JSON.
+- Use log levels appropriately.
+- Always use the `extra` keyword for context in logs.
+
+## Exception Handling
+
+- Use custom exceptions for specific errors.
+- Use `try`/`except`/`finally` as needed.
+- Use `logging.exception()` for exceptions.
+- Use `contextlib` for context managers.
+- Use `functools.wraps` in decorators.
+
+## Testing
+
+- Unit tests: mark with `@pytest.mark.unit`, cover positive and negative cases, use parameterization.
+- Integration tests: mark with `@pytest.mark.integration`.
+- Use `@pytest.mark.rfc3164` and `@pytest.mark.rfc5424` for format-specific tests.
+- Place tests in `tests/` following the component structure.
+
+## Documentation
+
+- All public classes and methods must have docstrings.
+- Document Args, Returns, and Raises.
+- Document timestamp formats and parsing rules.
+- Add clear examples to the `examples/` directory.
+
+## Code Organization
+
+- Import order: standard library, third-party, local/package.
+- Naming: Classes (PascalCase), functions/methods (snake_case), constants (UPPER_SNAKE_CASE).
+- Inheritance: BaseModel → SyslogRFCBaseModel → format-specific models.
+
+## Common Issues
+
+- Avoid circular imports, especially in `__init__.py`.
+- Update all relevant tests when changing interfaces.
+- Ensure unit tests are isolated.
+- Check for missing or incorrect imports before committing.
+
+## Adding New Components
+
+### Decoder
+
+1. Subclass `Decoder[YourModel]`.
+2. Implement `decode()` returning your model.
+3. Add unit tests with `@pytest.mark.unit`.
+4. Document supported formats and parsing rules.
+
+### Model
+
+1. Subclass the appropriate base model.
+2. Use type hints for all fields.
+3. Add validation logic if needed.
+4. Add unit tests with `@pytest.mark.unit`.
+
+### Adapter
+
+1. Subclass `Adapter[SourceModel, TargetModel]`.
+2. Implement `transform()`.
+3. Add unit tests with `@pytest.mark.unit`.
+
+### Encoder
+
+1. Subclass `Encoder[YourModel]`.
+2. Implement `encode()`.
+3. Add unit tests with `@pytest.mark.unit`.
+
+---
+
+## Quick Reference: Plugin Registration
+
+- Register for `SyslogRFCBaseModel` if your plugin is generic
+- Register for `SyslogRFC3164Message` or `SyslogRFC5424Message` for format-specific plugins
+- Use `MessagePluginStage.SECOND_PASS` for most vendor plugins
+
+Example:
+```python
+register_message_decoder(SyslogRFCBaseModel, MessagePluginStage.SECOND_PASS)(YourPluginClassName)
+```
+
+## Logging Example
+
+Use structured logging:
+```python
+logger.info("Parsed event", extra={"event_data": model.event_data})
+```
+Avoid f-strings in log messages.
+
+## Regex Example
+
+Use named groups and compile patterns:
+```python
+pattern = re.compile(r"(?P<field>\w+):(?P<value>\S+)")
+```
+
+---
 
 ## Creating a New Message Decoder Plugin
 
