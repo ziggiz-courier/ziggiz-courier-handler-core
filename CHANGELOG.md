@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.7.0 (2025-05-17)
+
+### Features
+
+- **json**: Basic parser
+  ([`260f44f`](https://github.com/ziggiz-courier/core-data-processing/commit/260f44f35f39c35bb4b70328296ec2ed4099d4e8))
+
+- **json**: Improved json handling for corner cases
+  ([`08eee86`](https://github.com/ziggiz-courier/core-data-processing/commit/08eee86c5bbeebe58a6a95786a11afe3f13efb71))
+
+### Testing
+
+- Additional test coverage
+  ([`9400fa8`](https://github.com/ziggiz-courier/core-data-processing/commit/9400fa8cb3c902289ad4324c07564ba4cd270c8b))
+
+
 ## v0.6.0 (2025-05-16)
 
 ### Features
