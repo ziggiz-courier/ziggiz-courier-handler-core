@@ -13,17 +13,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Utility functions and classes for courier data processing."""
+"""Generic JSON message decoder plugin package."""
 
 # Local/package imports
-from core_data_processing.decoders.utils.timestamp_parser import TimestampParser
-from .cef_parser import parse_cef_message
-from .json_parser import parse_json_message
-from .kv_parser import parse_kv_message
+from core_data_processing.decoders.plugins.message.generic.json.plugin import (
+    GenericJSONDecoderPlugin,
+)
 
-__all__ = [
-    "TimestampParser",
-    "parse_kv_message",
-    "parse_cef_message",
-    "parse_json_message",
-]
+__all__ = ["GenericJSONDecoderPlugin"]
