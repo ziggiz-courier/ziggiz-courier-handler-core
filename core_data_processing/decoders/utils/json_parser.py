@@ -17,8 +17,11 @@
 Utility for parsing native JSON objects.
 
 This module provides a parser that handles only native JSON objects, not stringified JSON.
+It also handles JSON with escaped control characters that might break standard parsing.
 """
 # Standard library imports
+import json
+
 from typing import Any, Dict, Optional
 
 # Third-party imports
@@ -31,7 +34,8 @@ def parse_json_message(message: str) -> Optional[Dict[str, Any]]:
 
     This function attempts to parse the given string as a native JSON object.
     It only processes messages that are already in valid JSON format
-    (starting with { and ending with }).
+    (starting with { and ending with }). It can also handle JSON with escaped
+    control characters like \\r\\n, and escaped quotes.
 
     Args:
         message: The raw message that must be a native JSON object
@@ -52,4 +56,20 @@ def parse_json_message(message: str) -> Optional[Dict[str, Any]]:
     try:
         return orjson.loads(message)
     except (orjson.JSONDecodeError, ValueError, TypeError):
-        return None
+        # First attempt failed, try fixing common issues
+        try:
+            # Try using the standard library json which is more forgiving
+            return json.loads(message)
+        except (json.JSONDecodeError, ValueError, TypeError):
+            # If that fails too, try replacing literal \r\n with actual line breaks
+            # and handle escaped quotes by using a raw string equivalent
+            try:
+                # Handle \r\n and other control chars
+                fixed_message = message.replace("\\r\\n", "\r\n")
+                fixed_message = fixed_message.replace("\\n", "\n")
+                fixed_message = fixed_message.replace('\\"', '"')
+                fixed_message = fixed_message.replace("\\/", "/")
+                fixed_message = fixed_message.replace("\\\\", "\\")
+                return orjson.loads(fixed_message)
+            except (orjson.JSONDecodeError, ValueError, TypeError):
+                return None
