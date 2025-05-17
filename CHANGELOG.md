@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.8.0 (2025-05-17)
+
+### Features
+
+- **xml**: Support generic xml messages
+  ([`4d38627`](https://github.com/ziggiz-courier/core-data-processing/commit/4d3862726426c37066e4c2e70cf1c24ab5fcb364))
+
+
 ## v0.7.0 (2025-05-17)
 
 ### Features
