@@ -24,8 +24,9 @@ def test_generic_cef_basic_case():
     """Test GenericCEFDecoderPlugin with basic CEF message format."""
     # Create a model with a test CEF message
     msg = "CEF:1|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232"
+    from datetime import datetime, timezone
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-13T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,  # LOCAL0
         severity=6,  # INFO
         message=msg,
@@ -44,8 +45,9 @@ def test_generic_cef_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    assert handler_entry["vendor"] == "security"
-    assert handler_entry["product"] == "threatmanager"
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "security"
+    assert sp.product == "threatmanager"
     assert handler_entry["msgclass"] == "worm successfully stopped"
 
     # Verify specific fields in the parsed data
@@ -62,8 +64,9 @@ def test_generic_cef_with_custom_fields():
     """Test GenericCEFDecoderPlugin with custom fields."""
     # Create a model with a test CEF message with custom fields
     msg = "CEF:1|Vendor|Product|1.0|100|Name|10|src=10.0.0.1 customField=customValue"
+    from datetime import datetime, timezone
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-13T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
         severity=6,
         message=msg,
@@ -81,9 +84,10 @@ def test_generic_cef_with_custom_fields():
     key = "GenericCEFDecoderPlugin"
     assert model.handler_data is not None
     assert key in model.handler_data
-    handler_entry = model.handler_data[key]
-    assert handler_entry["vendor"] == "vendor"
-    assert handler_entry["product"] == "product"
+    # handler_entry = model.handler_data[key]
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "vendor"
+    assert sp.product == "product"
     assert model.event_data is not None
     assert "customField" in model.event_data
     assert model.event_data["customField"] == "customValue"

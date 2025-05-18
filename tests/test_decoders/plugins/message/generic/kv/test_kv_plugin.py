@@ -47,8 +47,9 @@ def test_generic_kv_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_kv"
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_kv"
     assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data

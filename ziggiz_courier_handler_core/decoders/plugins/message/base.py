@@ -22,9 +22,11 @@ from typing import Any, Dict, List, Optional
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessageDecoderPlugin,
 )
+
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
 logger = logging.getLogger(__name__)
@@ -85,10 +87,10 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             key = f"{pkg}..{typename}"
 
         entry = {
-            "vendor": vendor,
-            "product": product,
             "msgclass": msgclass,
             "fields": field_names,
+            "vendor": vendor,
+            "product": product,
         }
         if handler_metadata:
             entry.update(handler_metadata)
@@ -98,6 +100,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             model.handler_data = {}
         model.handler_data[key] = entry
 
+        model.handler_data["SourceProducer"] = SourceProducer(organization=vendor, product=product)
         logger.debug(
             "plugin parsed event_data",
             extra={

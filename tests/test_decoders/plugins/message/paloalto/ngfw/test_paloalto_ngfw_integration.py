@@ -68,8 +68,9 @@ def test_paloalto_traffic_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "traffic"
     assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
@@ -77,8 +78,9 @@ def test_paloalto_traffic_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "traffic"
 
 
@@ -111,8 +113,9 @@ def test_paloalto_threat_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "threat"
     assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
@@ -121,8 +124,9 @@ def test_paloalto_threat_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "threat"
 
 
@@ -155,8 +159,9 @@ def test_paloalto_system_log_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "system"
     assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"

@@ -53,8 +53,9 @@ def test_json_with_rfc3164():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_json"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_json"
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "event" in result.event_data
@@ -87,8 +88,9 @@ def test_json_with_rfc5424():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_json"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_json"
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "user" in result.event_data
@@ -119,8 +121,9 @@ def test_direct_json_message():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_json"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_json"
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert result.event_data["event"] == "system_alert"

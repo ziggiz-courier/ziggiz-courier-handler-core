@@ -51,10 +51,11 @@ def test_kv_with_rfc3164():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "generic"
-    assert handler_info["product"] == "unknown_kv"
-    assert handler_info["msgclass"] == "unknown"
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_kv"
+    assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
@@ -89,9 +90,9 @@ def test_kv_with_rfc5424():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "generic"
-    assert handler_info["product"] == "unknown_kv"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_kv"
     assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"] == "admin"
@@ -123,9 +124,9 @@ def test_direct_kv_message():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "generic"
-    assert handler_info["product"] == "unknown_kv"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_kv"
     assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "firewall"

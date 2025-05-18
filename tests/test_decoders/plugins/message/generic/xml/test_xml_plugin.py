@@ -44,8 +44,11 @@ def test_generic_xml_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_xml"
+    # Validate SourceProducer entry
+    assert "SourceProducer" in model.handler_data
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
@@ -120,8 +123,11 @@ def test_generic_xml_with_dtd():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    assert handler_entry["vendor"] == "generic"
-    assert handler_entry["product"] == "unknown_xml"
+    # Validate SourceProducer entry
+    assert "SourceProducer" in model.handler_data
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert handler_entry["msgclass"] == "security_event"
 
     # Verify specific fields in the parsed data

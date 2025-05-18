@@ -78,8 +78,11 @@ def test_fortigate_traffic_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "fortinet"
-    assert handler_entry["product"] == "fortigate"
+    # Validate SourceProducer entry
+    assert "SourceProducer" in result.handler_data
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
     assert handler_entry["msgclass"] == "traffic_sniffer"
     assert result.event_data is not None
     assert result.event_data["type"] == "traffic"
@@ -125,8 +128,11 @@ def test_fortigate_utm_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "fortinet"
-    assert handler_entry["product"] == "fortigate"
+    # Validate SourceProducer entry
+    assert "SourceProducer" in result.handler_data
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
     assert handler_entry["msgclass"] == "utm_webfilter"
     assert result.event_data is not None
     assert result.event_data["type"] == "utm"
@@ -168,8 +174,9 @@ def test_fortigate_event_log():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "fortinet"
-    assert handler_entry["product"] == "fortigate"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
     assert handler_entry["msgclass"] == "event_system"
     assert result.event_data is not None
     assert result.event_data["type"] == "event"
@@ -209,8 +216,9 @@ def test_unknown_syslog_decoder_and_plugin_for_fortigate():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "fortinet"
-    assert handler_entry["product"] == "fortigate"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
     assert handler_entry["msgclass"] == "traffic_sniffer"
     assert result.event_data is not None
     assert result.event_data["type"] == "traffic"

@@ -53,8 +53,9 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler = model.handler_data[key]
-        assert handler["vendor"] == "paloalto"
-        assert handler["product"] == "ngfw"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "paloalto"
+        assert sp.product == "ngfw"
         assert handler["msgclass"] == "traffic"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "TRAFFIC"
@@ -81,8 +82,9 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
         assert handler is not None
-        assert handler["vendor"] == "paloalto"
-        assert handler["product"] == "ngfw"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "paloalto"
+        assert sp.product == "ngfw"
         assert handler["msgclass"] == "threat"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "THREAT"
@@ -110,8 +112,9 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
         assert handler is not None
-        assert handler["vendor"] == "paloalto"
-        assert handler["product"] == "ngfw"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "paloalto"
+        assert sp.product == "ngfw"
         assert handler["msgclass"] == "system"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "SYSTEM"
@@ -138,8 +141,9 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
         assert handler is not None
-        assert handler["vendor"] == "paloalto"
-        assert handler["product"] == "ngfw"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "paloalto"
+        assert sp.product == "ngfw"
         assert handler["msgclass"] == "config"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "CONFIG"
@@ -174,8 +178,9 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
         assert handler is not None
-        assert handler["vendor"] == "paloalto"
-        assert handler["product"] == "ngfw"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "paloalto"
+        assert sp.product == "ngfw"
 
     def test_non_matching_message(self):
         """Test with a message that doesn't match the PaloAlto NGFW CSV format."""

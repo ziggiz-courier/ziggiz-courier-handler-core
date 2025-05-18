@@ -22,9 +22,14 @@ def test_parse_leef_2_message_basic():
     """Test basic LEEF 2.0 message parsing with standard header and extension fields."""
     msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
     result = parse_leef_message(msg)
+    assert result is not None
     assert result["leef_version"] == "2.0"
-    assert result["vendor"] == "IBM"
-    assert result["product"] == "QRadar"
+    assert "SourceProducer" in result
+    sp = result["SourceProducer"]
+    assert hasattr(sp, "organization")
+    assert hasattr(sp, "product")
+    assert sp.organization == "IBM"
+    assert sp.product == "QRadar"
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["src"] == "10.0.0.1"
@@ -37,9 +42,14 @@ def test_parse_leef_2_message_with_category():
     """Test LEEF 2.0 message parsing with event category field."""
     msg = "LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
     result = parse_leef_message(msg)
+    assert result is not None
     assert result["leef_version"] == "2.0"
-    assert result["vendor"] == "IBM"
-    assert result["product"] == "QRadar"
+    assert "SourceProducer" in result
+    sp = result["SourceProducer"]
+    assert hasattr(sp, "organization")
+    assert hasattr(sp, "product")
+    assert sp.organization == "IBM"
+    assert sp.product == "QRadar"
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["event_category"] == "SecurityAlert"
@@ -53,9 +63,14 @@ def test_parse_leef_2_message_with_space_delimiter():
     """Test LEEF 2.0 message parsing with space-delimited extension fields."""
     msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1 dst=2.1.2.2 spt=1232"
     result = parse_leef_message(msg)
+    assert result is not None
     assert result["leef_version"] == "2.0"
-    assert result["vendor"] == "IBM"
-    assert result["product"] == "QRadar"
+    assert "SourceProducer" in result
+    sp = result["SourceProducer"]
+    assert hasattr(sp, "organization")
+    assert hasattr(sp, "product")
+    assert sp.organization == "IBM"
+    assert sp.product == "QRadar"
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["src"] == "10.0.0.1"

@@ -49,8 +49,9 @@ def test_cef_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "vendor"
-    assert handler_entry["product"] == "product"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "vendor"
+    assert sp.product == "product"
     assert handler_entry["msgclass"] == "security alert"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -82,8 +83,9 @@ def test_cef_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "security"
-    assert handler_entry["product"] == "product"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "security"
+    assert sp.product == "product"
     assert handler_entry["msgclass"] == "intrusion detected"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -113,8 +115,9 @@ def test_direct_cef_message():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "vendor"
-    assert handler_entry["product"] == "product"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "vendor"
+    assert sp.product == "product"
     assert handler_entry["msgclass"] == "system alert"
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"

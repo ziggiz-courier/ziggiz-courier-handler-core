@@ -20,11 +20,13 @@ import logging
 import re
 
 from typing import Dict, Optional
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 logger = logging.getLogger(__name__)
 
 
-def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
+from typing import Any
+def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
     """
     High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
@@ -51,10 +53,8 @@ def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
             "LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
             == message
         ):
-            return {
+            result = {
                 "leef_version": "2.0",
-                "vendor": "IBM",
-                "product": "QRadar",
                 "version": "2.0",
                 "event_id": "12345",
                 "event_category": "SecurityAlert",
@@ -62,6 +62,9 @@ def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
                 "dst": "2.1.2.2",
                 "spt": "1232",
             }
+            # Store as object, but also return a dict for compatibility
+            result["SourceProducer"] = SourceProducer(organization="IBM", product="QRadar")
+            return result
 
         # Handle all other cases
         # First, split by pipe and handle basic header
@@ -72,11 +75,12 @@ def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
 
         result = {
             "leef_version": parts[0][5:],  # Skip "LEEF:"
-            "vendor": parts[1],
-            "product": parts[2],
             "version": parts[3],
             "event_id": parts[4],
         }
+        # Add SourceProducer instance
+        # Store as object, but also return a dict for compatibility
+        result["SourceProducer"] = SourceProducer(organization=parts[1], product=parts[2])
 
         # The rest is either event_category + extension or just extension
         if len(parts) >= 6:
