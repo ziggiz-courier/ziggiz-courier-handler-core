@@ -25,9 +25,7 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
-from ziggiz_courier_handler_core.models.event_structure_classification import (
-    StructuredEventStructureClassification,
-)
+
 
 logger = logging.getLogger(__name__)
 
@@ -58,26 +56,52 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         vendor: str,
         product: str,
         msgclass: str,
+        handler_metadata: Optional[dict] = None,
     ) -> None:
         """
-        Apply field mapping to the model.
+        Apply field mapping to the model and update handler_data.
 
         Args:
             model (EventEnvelopeBaseModel): The model to update with parsed fields
             fields (List[Any]): The parsed field values
             field_names (List[str]): The field names corresponding to the values
-            vendor (str): Vendor name for structure classification
-            product (str): Product name for structure classification
-            msgclass (str): Message class for structure classification
+            vendor (str): Vendor name for handler_data
+            product (str): Product name for handler_data
+            msgclass (str): Message class for handler_data
+            handler_metadata (Optional[dict]): Additional metadata for this handler entry
         """
-        model.structure_classification = StructuredEventStructureClassification(
-            vendor=vendor,
-            product=product,
-            msgclass=msgclass,
-            fields=field_names,
-        )
+        # Set event_data as before
         model.event_data = {k: v for k, v in zip(field_names, fields)}
+
+        # Use only the class name as key for first-party, or package..Type for third-party plugins
+        cls = self.__class__
+        module = cls.__module__
+        typename = cls.__name__
+        if module.startswith("ziggiz_courier_handler_core."):
+            key = typename
+        else:
+            # Abbreviated: package..Type (e.g., vendorpkg..PluginType)
+            pkg = module.split(".")[0]
+            key = f"{pkg}..{typename}"
+
+        entry = {
+            "vendor": vendor,
+            "product": product,
+            "msgclass": msgclass,
+            "fields": field_names,
+        }
+        if handler_metadata:
+            entry.update(handler_metadata)
+
+        # Maintain insertion order (Python 3.7+ dicts are ordered)
+        if model.handler_data is None:
+            model.handler_data = {}
+        model.handler_data[key] = entry
+
         logger.debug(
-            f"{vendor} {product} plugin parsed event_data",
-            extra={"event_data": model.event_data},
+            "plugin parsed event_data",
+            extra={
+                "event_data": model.event_data,
+                "handler_data": model.handler_data,
+            },
         )

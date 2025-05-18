@@ -39,14 +39,22 @@ def test_generic_json_basic_case():
 
     # Verify the result
     assert result is True
-    assert model.structure_classification.vendor == "generic"
-    assert model.structure_classification.product == "unknown_json"
-    assert model.structure_classification.msgclass == "unknown"
+    # Check handler_data for the decoder's FQCN
+    key = "GenericJSONDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_info = model.handler_data[key]
+    assert handler_info["vendor"] == "generic"
+    assert handler_info["product"] == "unknown_json"
+    assert handler_info["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "event" in model.event_data
     assert model.event_data["event"] == "login"
+    assert "user" in model.event_data
     assert model.event_data["user"] == "admin"
+    assert "status" in model.event_data
     assert model.event_data["status"] == "success"
 
 
@@ -72,6 +80,15 @@ def test_generic_json_nested_data():
 
     # Verify the result
     assert result is True
+    key = "GenericJSONDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    assert handler_entry["vendor"] == "generic"
+    assert handler_entry["product"] == "unknown_json"
+    assert handler_entry["msgclass"] == "unknown"
+    # Check event data
+    assert model.event_data is not None
     assert "user" in model.event_data
     assert model.event_data["user"] == {"id": 123, "name": "John"}
     assert "actions" in model.event_data

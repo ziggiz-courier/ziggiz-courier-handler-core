@@ -48,13 +48,21 @@ def test_kv_with_rfc3164():
 
     # Verify the result after KV plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_kv"
-    assert result.structure_classification.msgclass == "unknown"
+    key = "GenericKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "generic"
+    assert handler_info["product"] == "unknown_kv"
+    assert handler_info["msgclass"] == "unknown"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
+    assert "dst" in result.event_data
     assert result.event_data["dst"] == "8.8.8.8"
+    assert "action" in result.event_data
     assert result.event_data["action"] == "allow"
+    assert "service" in result.event_data
     assert result.event_data["service"] == "https"
 
 
@@ -78,12 +86,20 @@ def test_kv_with_rfc5424():
 
     # Verify the result after KV plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_kv"
+    key = "GenericKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "generic"
+    assert handler_info["product"] == "unknown_kv"
+    assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"] == "admin"
+    assert "action" in result.event_data
     assert result.event_data["action"] == "login"
+    assert "status" in result.event_data
     assert result.event_data["status"] == "success"
+    assert "ip" in result.event_data
     assert result.event_data["ip"] == "192.168.1.1"
 
 
@@ -104,11 +120,22 @@ def test_direct_kv_message():
 
     # Verify the result after KV plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_kv"
+    key = "GenericKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "generic"
+    assert handler_info["product"] == "unknown_kv"
+    assert result.event_data is not None
+    assert "src" in result.event_data
     assert result.event_data["src"] == "firewall"
+    assert "dst" in result.event_data
     assert result.event_data["dst"] == "10.0.0.5"
+    assert "action" in result.event_data
     assert result.event_data["action"] == "block"
+    assert "proto" in result.event_data
     assert result.event_data["proto"] == "tcp"
+    assert "port" in result.event_data
     assert result.event_data["port"] == "22"
+    assert "reason" in result.event_data
     assert result.event_data["reason"] == "Invalid authentication"

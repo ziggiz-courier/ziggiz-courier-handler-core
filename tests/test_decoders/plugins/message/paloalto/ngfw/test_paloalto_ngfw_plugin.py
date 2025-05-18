@@ -33,8 +33,9 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_traffic_log_decoding(self):
         """Test TRAFFIC log type decoding."""
         # Create a model with a TRAFFIC message
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,TRAFFIC,drop,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Allow-All,ethernet1/1,ethernet1/2,ethernet1/1,ethernet1/2,Test-Rule,2025/05/13 12:34:56,1,1,0,0,0,0,0x0,udp,deny,0,0,0,0,,paloalto,from-policy",
@@ -48,17 +49,22 @@ class TestPaloAltoNGFWCSVDecoder:
 
         # Check that the message was decoded correctly
         assert result is True
-        assert model.structure_classification.vendor == "paloalto"
-        assert model.structure_classification.product == "ngfw"
-        assert model.structure_classification.msgclass == "traffic"
+        key = "PaloAltoNGFWCSVDecoder"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler = model.handler_data[key]
+        assert handler["vendor"] == "paloalto"
+        assert handler["product"] == "ngfw"
+        assert handler["msgclass"] == "traffic"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "TRAFFIC"
 
     def test_threat_log_decoding(self):
         """Test THREAT log type decoding."""
         # Create a model with a THREAT message
+        from datetime import datetime, timezone
         model = SyslogRFC5424Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,THREAT,vulnerability,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Threat-Rule,user1,user2,web-browsing,vsys1,untrust,trust,ethernet1/1,ethernet1/2,Threat-Log,1234,5678,1,80,443,1,2,0x0,tcp,reset-both,example.com/malicious.php,12345,malware,critical,client-to-server,9876543,0x2",
@@ -72,9 +78,12 @@ class TestPaloAltoNGFWCSVDecoder:
 
         # Check that the message was decoded correctly
         assert result is True
-        assert model.structure_classification.vendor == "paloalto"
-        assert model.structure_classification.product == "ngfw"
-        assert model.structure_classification.msgclass == "threat"
+        assert model.handler_data is not None
+        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        assert handler is not None
+        assert handler["vendor"] == "paloalto"
+        assert handler["product"] == "ngfw"
+        assert handler["msgclass"] == "threat"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "THREAT"
         assert model.event_data["threat_content_type"] == "vulnerability"
@@ -82,8 +91,9 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_system_log_decoding(self):
         """Test SYSTEM log type decoding."""
         # Create a model with a SYSTEM message
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,SYSTEM,general,0001,2025/05/13,12:34:56,system,1,0,general,info,auth-success,Authentication successful for user admin from 10.1.1.1",
@@ -97,17 +107,21 @@ class TestPaloAltoNGFWCSVDecoder:
 
         # Check that the message was decoded correctly
         assert result is True
-        assert model.structure_classification.vendor == "paloalto"
-        assert model.structure_classification.product == "ngfw"
-        assert model.structure_classification.msgclass == "system"
+        assert model.handler_data is not None
+        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        assert handler is not None
+        assert handler["vendor"] == "paloalto"
+        assert handler["product"] == "ngfw"
+        assert handler["msgclass"] == "system"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "SYSTEM"
 
     def test_config_log_decoding(self):
         """Test CONFIG log type decoding."""
         # Create a model with a CONFIG message
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,CONFIG,0,0,2025/05/13,12:34:56,admin,10.1.1.1,Web,0,0,set,vsys1,policy,rules,Test-Rule,action,allow",
@@ -121,9 +135,12 @@ class TestPaloAltoNGFWCSVDecoder:
 
         # Check that the message was decoded correctly
         assert result is True
-        assert model.structure_classification.vendor == "paloalto"
-        assert model.structure_classification.product == "ngfw"
-        assert model.structure_classification.msgclass == "config"
+        assert model.handler_data is not None
+        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        assert handler is not None
+        assert handler["vendor"] == "paloalto"
+        assert handler["product"] == "ngfw"
+        assert handler["msgclass"] == "config"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "CONFIG"
 
@@ -138,8 +155,9 @@ class TestPaloAltoNGFWCSVDecoder:
         }
 
         # Create a model with a message that would match the cache
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,TRAFFIC,drop,1,2025/05/13,12:34:56,10.1.1.1,10.2.2.2,0.0.0.0,0.0.0.0,Allow-All,ethernet1/1,ethernet1/2",
@@ -153,14 +171,18 @@ class TestPaloAltoNGFWCSVDecoder:
 
         # Verify that it was decoded successfully using the cache
         assert result is True
-        assert model.structure_classification.vendor == "paloalto"
-        assert model.structure_classification.product == "ngfw"
+        assert model.handler_data is not None
+        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        assert handler is not None
+        assert handler["vendor"] == "paloalto"
+        assert handler["product"] == "ngfw"
 
     def test_non_matching_message(self):
         """Test with a message that doesn't match the PaloAlto NGFW CSV format."""
         # Create a model with a non-matching message
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="This is not a PaloAlto NGFW CSV message",
@@ -178,8 +200,9 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_no_message_attribute(self):
         """Test PaloAltoNGFWCSVDecoder with a model without a message attribute."""
         # Create a model without a message attribute
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             # No message attribute
@@ -197,8 +220,9 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_incorrect_structure(self):
         """Test with a message that looks like PaloAlto but has incorrect structure."""
         # Create a model with a message that starts with a number but is not a valid PA log
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
             severity=6,  # INFO
             message="1,2025/05/13 12:34:56,001122334455,INVALID_TYPE,drop,1,2025/05/13",

@@ -44,9 +44,14 @@ def test_leef2_with_rfc3164():
 
     # Verify the result after LEEF 2.0 plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEF2DecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "ibm"
+    assert handler_info["product"] == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
 
@@ -71,11 +76,17 @@ def test_leef2_with_rfc5424():
 
     # Verify the result after LEEF 2.0 plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEF2DecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "ibm"
+    assert handler_info["product"] == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "192.168.1.1"
+    assert "act" in result.event_data
     assert result.event_data["act"] == "blocked"
 
 
@@ -96,9 +107,14 @@ def test_direct_leef2_message():
 
     # Verify the result after LEEF 2.0 plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEF2DecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "ibm"
+    assert handler_info["product"] == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "rt" in result.event_data
@@ -123,10 +139,15 @@ def test_leef2_with_category():
 
     # Verify the result after LEEF 2.0 plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
+    key = "GenericLEEF2DecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "ibm"
+    assert handler_info["product"] == "qradar"
     # Check that category is incorporated into msgclass (lowercase)
-    assert result.structure_classification.msgclass == "securityalert_12345"
+    assert handler_info["msgclass"] == "securityalert_12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "event_category" in result.event_data
@@ -151,9 +172,14 @@ def test_leef2_with_custom_labels():
 
     # Verify the result after LEEF 2.0 plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEF2DecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    assert handler_info["vendor"] == "ibm"
+    assert handler_info["product"] == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "sourceAddress" in result.event_data
     assert result.event_data["sourceAddress"] == "10.0.0.1"
     assert "destAddress" in result.event_data

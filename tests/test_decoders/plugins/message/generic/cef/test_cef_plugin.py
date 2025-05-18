@@ -38,12 +38,18 @@ def test_generic_cef_basic_case():
     result = decoder.decode(model)
 
     # Verify the result
+
     assert result is True
-    assert model.structure_classification.vendor == "security"
-    assert model.structure_classification.product == "threatmanager"
-    assert model.structure_classification.msgclass == "worm successfully stopped"
+    key = "GenericCEFDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    assert handler_entry["vendor"] == "security"
+    assert handler_entry["product"] == "threatmanager"
+    assert handler_entry["msgclass"] == "worm successfully stopped"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "cef_version" in model.event_data
     assert model.event_data["cef_version"] == "1"
     assert model.event_data["src"] == "10.0.0.1"
@@ -70,9 +76,15 @@ def test_generic_cef_with_custom_fields():
     result = decoder.decode(model)
 
     # Verify the result
+
     assert result is True
-    assert model.structure_classification.vendor == "vendor"
-    assert model.structure_classification.product == "product"
+    key = "GenericCEFDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    assert handler_entry["vendor"] == "vendor"
+    assert handler_entry["product"] == "product"
+    assert model.event_data is not None
     assert "customField" in model.event_data
     assert model.event_data["customField"] == "customValue"
 

@@ -49,9 +49,14 @@ def test_json_with_rfc3164():
 
     # Verify the result after JSON plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_json"
-    assert result.structure_classification.msgclass == "unknown"
+    plugin_key = "GenericJSONDecoderPlugin"
+    assert result.handler_data is not None
+    assert plugin_key in result.handler_data
+    handler_entry = result.handler_data[plugin_key]
+    assert handler_entry["vendor"] == "generic"
+    assert handler_entry["product"] == "unknown_json"
+    assert handler_entry["msgclass"] == "unknown"
+    assert result.event_data is not None
     assert "event" in result.event_data
     assert result.event_data["event"] == "login"
     assert result.event_data["user"] == "admin"
@@ -78,8 +83,14 @@ def test_json_with_rfc5424():
 
     # Verify the result after JSON plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_json"
+    plugin_key = "GenericJSONDecoderPlugin"
+    assert result.handler_data is not None
+    assert plugin_key in result.handler_data
+    handler_entry = result.handler_data[plugin_key]
+    assert handler_entry["vendor"] == "generic"
+    assert handler_entry["product"] == "unknown_json"
+    assert handler_entry["msgclass"] == "unknown"
+    assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"]["id"] == 123
     assert result.event_data["user"]["name"] == "John"
@@ -104,8 +115,14 @@ def test_direct_json_message():
 
     # Verify the result after JSON plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "generic"
-    assert result.structure_classification.product == "unknown_json"
+    plugin_key = "GenericJSONDecoderPlugin"
+    assert result.handler_data is not None
+    assert plugin_key in result.handler_data
+    handler_entry = result.handler_data[plugin_key]
+    assert handler_entry["vendor"] == "generic"
+    assert handler_entry["product"] == "unknown_json"
+    assert handler_entry["msgclass"] == "unknown"
+    assert result.event_data is not None
     assert result.event_data["event"] == "system_alert"
     assert result.event_data["source"] == "firewall"
     assert result.event_data["severity"] == "high"
