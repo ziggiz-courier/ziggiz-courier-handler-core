@@ -51,6 +51,10 @@ class TimestampParser:
         if reference_time is None:
             reference_time = datetime.now()
 
+        # Ensure reference_time has timezone
+        if reference_time.tzinfo is None:
+            reference_time = reference_time.replace(tzinfo=timezone.utc)
+
         # Handle epoch formats
         if any(fmt.startswith("epoch_") for fmt in formats):
             return cls._parse_epoch_timestamp(timestamp_str)
@@ -62,25 +66,60 @@ class TimestampParser:
                 if fmt.startswith("epoch_"):
                     continue
 
-                dt = datetime.strptime(timestamp_str, fmt)
-
-                # Handle timestamps without year (common in RFC3164 format)
+                # Check if the format is missing year information
                 if "%Y" not in fmt and "%y" not in fmt:
-                    # Determine appropriate year (current or previous)
-                    month = dt.month
-                    current_month = reference_time.month
+                    # Determine the most appropriate year to use
+                    current_year = reference_time.year
 
-                    if month > current_month:
-                        # If parsed month is later than current, use previous year
-                        dt = dt.replace(year=reference_time.year - 1)
-                    else:
-                        dt = dt.replace(year=reference_time.year)
+                    # Try to parse with explicit year prefix to avoid the warning
+                    # We add a year to the format string and prepend the year to the timestamp
+                    year_fmt = f"%Y {fmt}"
 
-                # Ensure timestamp has timezone
-                if dt.tzinfo is None:
-                    dt = dt.replace(tzinfo=reference_time.tzinfo or timezone.utc)
+                    # First try with current year
+                    current_year_timestamp = f"{current_year} {timestamp_str}"
 
-                return dt
+                    try:
+                        dt = datetime.strptime(current_year_timestamp, year_fmt)
+
+                        # Add timezone to match reference_time
+                        dt = dt.replace(tzinfo=reference_time.tzinfo)
+
+                        # Check if this date is in the future
+                        if dt > reference_time:
+                            # If it's in the future, try previous year
+                            prev_year = current_year - 1
+                            prev_year_timestamp = f"{prev_year} {timestamp_str}"
+                            dt = datetime.strptime(prev_year_timestamp, year_fmt)
+                            dt = dt.replace(tzinfo=reference_time.tzinfo)
+                        else:
+                            # For past dates, check month logic
+                            if dt.month > reference_time.month:
+                                # If month is later than reference month, use previous year
+                                # unless we're within 24 hours
+                                time_diff = (reference_time - dt).total_seconds()
+                                if (
+                                    time_diff < 0 or time_diff >= 86400
+                                ):  # Not within 24 hours
+                                    prev_year = current_year - 1
+                                    prev_year_timestamp = f"{prev_year} {timestamp_str}"
+                                    dt = datetime.strptime(
+                                        prev_year_timestamp, year_fmt
+                                    )
+                                    dt = dt.replace(tzinfo=reference_time.tzinfo)
+
+                        return dt
+                    except ValueError:
+                        # If we can't parse even with explicit year, try next format
+                        continue
+                else:
+                    # Format already includes year, use regular parsing
+                    dt = datetime.strptime(timestamp_str, fmt)
+
+                    # Ensure timezone is set
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=reference_time.tzinfo)
+
+                    return dt
             except ValueError:
                 continue
 
