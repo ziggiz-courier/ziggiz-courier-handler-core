@@ -43,17 +43,17 @@ jobs:
           cache: "pip"
       - name: Install Poetry
         run: pip install poetry
-      - name: Configure Poetry
-        run: |
-          poetry config virtualenvs.in-project true
-      - name: Set up Poetry cache
-        uses: actions/cache@v3
-        id: poetry-cache
-        with:
-          path: ./.venv
-          key: poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
+      # - name: Configure Poetry
+      #   run: |
+      #     poetry config virtualenvs.in-project true
+      # - name: Set up Poetry cache
+      #   uses: actions/cache@v3
+      #   id: poetry-cache
+      #   with:
+      #     path: ./.venv
+      #     key: poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+      #     restore-keys: |
+      #       poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
       - name: Install dependencies
         run: poetry install --with dev
       - name: Run black
