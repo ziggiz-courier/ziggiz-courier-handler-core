@@ -113,7 +113,6 @@ jobs:
       - name: Install Poetry
         run: pip install poetry
       - name: Install dependencies
-        if: steps.poetry-cache.outputs.cache-hit != 'true'
         run: poetry install
       - name: Action | Semantic Version Release
         id: release
