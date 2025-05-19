@@ -101,8 +101,7 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
             # Use apply_field_mapping method from base class with dynamic values
             self.apply_field_mapping(
                 model=model,
-                fields=list(parsed_data.values()),
-                field_names=list(parsed_data.keys()),
+                event_data=parsed_data,
                 organization=organization,
                 product=product,
                 msgclass=msgclass,

@@ -101,8 +101,7 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
             # Apply parsed data to model
             self.apply_field_mapping(
                 model=model,
-                fields=list(parsed_data.values()),
-                field_names=list(parsed_data.keys()),
+                event_data=parsed_data,
                 organization=organization,
                 product=product,
                 msgclass=msgclass,

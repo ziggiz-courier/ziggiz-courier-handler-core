@@ -16,7 +16,7 @@ including caching and common utility methods.
 # Standard library imports
 import logging
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
@@ -53,8 +53,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
     def apply_field_mapping(
         self,
         model: EventEnvelopeBaseModel,
-        fields: List[Any],
-        field_names: List[str],
+        event_data: Dict[str, Any],
         organization: str,
         product: str,
         msgclass: str,
@@ -65,15 +64,14 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
 
         Args:
             model (EventEnvelopeBaseModel): The model to update with parsed fields
-            fields (List[Any]): The parsed field values
-            field_names (List[str]): The field names corresponding to the values
+            event_data (Dict[str, Any]): Dictionary containing event data to be stored
             organization (str): Organization name for the source producer
             product (str): Product name for the source producer
             msgclass (str): Message class for handler_data
             handler_metadata (Optional[dict]): Additional metadata for this handler entry
         """
-        # Set event_data as before
-        model.event_data = {k: v for k, v in zip(field_names, fields)}
+        # Set event_data directly
+        model.event_data = event_data
 
         # Use only the class name as key for first-party, or package..Type for third-party plugins
         cls = self.__class__
@@ -88,7 +86,6 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
 
         entry = {
             "msgclass": msgclass,
-            "fields": field_names,
         }
         if handler_metadata:
             entry.update(handler_metadata)

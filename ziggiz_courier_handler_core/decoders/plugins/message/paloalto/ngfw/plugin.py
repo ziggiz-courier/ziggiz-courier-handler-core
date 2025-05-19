@@ -97,10 +97,11 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                 field_names = PAN_TYPE_FIELD_MAP.get(type_field.upper())
 
             if field_names:
+                # Create event_data dictionary from fields and field_names
+                event_data = dict(zip(field_names, fields))
                 self.apply_field_mapping(
                     model=model,
-                    fields=fields,
-                    field_names=field_names,
+                    event_data=event_data,
                     organization="paloalto",
                     product="ngfw",
                     msgclass=type_field.lower(),
