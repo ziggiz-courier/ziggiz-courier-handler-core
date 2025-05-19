@@ -55,7 +55,6 @@ jobs:
           restore-keys: |
             poetry-${{ runner.os }}-${{ steps.python_version.outputs.version }}-
       - name: Install dependencies
-        if: steps.poetry-cache.outputs.cache-hit != 'true'
         run: poetry install
       - name: Run black
         run: poetry run black --check ziggiz_courier_handler_core
