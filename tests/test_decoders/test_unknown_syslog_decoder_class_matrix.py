@@ -105,7 +105,7 @@ class TestUnknownSyslogDecoderClassMatrixRFC3164:
             hostname=expected_hostname,
             app_name=expected_app_name,
             proc_id=expected_proc_id,
-            message=expected_message
+            message=expected_message,
         )
 
 
@@ -182,10 +182,10 @@ def test_unknown_decoder_returns_rfc5424_class_matrix(
     decoder = UnknownSyslogDecoder()
     raw_syslog = f'<{pri}>1 {timestamp} {hostname} {app_name} {proc_id} {msg_id} [test@32473 iut="3"] This is a test message with {test_id}'
     result = decoder.decode(raw_syslog)
-    
+
     # First assert the correct instance type
     assert isinstance(result, SyslogRFC5424Message), f"Failed for: {raw_syslog}"
-    
+
     # Use validation utility instead of separate assertions
     validate_syslog_model(
         result,
@@ -196,9 +196,9 @@ def test_unknown_decoder_returns_rfc5424_class_matrix(
         proc_id=expected_proc_id,
         msg_id=expected_msg_id,
         message=f"This is a test message with {test_id}",
-        structured_data={"test@32473": {"iut": "3"}}
+        structured_data={"test@32473": {"iut": "3"}},
     )
-    
+
     # Check timestamp specifically as it needs custom validation logic
     assert result.timestamp is not None
     assert result.timestamp.tzinfo is not None

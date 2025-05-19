@@ -9,21 +9,25 @@
 """
 Tests for verifying handler_data structure in MessageDecoderPluginBase.
 """
+# Standard library imports
 from typing import Any
 
 # Third-party imports
 import pytest
 
-# Local/package imports
-from ziggiz_courier_handler_core.decoders.plugins.message.base import MessageDecoderPluginBase
-from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from tests.test_utils.validation import validate_source_producer
+
+# Local/package imports
+from ziggiz_courier_handler_core.decoders.plugins.message.base import (
+    MessageDecoderPluginBase,
+)
+from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
 
 # Implementation of MessageDecoderPluginBase for testing purposes
 class MockMessageDecoderPlugin(MessageDecoderPluginBase):
     """Test implementation of MessageDecoderPluginBase."""
-    
+
     def decode(self, model: Any) -> bool:
         """Implement required abstract method."""
         return True
@@ -37,47 +41,47 @@ class TestHandlerDataFields:
         """Test to verify the structure of handler_data after apply_field_mapping."""
         # Create a concrete plugin instance
         plugin = MockMessageDecoderPlugin()
-        
+
         # Create a model
         model = SyslogRFC3164Message(
             facility=16,  # LOCAL0
-            severity=6,   # INFO
+            severity=6,  # INFO
         )
-        
+
         # Sample event data
         event_data = {"field1": "value1", "field2": "value2"}
-        
+
         # Apply field mapping
         plugin.apply_field_mapping(
             model=model,
             event_data=event_data,
             organization="test_org",
             product="test_product",
-            msgclass="test_class"
+            msgclass="test_class",
         )
-        
+
         # Check the structure of handler_data
         assert model.handler_data is not None
-        
+
         # Tests..MockMessageDecoderPlugin because it's a third-party plugin
         key = "tests..MockMessageDecoderPlugin"
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        
+
         # Assert expected keys
         assert "msgclass" in handler_entry
         assert handler_entry["msgclass"] == "test_class"
-        
+
         # Check that 'fields' key is NOT present
         assert "fields" not in handler_entry
-        
+
         # Print the full handler_data for inspection
         print(f"Handler data: {model.handler_data}")
-        
+
         # Verify SourceProducer
         validate_source_producer(
             model,
             expected_organization="test_org",
             expected_product="test_product",
-            handler_key=key
+            handler_key=key,
         )

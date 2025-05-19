@@ -14,6 +14,8 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.cef.plugin import (
     GenericCEFDecoderPlugin,
@@ -24,7 +26,6 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -54,7 +55,7 @@ def test_cef_with_rfc3164():
         result,
         expected_organization="vendor",
         expected_product="product",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "security alert"
     assert result.event_data is not None
@@ -91,7 +92,7 @@ def test_cef_with_rfc5424():
         result,
         expected_organization="security",
         expected_product="product",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "intrusion detected"
     assert result.event_data is not None
@@ -126,7 +127,7 @@ def test_direct_cef_message():
         result,
         expected_organization="vendor",
         expected_product="product",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "system alert"
     assert "src" in result.event_data

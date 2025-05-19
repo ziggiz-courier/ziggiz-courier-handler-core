@@ -12,12 +12,13 @@ Unit tests for GenericJSONDecoderPlugin.
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.json.plugin import (
     GenericJSONDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -25,7 +26,9 @@ def test_generic_json_basic_case():
     """Test GenericJSONDecoderPlugin with basic JSON message format."""
     # Create a model with a test JSON message
     msg = '{"event": "login", "user": "admin", "status": "success"}'
+    # Standard library imports
     from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
         timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,  # LOCAL0
@@ -51,7 +54,7 @@ def test_generic_json_basic_case():
         model,
         expected_organization="generic",
         expected_product="unknown_json",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_info["msgclass"] == "unknown"
 
@@ -72,7 +75,9 @@ def test_generic_json_nested_data():
     msg = (
         '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
     )
+    # Standard library imports
     from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
         timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
@@ -96,7 +101,7 @@ def test_generic_json_nested_data():
         model,
         expected_organization="generic",
         expected_product="unknown_json",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "unknown"
     # Check event data
@@ -112,7 +117,9 @@ def test_generic_json_negative_case():
     """Test GenericJSONDecoderPlugin with non-matching message format."""
     # Create a model with a message that should not match JSON format
     msg = "This is not a JSON formatted message"
+    # Standard library imports
     from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
         timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,

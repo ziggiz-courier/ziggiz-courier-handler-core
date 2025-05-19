@@ -13,15 +13,11 @@ Covers IBM QRadar Log Event Extended Format 2.0 messages.
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.leef_2_parser import parse_leef_message
-from tests.test_utils.validation import validate_source_producer
 
-
-
-import pytest
-from ziggiz_courier_handler_core.decoders.utils.leef_2_parser import parse_leef_message
-from tests.test_utils.validation import validate_source_producer
 
 @pytest.mark.unit
 class TestLEEF2Parser:
@@ -34,9 +30,7 @@ class TestLEEF2Parser:
         assert result is not None
         assert result["leef_version"] == "2.0"
         validate_source_producer(
-            result,
-            expected_organization="IBM",
-            expected_product="QRadar"
+            result, expected_organization="IBM", expected_product="QRadar"
         )
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"
@@ -51,9 +45,7 @@ class TestLEEF2Parser:
         assert result is not None
         assert result["leef_version"] == "2.0"
         validate_source_producer(
-            result,
-            expected_organization="IBM",
-            expected_product="QRadar"
+            result, expected_organization="IBM", expected_product="QRadar"
         )
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"
@@ -69,9 +61,7 @@ class TestLEEF2Parser:
         assert result is not None
         assert result["leef_version"] == "2.0"
         validate_source_producer(
-            result,
-            expected_organization="IBM",
-            expected_product="QRadar"
+            result, expected_organization="IBM", expected_product="QRadar"
         )
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"

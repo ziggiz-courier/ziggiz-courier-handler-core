@@ -13,10 +13,13 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 """
 # Standard library imports
 import random
+
 from datetime import datetime
 
 # Third-party imports
 import pytest
+
+from tests.test_utils.validation import validate_source_producer
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.paloalto.ngfw.plugin import (
@@ -28,7 +31,6 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -71,7 +73,7 @@ def test_paloalto_traffic_with_rfc3164():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "traffic"
     assert result.event_data is not None
@@ -111,7 +113,7 @@ def test_paloalto_threat_with_rfc5424():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "threat"
     assert result.event_data is not None
@@ -123,7 +125,7 @@ def test_paloalto_threat_with_rfc5424():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "threat"
 
@@ -160,7 +162,7 @@ def test_paloalto_system_log_with_rfc3164():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "system"
     assert result.event_data is not None
@@ -173,7 +175,7 @@ def test_paloalto_system_log_with_rfc3164():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "system"
 
@@ -210,7 +212,7 @@ def test_paloalto_config_log_with_rfc5424():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "config"
     assert result.event_data is not None
@@ -223,7 +225,7 @@ def test_paloalto_config_log_with_rfc5424():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "config"
 
@@ -252,7 +254,7 @@ def test_unknown_syslog_decoder_chain_for_paloalto():
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "traffic"
     assert result.event_data is not None

@@ -13,13 +13,14 @@
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_syslog_model
+
 # Local/package imports
 from ziggiz_courier_handler_core.models.syslog_rfc_base import (
     Facility,
     Severity,
     SyslogRFCBaseModel,
 )
-from tests.test_utils.validation import validate_syslog_model
 
 # Test parameters for facility enum
 FACILITY_PARAMS = {
@@ -247,15 +248,12 @@ class TestSyslogRFCBaseModel:
         model = SyslogRFCBaseModel(
             facility=int(facility), severity=int(severity), timestamp=datetime.now()
         )
-        
+
         # Use validation utility to check the model
         validate_syslog_model(
-            model,
-            facility=int(facility),
-            severity=int(severity),
-            priority=expected_pri
+            model, facility=int(facility), severity=int(severity), priority=expected_pri
         )
-        
+
         # Keep these assertions for specific enum tests
         assert model.get_facility_enum() == facility
         assert model.get_severity_enum() == severity
@@ -268,14 +266,12 @@ class TestSyslogRFCBaseModel:
     def test_from_priority(self, pri, expected_facility, expected_severity, test_id):
         """Test creating an instance from a priority value."""
         model = SyslogRFCBaseModel.from_priority(pri)
-        
+
         # Use validation utility to check the model
         validate_syslog_model(
-            model,
-            facility=expected_facility.value,
-            severity=expected_severity.value
+            model, facility=expected_facility.value, severity=expected_severity.value
         )
-        
+
         # Keep these for specific enum validations
         assert model.get_facility_enum() == expected_facility
         assert model.get_severity_enum() == expected_severity
@@ -290,14 +286,12 @@ class TestSyslogRFCBaseModel:
     ):
         """Test creating an instance from invalid priority values."""
         model = SyslogRFCBaseModel.from_priority(pri)
-        
+
         # Use validation utility to check the model
         validate_syslog_model(
-            model,
-            facility=expected_facility.value,
-            severity=expected_severity.value
+            model, facility=expected_facility.value, severity=expected_severity.value
         )
-        
+
         # Keep these for specific enum validations
         assert model.get_facility_enum() == expected_facility
         assert model.get_severity_enum() == expected_severity

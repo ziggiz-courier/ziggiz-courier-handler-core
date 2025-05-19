@@ -17,7 +17,6 @@ import pytest
 from ziggiz_courier_handler_core.decoders.utils.json_parser import parse_json_message
 
 
-
 @pytest.mark.unit
 class TestJSONParser:
     """Unit tests for the JSON parser utility (parse_json_message)."""
@@ -32,9 +31,7 @@ class TestJSONParser:
 
     def test_parse_json_message_nested(self):
         """Test JSON message parsing with nested structures."""
-        msg = (
-            '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
-        )
+        msg = '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
         result = parse_json_message(msg)
         assert result["user"]["id"] == 123
         assert result["user"]["name"] == "John"
@@ -89,6 +86,8 @@ class TestJSONParser:
         assert result["name"] == "test_application"
         assert result["message"] == 'User "admin" logged in'
         assert result["level"] == "info"
+
+
 def test_parse_json_with_complex_escaping():
     """Test JSON message parsing with multiple escaped characters that require special handling."""
     # Complex JSON with various escape combinations

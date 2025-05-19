@@ -120,7 +120,7 @@ class TestSyslogRFC5424Decoder:
             proc_id=expected_proc_id,
             msg_id=expected_msg_id,
             message=f"This is a test message with {test_id}",
-            structured_data={"test@32473": {"iut": "3"}}
+            structured_data={"test@32473": {"iut": "3"}},
         )
 
         # Verify timestamp handling

@@ -15,9 +15,7 @@ from typing import Optional
 # Third-party imports
 from pydantic import BaseModel as PydanticBaseModel
 
-# Local/package imports
 # Import BaseEventStructureClassification from the new event_structure_classification.py file
-
 
 
 class EventEnvelopeBaseModel(PydanticBaseModel):
@@ -45,7 +43,9 @@ class EventEnvelopeBaseModel(PydanticBaseModel):
     )  # First touch by a Courier receiver, don't modify during processing
     message: Optional[str] = None  # Common message field for all models
     event_data: Optional[dict] = None  # Optional: Additional event data
-    handler_data: Optional[dict] = None  # Optional: Ordered dict for handler/decoder metadata
+    handler_data: Optional[dict] = (
+        None  # Optional: Ordered dict for handler/decoder metadata
+    )
 
     # Use model_config instead of Config class (Pydantic v2)
     model_config = {

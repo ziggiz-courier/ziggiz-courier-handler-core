@@ -63,11 +63,10 @@ def parse_cef_message(message: str) -> Optional[Dict[str, str]]:
         result = {}
         for i, field in enumerate(header_fields):
             result[field] = parts[i]
-            
+
         # Add SourceProducer instance
         result["SourceProducer"] = SourceProducer(
-            organization=result["device_vendor"], 
-            product=result["device_product"]
+            organization=result["device_vendor"], product=result["device_product"]
         )
 
         # Process extension (key=value pairs)

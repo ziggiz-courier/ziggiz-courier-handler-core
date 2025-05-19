@@ -13,10 +13,13 @@ These tests verify the plugin's ability to parse and interpret Fortinet FortiGat
 in key-value format directly, independent of the syslog decoder chain.
 """
 
+# Standard library imports
 from datetime import datetime, timezone
 
 # Third-party imports
 import pytest
+
+from tests.test_utils.validation import validate_source_producer
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plugin import (
@@ -25,8 +28,6 @@ from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plu
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -76,7 +77,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
             model,
             expected_organization="fortinet",
             expected_product="fortigate",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "traffic_sniffer"
 
@@ -129,7 +130,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
             model,
             expected_organization="fortinet",
             expected_product="fortigate",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "utm_webfilter"
 
@@ -179,7 +180,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
             model,
             expected_organization="fortinet",
             expected_product="fortigate",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "event_system"
 

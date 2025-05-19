@@ -61,9 +61,11 @@ def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
         result = {}
         for i, field in enumerate(header_fields):
             result[field] = parts[i]
-            
+
         # Add SourceProducer instance
-        result["SourceProducer"] = SourceProducer(organization=result["vendor"], product=result["product"])
+        result["SourceProducer"] = SourceProducer(
+            organization=result["vendor"], product=result["product"]
+        )
 
         # Process extension (key=value pairs)
         extension = parts[5]

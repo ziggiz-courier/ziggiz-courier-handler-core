@@ -9,16 +9,18 @@
 """
 Unit tests for GenericCEFDecoderPlugin.
 """
+# Standard library imports
+
 # Third-party imports
 import pytest
-from datetime import datetime, timezone
+
+from tests.test_utils.validation import validate_source_producer
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.cef.plugin import (
     GenericCEFDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -26,7 +28,9 @@ def test_generic_cef_basic_case():
     """Test GenericCEFDecoderPlugin with basic CEF message format."""
     # Create a model with a test CEF message
     msg = "CEF:1|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232"
+    # Standard library imports
     from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
         timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,  # LOCAL0
@@ -51,7 +55,7 @@ def test_generic_cef_basic_case():
         model,
         expected_organization="security",
         expected_product="threatmanager",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "worm successfully stopped"
 
@@ -69,7 +73,9 @@ def test_generic_cef_with_custom_fields():
     """Test GenericCEFDecoderPlugin with custom fields."""
     # Create a model with a test CEF message with custom fields
     msg = "CEF:1|Vendor|Product|1.0|100|Name|10|src=10.0.0.1 customField=customValue"
+    # Standard library imports
     from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
         timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
@@ -93,7 +99,7 @@ def test_generic_cef_with_custom_fields():
         model,
         expected_organization="vendor",
         expected_product="product",
-        handler_key=key
+        handler_key=key,
     )
     assert model.event_data is not None
     assert "customField" in model.event_data

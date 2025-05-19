@@ -10,15 +10,14 @@
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.event_envelope_base import BaseModel
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import (
     SyslogRFC3164Message,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import (
     SyslogRFC5424Message,
 )
-
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 __all__ = [
     "BaseModel",

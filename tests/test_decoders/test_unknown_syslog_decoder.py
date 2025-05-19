@@ -17,6 +17,8 @@
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_syslog_model
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
     UnknownSyslogDecoder,
@@ -27,7 +29,6 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
@@ -40,7 +41,7 @@ class TestUnknownSyslogDecoder:
         decoder = UnknownSyslogDecoder()
         result = decoder.decode(msg)
         assert isinstance(result, SyslogRFC5424Message)
-        
+
         # Use the validation utility instead of separate assertions
         validate_syslog_model(
             result,
@@ -51,7 +52,9 @@ class TestUnknownSyslogDecoder:
             proc_id="1234",
             msg_id="ID47",
             message="BOMAn application event log entry...",
-            structured_data={"exampleSDID@32473": {"iut": "3", "eventSource": "Application"}}
+            structured_data={
+                "exampleSDID@32473": {"iut": "3", "eventSource": "Application"}
+            },
         )
 
     def test_decode_rfc3164(self):
@@ -60,7 +63,7 @@ class TestUnknownSyslogDecoder:
         decoder = UnknownSyslogDecoder()
         result = decoder.decode(msg)
         assert isinstance(result, SyslogRFC3164Message)
-        
+
         # Use the validation utility instead of separate assertions
         validate_syslog_model(
             result,
@@ -68,7 +71,7 @@ class TestUnknownSyslogDecoder:
             severity=5,
             hostname="mymachine",
             app_name="su",
-            message="This is a BSD syslog message."
+            message="This is a BSD syslog message.",
         )
 
     def test_decode_rfcbase(self):
@@ -77,13 +80,13 @@ class TestUnknownSyslogDecoder:
         decoder = UnknownSyslogDecoder()
         result = decoder.decode(msg)
         assert isinstance(result, SyslogRFCBaseModel)
-        
+
         # Use the validation utility instead of separate assertions
         validate_syslog_model(
             result,
             facility=1,  # 13 = 1*8 + 5
             severity=5,
-            message="This is a base syslog message."
+            message="This is a base syslog message.",
         )
 
     def test_decode_unknown(self):

@@ -9,16 +9,19 @@
 """
 Unit tests for GenericXMLDecoderPlugin.
 """
+# Standard library imports
+from datetime import datetime
+
 # Third-party imports
 import pytest
-from datetime import datetime
+
+from tests.test_utils.validation import validate_source_producer
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
     GenericXMLDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -49,7 +52,7 @@ def test_generic_xml_basic_case():
         model,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "unknown"
 
@@ -127,7 +130,7 @@ def test_generic_xml_with_dtd():
         model,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "security_event"
 
@@ -163,7 +166,9 @@ def test_generic_xml_with_escaped_entities():
     assert "event" in model.event_data
     event = model.event_data["event"]
     assert "description" in event
-    assert event["description"] == "User <admin> logged in with privileges & access rights"
+    assert (
+        event["description"] == "User <admin> logged in with privileges & access rights"
+    )
 
 
 @pytest.mark.unit

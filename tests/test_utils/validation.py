@@ -10,22 +10,17 @@
 """Validation utilities for testing Syslog models and common components."""
 
 # Standard library imports
-from typing import Any, Dict, Optional, Type, TypeVar, Union, cast
-
-# Third-party imports
-import pytest
+from typing import Any, Dict, Optional, TypeVar, Union
 
 # Local/package imports
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import (
     Facility,
     Severity,
     SyslogRFCBaseModel,
     SyslogRFCCommonModel,
 )
-from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
-from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
-
 
 # Type variable for the syslog model types
 T = TypeVar("T", bound=SyslogRFCBaseModel)
@@ -33,8 +28,6 @@ T = TypeVar("T", bound=SyslogRFCBaseModel)
 
 class InvalidArgumentException(Exception):
     """Raised when invalid arguments are passed to the validation function."""
-
-    pass
 
 
 def validate_syslog_model(
@@ -53,7 +46,7 @@ def validate_syslog_model(
     # RFC5424 specific fields
     msg_id: Optional[str] = None,
     structured_data: Optional[Dict[str, Dict[str, str]]] = None,
-    **kwargs
+    **kwargs,
 ) -> None:
     """Validate a Syslog model instance against expected values.
 
@@ -91,7 +84,7 @@ def validate_syslog_model(
         "msg_id": "msg_id" in kwargs or msg_id is not None,
         "structured_data": "structured_data" in kwargs or structured_data is not None,
     }
-    
+
     # Check if any arguments were explicitly provided
     if not any(call_params.values()):
         model_type = type(model_instance).__name__
@@ -162,7 +155,7 @@ def validate_source_producer(
     expected_organization: str,
     expected_product: str,
     expected_module: Optional[str] = None,
-    handler_key: Optional[str] = None
+    handler_key: Optional[str] = None,
 ) -> None:
     """Validate a SourceProducer instance against expected values.
 
@@ -170,7 +163,7 @@ def validate_source_producer(
     It can validate a SourceProducer directly or one stored in a model's handler_data dictionary.
 
     Args:
-        result_or_handler_data: Either a model with handler_data containing a SourceProducer, 
+        result_or_handler_data: Either a model with handler_data containing a SourceProducer,
                                 a dictionary containing a SourceProducer, or a SourceProducer instance.
         expected_organization: Expected organization value.
         expected_product: Expected product value.
@@ -182,38 +175,57 @@ def validate_source_producer(
     """
     # Get the SourceProducer instance from the input
     sp = None
-    
+
     # Case 1: Direct SourceProducer instance
     if isinstance(result_or_handler_data, SourceProducer):
         sp = result_or_handler_data
-    
+
     # Case 2: Model with handler_data attribute
-    elif hasattr(result_or_handler_data, "handler_data") and result_or_handler_data.handler_data is not None:
+    elif (
+        hasattr(result_or_handler_data, "handler_data")
+        and result_or_handler_data.handler_data is not None
+    ):
         # Verify handler_data contains SourceProducer
-        assert "SourceProducer" in result_or_handler_data.handler_data, "SourceProducer not found in handler_data"
+        assert (
+            "SourceProducer" in result_or_handler_data.handler_data
+        ), "SourceProducer not found in handler_data"
         sp = result_or_handler_data.handler_data["SourceProducer"]
-        
+
         # If handler_key is provided, verify it exists in handler_data
         if handler_key is not None:
-            assert handler_key in result_or_handler_data.handler_data, f"Handler key '{handler_key}' not found in handler_data"
-    
+            assert (
+                handler_key in result_or_handler_data.handler_data
+            ), f"Handler key '{handler_key}' not found in handler_data"
+
     # Case 3: Dictionary potentially containing SourceProducer
     elif isinstance(result_or_handler_data, dict):
         # Verify dictionary contains SourceProducer
-        assert "SourceProducer" in result_or_handler_data, "SourceProducer not found in dictionary"
+        assert (
+            "SourceProducer" in result_or_handler_data
+        ), "SourceProducer not found in dictionary"
         sp = result_or_handler_data["SourceProducer"]
-        
+
         # If handler_key is provided, verify it exists in the dictionary
         if handler_key is not None:
-            assert handler_key in result_or_handler_data, f"Handler key '{handler_key}' not found in dictionary"
-    
+            assert (
+                handler_key in result_or_handler_data
+            ), f"Handler key '{handler_key}' not found in dictionary"
+
     # None of the above
     else:
-        assert False, f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
-    
+        assert (
+            False
+        ), f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
+
     # Validate SourceProducer fields
-    assert sp.organization == expected_organization, f"Expected organization '{expected_organization}', got '{sp.organization}'"
-    assert sp.product == expected_product, f"Expected product '{expected_product}', got '{sp.product}'"
-    
+    assert (
+        sp.organization == expected_organization
+    ), f"Expected organization '{expected_organization}', got '{sp.organization}'"
+    assert (
+        sp.product == expected_product
+    ), f"Expected product '{expected_product}', got '{sp.product}'"
+
     if expected_module is not None:
-        assert sp.module == expected_module, f"Expected module '{expected_module}', got '{sp.module}'"
+        assert (
+            sp.module == expected_module
+        ), f"Expected module '{expected_module}', got '{sp.module}'"

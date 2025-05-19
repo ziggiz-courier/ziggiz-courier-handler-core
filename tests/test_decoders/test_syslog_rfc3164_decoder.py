@@ -216,13 +216,13 @@ class TestSyslogRFC3164Decoder:
             tag_str = message
         raw_syslog = f"<{pri}>{timestamp_str} {tag_str}"
         result = decoder.decode(raw_syslog)
-        
+
         expected_hostname = (
             expected_func(input_hostname) if input_hostname is not None else None
         )
         if expected_hostname is not None:
             expected_hostname = expected_hostname.lower()
-        
+
         # Use validate_syslog_model utility for consistent validation
         validate_syslog_model(
             result,
@@ -231,9 +231,9 @@ class TestSyslogRFC3164Decoder:
             hostname=expected_hostname,
             app_name=expected_app_name,
             proc_id=expected_proc_id,
-            message=expected_message
+            message=expected_message,
         )
-        
+
         # Validate timestamp which is specific to this test
         assert isinstance(result.timestamp, datetime)
 
@@ -274,7 +274,7 @@ class TestSyslogRFC3164Decoder:
             hostname="host1",
             app_name="app",
             proc_id="123",
-            message="Test with space after PRI"
+            message="Test with space after PRI",
         )
         assert isinstance(result.timestamp, datetime)
 

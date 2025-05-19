@@ -15,12 +15,13 @@ from typing import Dict, Optional
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef1.plugin import (
     GenericLEEFDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -56,7 +57,7 @@ class TestGenericLEEFDecoderPlugin:
             model,
             expected_organization="ibm",
             expected_product="qradar",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "12345"
 
@@ -89,7 +90,7 @@ class TestGenericLEEFDecoderPlugin:
             model,
             expected_organization="ibm",
             expected_product="qradar",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "12345"
 
@@ -121,7 +122,7 @@ class TestGenericLEEFDecoderPlugin:
             model,
             expected_organization="ibm",
             expected_product="qradar",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "12345"
 
@@ -153,7 +154,7 @@ class TestGenericLEEFDecoderPlugin:
             model,
             expected_organization="ibm",
             expected_product="qradar",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "12345"
 
@@ -237,6 +238,6 @@ class TestGenericLEEFDecoderPlugin:
             model,
             expected_organization="mockvendor",
             expected_product="mockproduct",
-            handler_key=key
+            handler_key=key,
         )
         assert handler_entry["msgclass"] == "mockeventid"

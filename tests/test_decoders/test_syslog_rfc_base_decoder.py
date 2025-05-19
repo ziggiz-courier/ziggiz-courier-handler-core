@@ -59,7 +59,7 @@ class TestSyslogRFCBaseDecoder:
             facility=expected_facility.value,
             severity=expected_severity.value,
             message=f"This is a test message with {test_id}",
-            priority=pri
+            priority=pri,
         )
 
     @pytest.mark.parametrize(
@@ -85,9 +85,7 @@ class TestSyslogRFCBaseDecoder:
 
         # Use validate_syslog_model for facility and severity validation
         validate_syslog_model(
-            result,
-            facility=expected_facility,
-            severity=expected_severity
+            result, facility=expected_facility, severity=expected_severity
         )
 
         # Verify message is captured correctly
@@ -115,7 +113,7 @@ class TestSyslogRFCBaseDecoder:
                 result,
                 message=expected_message,
                 facility=Facility.USER,
-                severity=Severity.NOTICE
+                severity=Severity.NOTICE,
             )
 
     @pytest.mark.parametrize(

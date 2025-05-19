@@ -16,7 +16,6 @@ import pytest
 from ziggiz_courier_handler_core.decoders.utils.xml_parser import parse_xml_message
 
 
-
 @pytest.mark.unit
 class TestXMLParser:
     """Unit tests for XML parser utilities."""

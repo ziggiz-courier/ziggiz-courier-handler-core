@@ -15,17 +15,19 @@ LEEF:Version|Vendor|Product|Version|EventID|[EventCategory]|Extension
 The Extension part contains key=value pairs in the format key=value.
 LEEF 2.0 allows for more format flexibility and encoding options than LEEF 1.0.
 """
+
 # Standard library imports
 import logging
 import re
 
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
+
+# Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 logger = logging.getLogger(__name__)
 
 
-from typing import Any
 def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
     """
     High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
@@ -63,7 +65,9 @@ def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
                 "spt": "1232",
             }
             # Store as object, but also return a dict for compatibility
-            result["SourceProducer"] = SourceProducer(organization="IBM", product="QRadar")
+            result["SourceProducer"] = SourceProducer(
+                organization="IBM", product="QRadar"
+            )
             return result
 
         # Handle all other cases
@@ -80,7 +84,9 @@ def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
         }
         # Add SourceProducer instance
         # Store as object, but also return a dict for compatibility
-        result["SourceProducer"] = SourceProducer(organization=parts[1], product=parts[2])
+        result["SourceProducer"] = SourceProducer(
+            organization=parts[1], product=parts[2]
+        )
 
         # The rest is either event_category + extension or just extension
         if len(parts) >= 6:

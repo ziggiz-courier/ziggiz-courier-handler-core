@@ -39,7 +39,9 @@ class BaseEventStructureClassification(PydanticBaseModel):
         msgclass: str = "unknown",
         **kwargs
     ):
-        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(
+            organization=organization, product=product, msgclass=msgclass, **kwargs
+        )
 
 
 class StringEventStructureClassification(BaseEventStructureClassification):
@@ -59,7 +61,9 @@ class StringEventStructureClassification(BaseEventStructureClassification):
         punct: str = "",
         **kwargs
     ):
-        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(
+            organization=organization, product=product, msgclass=msgclass, **kwargs
+        )
         super(StringEventStructureClassification, self).__setattr__("punct", punct)
 
 
@@ -82,7 +86,9 @@ class StructuredEventStructureClassification(BaseEventStructureClassification):
     ):
         if fields is None:
             fields = []
-        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(
+            organization=organization, product=product, msgclass=msgclass, **kwargs
+        )
         super(StructuredEventStructureClassification, self).__setattr__(
             "fields", fields
         )

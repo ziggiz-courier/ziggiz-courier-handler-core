@@ -15,12 +15,13 @@ from datetime import datetime, timezone
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.kv.plugin import (
     GenericKVDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -52,7 +53,7 @@ def test_generic_kv_basic_case():
         model,
         expected_organization="generic",
         expected_product="unknown_kv",
-        handler_key=key
+        handler_key=key,
     )
     assert handler_entry["msgclass"] == "unknown"
 

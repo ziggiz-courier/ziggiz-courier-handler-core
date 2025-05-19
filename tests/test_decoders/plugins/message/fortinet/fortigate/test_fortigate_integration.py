@@ -19,6 +19,8 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plugin import (
     FortinetFortiGateKVDecoderPlugin,
@@ -29,7 +31,6 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -79,15 +80,15 @@ def test_fortigate_traffic_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    
+
     # Validate SourceProducer using the utility function
     validate_source_producer(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
-        handler_key=key
+        handler_key=key,
     )
-    
+
     assert handler_entry["msgclass"] == "traffic_sniffer"
     assert result.event_data is not None
     assert result.event_data["type"] == "traffic"
@@ -133,15 +134,15 @@ def test_fortigate_utm_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    
+
     # Validate SourceProducer using the utility function
     validate_source_producer(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
-        handler_key=key
+        handler_key=key,
     )
-    
+
     assert handler_entry["msgclass"] == "utm_webfilter"
     assert result.event_data is not None
     assert result.event_data["type"] == "utm"
@@ -183,15 +184,15 @@ def test_fortigate_event_log():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    
+
     # Validate SourceProducer using the utility function
     validate_source_producer(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
-        handler_key=key
+        handler_key=key,
     )
-    
+
     assert handler_entry["msgclass"] == "event_system"
     assert result.event_data is not None
     assert result.event_data["type"] == "event"
@@ -231,15 +232,15 @@ def test_unknown_syslog_decoder_and_plugin_for_fortigate():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    
+
     # Validate SourceProducer using the utility function
     validate_source_producer(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
-        handler_key=key
+        handler_key=key,
     )
-    
+
     assert handler_entry["msgclass"] == "traffic_sniffer"
     assert result.event_data is not None
     assert result.event_data["type"] == "traffic"

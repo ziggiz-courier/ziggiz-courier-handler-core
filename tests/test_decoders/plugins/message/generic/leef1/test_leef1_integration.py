@@ -14,6 +14,8 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef1.plugin import (
     GenericLEEFDecoderPlugin,
@@ -24,7 +26,6 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -50,10 +51,7 @@ def test_leef_with_rfc3164():
     assert key in result.handler_data
     handler_info = result.handler_data[key]
     validate_source_producer(
-        result,
-        expected_organization="ibm",
-        expected_product="qradar",
-        handler_key=key
+        result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
@@ -86,10 +84,7 @@ def test_leef_with_rfc5424():
     assert key in result.handler_data
     handler_info = result.handler_data[key]
     validate_source_producer(
-        result,
-        expected_organization="ibm",
-        expected_product="qradar",
-        handler_key=key
+        result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
@@ -121,10 +116,7 @@ def test_direct_leef_message():
     assert key in result.handler_data
     handler_info = result.handler_data[key]
     validate_source_producer(
-        result,
-        expected_organization="ibm",
-        expected_product="qradar",
-        handler_key=key
+        result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
@@ -157,10 +149,7 @@ def test_leef_with_space_delimited_extension():
     assert key in result.handler_data
     handler_info = result.handler_data[key]
     validate_source_producer(
-        result,
-        expected_organization="ibm",
-        expected_product="qradar",
-        handler_key=key
+        result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None

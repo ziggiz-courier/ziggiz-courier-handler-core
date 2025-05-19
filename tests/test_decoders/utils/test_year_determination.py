@@ -26,15 +26,15 @@ class TestYearDetermination:
         """Test that past dates in current year are correctly identified."""
         # Reference time is May 19, 2025
         reference_time = datetime(2025, 5, 19, 12, 0, 0, tzinfo=timezone.utc)
-        
+
         # Test date is January 15, no year specified
         timestamp_str = "Jan 15 10:30:45"
-        
+
         # Should use current year since Jan 15 is before May 19 in the same year
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2025
         assert result.month == 1
@@ -44,15 +44,15 @@ class TestYearDetermination:
         """Test that future dates are assigned to previous year."""
         # Reference time is May 19, 2025
         reference_time = datetime(2025, 5, 19, 12, 0, 0, tzinfo=timezone.utc)
-        
+
         # Test date is December 15, no year specified
         timestamp_str = "Dec 15 10:30:45"
-        
+
         # Should use previous year since Dec 15 is after May 19 in the calendar
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2024
         assert result.month == 12
@@ -62,15 +62,15 @@ class TestYearDetermination:
         """Test timestamp from earlier on the same day."""
         # Reference time is May 19, 2025, 12:00
         reference_time = datetime(2025, 5, 19, 12, 0, 0, tzinfo=timezone.utc)
-        
+
         # Test date is May 19, 10:30:45, no year specified
         timestamp_str = "May 19 10:30:45"
-        
+
         # Should use current year since it's the same day
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2025
         assert result.month == 5
@@ -83,15 +83,15 @@ class TestYearDetermination:
         """Test timestamp near month boundary."""
         # Reference time is June 1, 2025, 00:30
         reference_time = datetime(2025, 6, 1, 0, 30, 0, tzinfo=timezone.utc)
-        
+
         # Test date is May 31, 23:45, no year specified (less than 1 hour before reference)
         timestamp_str = "May 31 23:45:00"
-        
+
         # Should use current year since it's less than 24 hours ago despite month difference
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2025
         assert result.month == 5
@@ -103,14 +103,14 @@ class TestYearDetermination:
         """Test timestamp handling around DST spring forward transition."""
         # Reference time is right after DST spring forward
         reference_time = datetime(2025, 3, 9, 3, 30, 0)
-        
+
         # Test date is from before the transition
         timestamp_str = "Mar 9 01:30:00"
-        
+
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2025
         assert result.month == 3
@@ -122,14 +122,14 @@ class TestYearDetermination:
         """Test timestamp handling around DST fall back transition."""
         # Reference time is right after DST fall back
         reference_time = datetime(2025, 11, 2, 2, 30, 0)
-        
+
         # Test date from earlier on the same day, could be ambiguous in standard time handling
         timestamp_str = "Nov 2 01:30:00"
-        
+
         result = TimestampParser.parse_timestamp(
             timestamp_str, ["%b %d %H:%M:%S"], reference_time
         )
-        
+
         assert result is not None
         assert result.year == 2025
         assert result.month == 11

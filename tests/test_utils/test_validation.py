@@ -15,11 +15,12 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import InvalidArgumentException, validate_syslog_model
+
 # Local/package imports
-from ziggiz_courier_handler_core.models.syslog_rfc_base import Facility, Severity
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
-from tests.test_utils.validation import InvalidArgumentException, validate_syslog_model
+from ziggiz_courier_handler_core.models.syslog_rfc_base import Facility, Severity
 
 
 @pytest.mark.unit
@@ -69,7 +70,7 @@ class TestSyslogModelValidation:
         # Create a test model
         timestamp = datetime.now()
         structured_data = {"origin": {"ip": "192.168.1.1", "software": "test-app"}}
-        
+
         model = SyslogRFC5424Message(
             facility=13,
             severity=7,
@@ -109,7 +110,7 @@ class TestSyslogModelValidation:
 
         with pytest.raises(InvalidArgumentException):
             validate_syslog_model(model)
-            
+
     def test_failed_validation(self):
         """Test that assertions fail when expected values don't match."""
         model = SyslogRFC3164Message(
@@ -121,7 +122,7 @@ class TestSyslogModelValidation:
 
         with pytest.raises(AssertionError):
             validate_syslog_model(model, message="Wrong message")  # Wrong message
-            
+
     def test_validate_with_none_values(self):
         """Test validating fields that are explicitly set to None."""
         # Create a test model with some None values
@@ -143,7 +144,7 @@ class TestSyslogModelValidation:
             timestamp=timestamp,
             hostname=None,
             app_name=None,
-            proc_id=None
+            proc_id=None,
         )
 
         # Create a model with None values for RFC5424 specific fields
@@ -162,5 +163,5 @@ class TestSyslogModelValidation:
             severity=7,
             message="Test message",
             msg_id=None,
-            structured_data=None
+            structured_data=None,
         )

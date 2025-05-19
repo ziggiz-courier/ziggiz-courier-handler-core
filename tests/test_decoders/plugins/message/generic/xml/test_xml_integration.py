@@ -14,6 +14,8 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_source_producer
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
     GenericXMLDecoderPlugin,
@@ -23,7 +25,6 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
-from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -50,14 +51,15 @@ def test_xml_with_rfc3164():
     key = "GenericXMLDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    handler_info = result.handler_data[key]
     validate_source_producer(
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
-    assert handler_info["msgclass"] == "unknown"
+    handler = result.handler_data.get(key)
+    assert handler is not None
+    assert handler["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "event" in result.event_data
     assert result.event_data["event"]["type"] == "login"
@@ -89,12 +91,11 @@ def test_xml_with_rfc5424():
     key = "GenericXMLDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    handler_info = result.handler_data[key]
     validate_source_producer(
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
     assert result.event_data is not None
     assert "user" in result.event_data
@@ -142,7 +143,7 @@ def test_xml_with_dtd_integration():
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
     assert handler["msgclass"] == "security_alert"
     assert "security_alert" in result.event_data
@@ -206,7 +207,7 @@ def test_deep_xml_structure():
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
-        handler_key=key
+        handler_key=key,
     )
     assert "system" in result.event_data
     assert "network" in result.event_data["system"]

@@ -14,9 +14,10 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
+from tests.test_utils.validation import validate_syslog_model
+
 # Local/package imports
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
-from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
@@ -42,11 +43,7 @@ class TestSyslogRFC3164Message:
 
         # Alternative using validation utility
         validate_syslog_model(
-            message,
-            facility=13,
-            severity=7,
-            message="This is a message",
-            timestamp=now
+            message, facility=13, severity=7, message="This is a message", timestamp=now
         )
 
         # Create with all fields
@@ -60,14 +57,10 @@ class TestSyslogRFC3164Message:
         assert message.severity == 7
         assert message.message == "This is a message"
         assert message.timestamp == now
-        
+
         # Alternative using validation utility
         validate_syslog_model(
-            message,
-            facility=13,
-            severity=7,
-            message="This is a message",
-            timestamp=now
+            message, facility=13, severity=7, message="This is a message", timestamp=now
         )
 
     def test_inherited_methods(self):
@@ -91,12 +84,8 @@ class TestSyslogRFC3164Message:
         assert new_message.facility == 4
         assert new_message.severity == 2
         assert new_message.message == "Another message"
-        
+
         # Alternative using validation utility
         validate_syslog_model(
-            new_message,
-            facility=4,
-            severity=2,
-            message="Another message",
-            priority=34
+            new_message, facility=4, severity=2, message="Another message", priority=34
         )
