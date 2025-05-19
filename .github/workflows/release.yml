@@ -20,7 +20,7 @@ on:
       - "ziggiz_courier_handler_core/**"
       - "poetry.lock"
       - "pyproject.toml"
-      - ".github/workflows/release-ziggiz-courier-handler-core.yml"
+      - ".github/workflows/release.yml"
       - "tests/**"
 jobs:
   test-lint:
