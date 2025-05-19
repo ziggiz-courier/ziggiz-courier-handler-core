@@ -51,8 +51,9 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        assert handler_entry["vendor"] == "ibm"
-        assert handler_entry["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_space_delimiter(self):
@@ -80,8 +81,9 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        assert handler_entry["vendor"] == "ibm"
-        assert handler_entry["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_pipes_in_content(self):
@@ -108,8 +110,9 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        assert handler_entry["vendor"] == "ibm"
-        assert handler_entry["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_escapes(self):
@@ -136,8 +139,9 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        assert handler_entry["vendor"] == "ibm"
-        assert handler_entry["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_entry["msgclass"] == "12345"
 
     def test_non_leef_message(self):
@@ -216,6 +220,7 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        assert handler_entry["vendor"] == "mockvendor"
-        assert handler_entry["product"] == "mockproduct"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "mockvendor"
+        assert sp.product == "mockproduct"
         assert handler_entry["msgclass"] == "mockeventid"

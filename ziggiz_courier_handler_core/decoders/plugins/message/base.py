@@ -55,7 +55,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         model: EventEnvelopeBaseModel,
         fields: List[Any],
         field_names: List[str],
-        vendor: str,
+        organization: str,
         product: str,
         msgclass: str,
         handler_metadata: Optional[dict] = None,
@@ -67,8 +67,8 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             model (EventEnvelopeBaseModel): The model to update with parsed fields
             fields (List[Any]): The parsed field values
             field_names (List[str]): The field names corresponding to the values
-            vendor (str): Vendor name for handler_data
-            product (str): Product name for handler_data
+            organization (str): Organization name for the source producer
+            product (str): Product name for the source producer
             msgclass (str): Message class for handler_data
             handler_metadata (Optional[dict]): Additional metadata for this handler entry
         """
@@ -89,8 +89,6 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         entry = {
             "msgclass": msgclass,
             "fields": field_names,
-            "vendor": vendor,
-            "product": product,
         }
         if handler_metadata:
             entry.update(handler_metadata)
@@ -100,7 +98,8 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             model.handler_data = {}
         model.handler_data[key] = entry
 
-        model.handler_data["SourceProducer"] = SourceProducer(organization=vendor, product=product)
+        # Store organization and product information solely in the SourceProducer object
+        model.handler_data["SourceProducer"] = SourceProducer(organization=organization, product=product)
         logger.debug(
             "plugin parsed event_data",
             extra={

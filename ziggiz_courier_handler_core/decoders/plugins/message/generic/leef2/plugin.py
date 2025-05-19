@@ -116,7 +116,7 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
                 model=model,
                 fields=list(parsed_data.values()),
                 field_names=list(parsed_data.keys()),
-                vendor=organization,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

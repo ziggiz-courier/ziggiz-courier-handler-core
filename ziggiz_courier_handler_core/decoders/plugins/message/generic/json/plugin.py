@@ -94,7 +94,7 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            vendor = "generic"
+            organization = "generic"
             product = "unknown_json"
             msgclass = "unknown"
 
@@ -103,7 +103,7 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
                 model=model,
                 fields=list(parsed_data.values()),
                 field_names=list(parsed_data.keys()),
-                vendor=vendor,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

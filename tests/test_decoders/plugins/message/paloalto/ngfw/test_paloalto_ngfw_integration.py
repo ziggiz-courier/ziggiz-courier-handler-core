@@ -33,7 +33,6 @@ from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseMode
 
 @pytest.mark.integration
 def test_paloalto_traffic_with_rfc3164():
-    key = "PaloAltoNGFWCSVDecoder"
     """Test PaloAlto NGFW TRAFFIC decode with an RFC3164 message."""
     # Generate a timestamp in RFC3164 format
     dt = datetime.now().astimezone()
@@ -86,7 +85,6 @@ def test_paloalto_traffic_with_rfc3164():
 
 @pytest.mark.integration
 def test_paloalto_threat_with_rfc5424():
-    key = "PaloAltoNGFWCSVDecoder"
     """Test PaloAlto NGFW THREAT decode with an RFC5424 message."""
     # Generate a timestamp in RFC5424 format
     dt = datetime.now().astimezone()
@@ -132,7 +130,6 @@ def test_paloalto_threat_with_rfc5424():
 
 @pytest.mark.integration
 def test_paloalto_system_log_with_rfc3164():
-    key = "PaloAltoNGFWCSVDecoder"
     """Test PaloAlto NGFW SYSTEM decode with an RFC3164 message."""
     # Generate a timestamp in RFC3164 format
     dt = datetime.now().astimezone()
@@ -169,14 +166,14 @@ def test_paloalto_system_log_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "system"
 
 
 @pytest.mark.integration
 def test_paloalto_config_log_with_rfc5424():
-    key = "PaloAltoNGFWCSVDecoder"
     """Test PaloAlto NGFW CONFIG decode with an RFC5424 message."""
     # Generate a timestamp in RFC5424 format
     dt = datetime.now().astimezone()
@@ -203,8 +200,9 @@ def test_paloalto_config_log_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "config"
     assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
@@ -212,8 +210,9 @@ def test_paloalto_config_log_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "config"
 
 
@@ -237,8 +236,9 @@ def test_unknown_syslog_decoder_chain_for_paloalto():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    assert handler_entry["vendor"] == "paloalto"
-    assert handler_entry["product"] == "ngfw"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
     assert handler_entry["msgclass"] == "traffic"
     assert result.event_data is not None
     assert result.event_data.get("type", "").lower() == "traffic"

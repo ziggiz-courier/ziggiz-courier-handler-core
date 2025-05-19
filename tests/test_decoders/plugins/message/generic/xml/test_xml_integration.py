@@ -50,8 +50,9 @@ def test_xml_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "generic"
-    assert handler_info["product"] == "unknown_xml"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert handler_info["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "event" in result.event_data
@@ -85,8 +86,9 @@ def test_xml_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "generic"
-    assert handler_info["product"] == "unknown_xml"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"]["@id"] == "123"
@@ -128,8 +130,9 @@ def test_xml_with_dtd_integration():
     assert result.handler_data is not None
     handler = result.handler_data.get("GenericXMLDecoderPlugin")
     assert handler is not None
-    assert handler["vendor"] == "generic"
-    assert handler["product"] == "unknown_xml"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert handler["msgclass"] == "security_alert"
     assert "security_alert" in result.event_data
     assert result.event_data["security_alert"]["@severity"] == "high"
@@ -187,8 +190,9 @@ def test_deep_xml_structure():
     assert result.handler_data is not None
     handler = result.handler_data.get("GenericXMLDecoderPlugin")
     assert handler is not None
-    assert handler["vendor"] == "generic"
-    assert handler["product"] == "unknown_xml"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
     assert "system" in result.event_data
     assert "network" in result.event_data["system"]
     assert "interface" in result.event_data["system"]["network"]

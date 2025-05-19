@@ -94,7 +94,7 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            vendor = "generic"
+            organization = "generic"
             product = "unknown_xml"
 
             # Check if we have a DTD name to use as msgclass
@@ -109,7 +109,7 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
                 model=model,
                 fields=list(parsed_data.values()),
                 field_names=list(parsed_data.keys()),
-                vendor=vendor,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

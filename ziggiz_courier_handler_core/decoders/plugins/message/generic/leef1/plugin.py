@@ -93,8 +93,8 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
         parsed_data = self.parsing_cache["parse_leef_message"]
 
         if parsed_data and "vendor" in parsed_data and "product" in parsed_data:
-            # Extract vendor, product, and event_id from LEEF headers for classification
-            vendor = parsed_data.get("vendor", "unknown").lower()
+            # Extract organization, product, and event_id from LEEF headers for classification
+            organization = parsed_data.get("vendor", "unknown").lower()
             product = parsed_data.get("product", "unknown").lower()
             msgclass = parsed_data.get("event_id", "unknown").lower()
 
@@ -103,7 +103,7 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
                 model=model,
                 fields=list(parsed_data.values()),
                 field_names=list(parsed_data.keys()),
-                vendor=vendor,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

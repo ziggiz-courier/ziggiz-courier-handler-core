@@ -61,6 +61,15 @@ def get_message_decoders(model_cls):
 
 # Plugin stages/groups
 class MessagePluginStage:
+    """
+    Defines constants for different stages of message decoder plugin execution.
+    
+    Stages are executed in sequence to allow for progressive message decoding:
+    - FIRST_PASS: Initial parsing of messages
+    - SECOND_PASS: Secondary parsing after first pass
+    - UNPROCESSED_STRUCTURED: Processing of structured data that wasn't handled before
+    - UNPROCESSED_MESSAGES: Final handling of any messages that weren't processed
+    """
     FIRST_PASS = "FIRST_PASS"
     SECOND_PASS = "SECOND_PASS"
     UNPROCESSED_STRUCTURED = "UNPROCESSED_STRUCTURED"

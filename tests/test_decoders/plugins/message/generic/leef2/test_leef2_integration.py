@@ -48,8 +48,9 @@ def test_leef2_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "ibm"
-    assert handler_info["product"] == "qradar"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -80,8 +81,9 @@ def test_leef2_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "ibm"
-    assert handler_info["product"] == "qradar"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -111,8 +113,9 @@ def test_direct_leef2_message():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "ibm"
-    assert handler_info["product"] == "qradar"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -143,8 +146,9 @@ def test_leef2_with_category():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "ibm"
-    assert handler_info["product"] == "qradar"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
     # Check that category is incorporated into msgclass (lowercase)
     assert handler_info["msgclass"] == "securityalert_12345"
     assert result.event_data is not None
@@ -176,8 +180,9 @@ def test_leef2_with_custom_labels():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    assert handler_info["vendor"] == "ibm"
-    assert handler_info["product"] == "qradar"
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
     assert handler_info["msgclass"] == "12345"
     assert result.event_data is not None
     assert "sourceAddress" in result.event_data

@@ -18,12 +18,12 @@ class BaseEventStructureClassification(PydanticBaseModel):
     """Base model for event structure classification.
 
     This model provides common fields for describing the structure of an event for classification purposes:
-    - vendor: The vendor or originator of the event (default: 'unknown')
+    - organization: The organization or originator of the event (default: 'unknown')
     - product: The product or system that generated the event (default: 'unknown')
     Subclasses should define additional structure-specific fields.
     """
 
-    vendor: str = "unknown"
+    organization: str = "unknown"
     product: str = "unknown"
     msgclass: str = "unknown"
 
@@ -34,12 +34,12 @@ class BaseEventStructureClassification(PydanticBaseModel):
 
     def __init__(
         self,
-        vendor: str = "unknown",
+        organization: str = "unknown",
         product: str = "unknown",
         msgclass: str = "unknown",
         **kwargs
     ):
-        super().__init__(vendor=vendor, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
 
 
 class StringEventStructureClassification(BaseEventStructureClassification):
@@ -53,13 +53,13 @@ class StringEventStructureClassification(BaseEventStructureClassification):
 
     def __init__(
         self,
-        vendor: str = "unknown",
+        organization: str = "unknown",
         product: str = "unknown",
         msgclass: str = "unknown",
         punct: str = "",
         **kwargs
     ):
-        super().__init__(vendor=vendor, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
         super(StringEventStructureClassification, self).__setattr__("punct", punct)
 
 
@@ -74,7 +74,7 @@ class StructuredEventStructureClassification(BaseEventStructureClassification):
 
     def __init__(
         self,
-        vendor: str = "unknown",
+        organization: str = "unknown",
         product: str = "unknown",
         msgclass: str = "unknown",
         fields: list[str] = None,
@@ -82,7 +82,7 @@ class StructuredEventStructureClassification(BaseEventStructureClassification):
     ):
         if fields is None:
             fields = []
-        super().__init__(vendor=vendor, product=product, msgclass=msgclass, **kwargs)
+        super().__init__(organization=organization, product=product, msgclass=msgclass, **kwargs)
         super(StructuredEventStructureClassification, self).__setattr__(
             "fields", fields
         )
@@ -98,7 +98,7 @@ class FormatStringEventStructureClassification(
 
     def __init__(
         self,
-        vendor: str = "unknown",
+        organization: str = "unknown",
         product: str = "unknown",
         fields: list[str] = None,
         punct: str = "",
@@ -107,7 +107,7 @@ class FormatStringEventStructureClassification(
     ):
         StructuredEventStructureClassification.__init__(
             self,
-            vendor=vendor,
+            organization=organization,
             product=product,
             msgclass=msgclass,
             fields=fields,
@@ -115,7 +115,7 @@ class FormatStringEventStructureClassification(
         )
         StringEventStructureClassification.__init__(
             self,
-            vendor=vendor,
+            organization=organization,
             product=product,
             msgclass=msgclass,
             punct=punct,

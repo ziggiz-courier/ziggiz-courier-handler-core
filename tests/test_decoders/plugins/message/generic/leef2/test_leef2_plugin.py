@@ -51,8 +51,9 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        assert handler_info["vendor"] == "ibm"
-        assert handler_info["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_info["msgclass"] == "12345"
 
     def test_leef_2_message_with_category(self):
@@ -81,8 +82,9 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        assert handler_info["vendor"] == "ibm"
-        assert handler_info["product"] == "qradar"
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
         assert handler_info["msgclass"] == "securityalert_12345"
 
     def test_non_leef_2_message(self):
@@ -158,6 +160,7 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        assert handler_info["vendor"] == "mockvendor"  # From cache
-        assert handler_info["product"] == "mockproduct"  # From cache
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "mockvendor"  # From cache
+        assert sp.product == "mockproduct"  # From cache
         assert handler_info["msgclass"] == "mockeventid"  # From cache

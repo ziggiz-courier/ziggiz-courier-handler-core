@@ -124,14 +124,14 @@ pattern = re.compile(r"(?P<field>\w+):(?P<value>\S+)")
 
 ### 1. Determine Plugin Location
 
-Plugins are organized by vendor and product:
+Plugins are organized by organization and product:
 
 ```
 ziggiz_courier_handler_core/
   decoders/
     plugins/
       message/
-        <vendor>/
+        <organization>/
           __init__.py
           <product>/
             __init__.py
@@ -255,7 +255,7 @@ class YourPluginClassName(MessageDecoderPluginBase):
                 model=model,
                 fields=self._extract_fields(parsed_data),
                 field_names=self._extract_field_names(parsed_data),
-                vendor="vendor_name",
+                organization="organization_name",
                 product="product_name",
                 msgclass=msgclass,
             )

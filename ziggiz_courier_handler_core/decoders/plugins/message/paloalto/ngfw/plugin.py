@@ -101,7 +101,7 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                     model=model,
                     fields=fields,
                     field_names=field_names,
-                    vendor="paloalto",
+                    organization="paloalto",
                     product="ngfw",
                     msgclass=type_field.lower(),
                 )

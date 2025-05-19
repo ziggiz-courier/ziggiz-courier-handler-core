@@ -106,7 +106,7 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
                 model=model,
                 fields=list(event_data.values()),
                 field_names=list(event_data.keys()),
-                vendor="fortinet",
+                organization="fortinet",
                 product="fortigate",
                 msgclass=msgclass,
             )
