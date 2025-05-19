@@ -44,9 +44,15 @@ def test_leef_with_rfc3164():
 
     # Verify the result after LEEF plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
 
@@ -71,11 +77,18 @@ def test_leef_with_rfc5424():
 
     # Verify the result after LEEF plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "192.168.1.1"
+    assert "act" in result.event_data
     assert result.event_data["act"] == "blocked"
 
 
@@ -96,9 +109,15 @@ def test_direct_leef_message():
 
     # Verify the result after LEEF plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "rt" in result.event_data
@@ -123,9 +142,15 @@ def test_leef_with_space_delimited_extension():
 
     # Verify the result after LEEF plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "ibm"
-    assert result.structure_classification.product == "qradar"
-    assert result.structure_classification.msgclass == "12345"
+    key = "GenericLEEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_info = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "ibm"
+    assert sp.product == "qradar"
+    assert handler_info["msgclass"] == "12345"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "dst" in result.event_data

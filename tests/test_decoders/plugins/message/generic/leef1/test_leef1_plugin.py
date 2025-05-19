@@ -43,12 +43,18 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("dst") == "2.1.2.2"
         assert model.event_data.get("spt") == "1232"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "12345"
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_space_delimiter(self):
         """Test LEEF 1.0 message with space-delimited extension fields."""
@@ -67,12 +73,18 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("dst") == "2.1.2.2"
         assert model.event_data.get("spt") == "1232"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "12345"
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_pipes_in_content(self):
         """Test LEEF message with pipe characters in the content."""
@@ -91,11 +103,17 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("command") == "cat /var/log/messages | grep error"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "12345"
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_escapes(self):
         """Test LEEF message with escaped characters in extension fields."""
@@ -114,11 +132,17 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("message") == "Multiple=value\thas=escapes"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "12345"
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_entry["msgclass"] == "12345"
 
     def test_non_leef_message(self):
         """Test that non-LEEF messages are not decoded."""
@@ -135,7 +159,9 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the message was not decoded
         assert result is False
-        assert not hasattr(model, "event_data") or not model.event_data
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is None or key not in model.handler_data
+        assert not getattr(model, "event_data", None)
 
     def test_leef_2_message_not_decoded(self):
         """Test that LEEF 2.0 messages are not decoded by the LEEF 1.0 decoder."""
@@ -186,15 +212,15 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the cached values were used (not the actual message content)
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "192.168.1.1"  # From cache
         assert model.event_data.get("dst") == "192.168.1.2"  # From cache
         assert model.event_data.get("spt") == "8080"  # From cache
-        assert (
-            model.structure_classification.vendor == "mockvendor"
-        )  # From cache (lowercase)
-        assert (
-            model.structure_classification.product == "mockproduct"
-        )  # From cache (lowercase)
-        assert (
-            model.structure_classification.msgclass == "mockeventid"
-        )  # From cache (lowercase)
+        key = "GenericLEEFDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "mockvendor"
+        assert sp.product == "mockproduct"
+        assert handler_entry["msgclass"] == "mockeventid"

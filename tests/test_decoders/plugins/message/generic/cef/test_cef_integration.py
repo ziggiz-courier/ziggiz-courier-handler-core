@@ -43,10 +43,17 @@ def test_cef_with_rfc3164():
     success = cef_decoder.decode(result)
 
     # Verify the result after CEF plugin is applied
+
     assert success is True
-    assert result.structure_classification.vendor == "vendor"
-    assert result.structure_classification.product == "product"
-    assert result.structure_classification.msgclass == "security alert"
+    key = "GenericCEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "vendor"
+    assert sp.product == "product"
+    assert handler_entry["msgclass"] == "security alert"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
 
@@ -70,10 +77,17 @@ def test_cef_with_rfc5424():
     success = cef_decoder.decode(result)
 
     # Verify the result after CEF plugin is applied
+
     assert success is True
-    assert result.structure_classification.vendor == "security"
-    assert result.structure_classification.product == "product"
-    assert result.structure_classification.msgclass == "intrusion detected"
+    key = "GenericCEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "security"
+    assert sp.product == "product"
+    assert handler_entry["msgclass"] == "intrusion detected"
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "192.168.1.1"
     assert result.event_data["act"] == "blocked"
@@ -95,10 +109,16 @@ def test_direct_cef_message():
     success = cef_decoder.decode(result)
 
     # Verify the result after CEF plugin is applied
+
     assert success is True
-    assert result.structure_classification.vendor == "vendor"
-    assert result.structure_classification.product == "product"
-    assert result.structure_classification.msgclass == "system alert"
+    key = "GenericCEFDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "vendor"
+    assert sp.product == "product"
+    assert handler_entry["msgclass"] == "system alert"
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "rt" in result.event_data

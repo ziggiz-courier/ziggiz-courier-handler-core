@@ -104,9 +104,8 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
             # Use apply_field_mapping method from base class
             self.apply_field_mapping(
                 model=model,
-                fields=list(event_data.values()),
-                field_names=list(event_data.keys()),
-                vendor="fortinet",
+                event_data=event_data,
+                organization="fortinet",
                 product="fortigate",
                 msgclass=msgclass,
             )

@@ -98,17 +98,16 @@ class GenericCEFDecoderPlugin(MessageDecoderPluginBase):
             and "device_vendor" in parsed_data
             and "device_product" in parsed_data
         ):
-            # Extract vendor, product, and name from CEF headers for classification
-            vendor = parsed_data.get("device_vendor", "unknown").lower()
+            # Extract organization, product, and name from CEF headers for classification
+            organization = parsed_data.get("device_vendor", "unknown").lower()
             product = parsed_data.get("device_product", "unknown").lower()
             msgclass = parsed_data.get("name", "unknown").lower()
 
-            # Use apply_field_mapping method from base class with dynamic values
+            # Use apply_field_mapping method from base class with direct event_data
             self.apply_field_mapping(
                 model=model,
-                fields=list(parsed_data.values()),
-                field_names=list(parsed_data.keys()),
-                vendor=vendor,
+                event_data=parsed_data,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

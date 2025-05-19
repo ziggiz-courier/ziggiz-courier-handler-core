@@ -12,8 +12,8 @@ Unit tests for FortinetFortiGateKVDecoderPlugin.
 These tests verify the plugin's ability to parse and interpret Fortinet FortiGate logs
 in key-value format directly, independent of the syslog decoder chain.
 """
-# Standard library imports
-from datetime import datetime
+
+from datetime import datetime, timezone
 
 # Third-party imports
 import pytest
@@ -34,6 +34,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_traffic_log_decoding(self):
         """Test traffic log type decoding."""
         # Create timestamp
+        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -49,8 +50,9 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f'app="IPv6.ICMP" appcat="Network.Service" apprisk=elevated applist="sniffer-profile" appact=detected '
             f"utmaction=allow countapp=1"
         )
+        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,  # LOG_ALERT
             severity=3,  # LOG_ERR
             message=message,
@@ -63,12 +65,21 @@ class TestFortinetFortiGateKVDecoderPlugin:
         result = decoder.decode(model)
 
         # Check that the message was decoded correctly
+
         assert result is True
-        assert model.structure_classification.vendor == "fortinet"
-        assert model.structure_classification.product == "fortigate"
-        assert model.structure_classification.msgclass == "traffic_sniffer"
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        # Validate SourceProducer entry
+        assert "SourceProducer" in model.handler_data
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "fortinet"
+        assert sp.product == "fortigate"
+        assert handler_entry["msgclass"] == "traffic_sniffer"
 
         # Verify specific fields
+        assert model.event_data is not None
         assert model.event_data["logid"] == "0004000017"
         assert model.event_data["type"] == "traffic"
         assert model.event_data["subtype"] == "sniffer"
@@ -78,6 +89,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_utm_log_decoding(self):
         """Test UTM log type decoding."""
         # Create timestamp
+        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -91,8 +103,9 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f'sessionid=12345 proto=6 action=blocked service=HTTPS hostname="example.com" profile="default-profile" '
             f'status=blocked urlcat="Information Technology" reason=blocked category=52 catdesc="Information Technology"'
         )
+        from datetime import datetime, timezone
         model = SyslogRFC5424Message(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,
             severity=4,  # WARNING
             message=message,
@@ -105,12 +118,21 @@ class TestFortinetFortiGateKVDecoderPlugin:
         result = decoder.decode(model)
 
         # Check that the message was decoded correctly
+
         assert result is True
-        assert model.structure_classification.vendor == "fortinet"
-        assert model.structure_classification.product == "fortigate"
-        assert model.structure_classification.msgclass == "utm_webfilter"
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        # Validate SourceProducer entry
+        assert "SourceProducer" in model.handler_data
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "fortinet"
+        assert sp.product == "fortigate"
+        assert handler_entry["msgclass"] == "utm_webfilter"
 
         # Verify specific fields
+        assert model.event_data is not None
         assert model.event_data["logid"] == "0419016384"
         assert model.event_data["type"] == "utm"
         assert model.event_data["subtype"] == "webfilter"
@@ -120,6 +142,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_event_log_decoding(self):
         """Test event log type decoding."""
         # Create timestamp
+        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -131,8 +154,9 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f"eventtime={eventtime_epoch} logid=0100032003 type=event subtype=system level=information vd=root "
             f'msg="Admin admin logged in from 10.1.1.100"'
         )
+        from datetime import datetime, timezone
         model = SyslogRFCBaseModel(
-            timestamp="2025-05-13T12:34:56.000Z",
+            timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,
             severity=6,  # INFO
             message=message,
@@ -146,11 +170,19 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
-        assert model.structure_classification.vendor == "fortinet"
-        assert model.structure_classification.product == "fortigate"
-        assert model.structure_classification.msgclass == "event_system"
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        # Validate SourceProducer entry
+        assert "SourceProducer" in model.handler_data
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "fortinet"
+        assert sp.product == "fortigate"
+        assert handler_entry["msgclass"] == "event_system"
 
         # Verify specific fields
+        assert model.event_data is not None
         assert model.event_data["logid"] == "0100032003"
         assert model.event_data["type"] == "event"
         assert model.event_data["subtype"] == "system"
@@ -190,10 +222,15 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # Check that the cached values were used (not the actual message content)
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("devname") == "cached-fortigate"  # From cache
         assert model.event_data.get("devid") == "CACHED-DEVICE-ID"  # From cache
         assert model.event_data.get("action") == "deny"  # From cache
-        assert model.structure_classification.msgclass == "traffic_sniffer"
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_entry = model.handler_data[key]
+        assert handler_entry["msgclass"] == "traffic_sniffer"
 
     def test_non_matching_message(self):
         """Test with a message that doesn't match the Fortinet FortiGate format."""
@@ -213,6 +250,11 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # Verify that it wasn't decoded
         assert result is False
+        key = "FortinetFortiGateKVDecoderPlugin"
+        # handler_data should be None or not contain the key
+        assert model.handler_data is None or key not in model.handler_data
+        # event_data should be None or empty
+        assert not getattr(model, "event_data", None)
 
     def test_no_message_attribute(self):
         """Test FortinetFortiGateKVDecoderPlugin with a model without a message attribute."""
@@ -232,6 +274,9 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # Verify the result
         assert result is False
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is None or key not in model.handler_data
+        assert not getattr(model, "event_data", None)
 
     def test_incomplete_fortigate_message(self):
         """Test with a message that looks like FortiGate but missing required fields."""
@@ -251,3 +296,5 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # This should return False since it's missing required fields like logid, type, subtype
         assert result is False
+        key = "FortinetFortiGateKVDecoderPlugin"
+        assert model.handler_data is None or key not in model.handler_data

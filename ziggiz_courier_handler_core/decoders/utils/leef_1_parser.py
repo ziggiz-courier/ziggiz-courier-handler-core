@@ -17,6 +17,9 @@ The Extension part contains key-value pairs in the format key=value.
 # Standard library imports
 from typing import Dict, List, Optional
 
+# Local/package imports
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+
 
 def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
     """
@@ -58,6 +61,9 @@ def parse_leef_message(message: str) -> Optional[Dict[str, str]]:
         result = {}
         for i, field in enumerate(header_fields):
             result[field] = parts[i]
+            
+        # Add SourceProducer instance
+        result["SourceProducer"] = SourceProducer(organization=result["vendor"], product=result["product"])
 
         # Process extension (key=value pairs)
         extension = parts[5]

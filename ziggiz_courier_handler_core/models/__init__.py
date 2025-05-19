@@ -16,11 +16,14 @@ from ziggiz_courier_handler_core.models.syslog_rfc3164 import (
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import (
     SyslogRFC5424Message,
 )
+
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 __all__ = [
     "BaseModel",
     "SyslogRFCBaseModel",
     "SyslogRFC5424Message",
     "SyslogRFC3164Message",
+    "SourceProducer",
 ]

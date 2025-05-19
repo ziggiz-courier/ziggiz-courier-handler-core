@@ -28,6 +28,15 @@ T = TypeVar("T", bound=EventEnvelopeBaseModel)
 
 
 class Decoder(Generic[T], ABC):
+    """
+    Abstract base class for decoders that transform raw data into model objects.
+    
+    Generic type T must be a subclass of EventEnvelopeBaseModel. All concrete decoders
+    should inherit from this class and implement the decode method.
+    
+    This class provides common functionality for all decoders, including plugin execution
+    for message processing.
+    """
 
     def _run_message_decoder_plugins(
         self,
@@ -66,8 +75,6 @@ class Decoder(Generic[T], ABC):
                     plugin = plugin_cls(parsing_cache)
                     if plugin.decode(model):
                         return
-
-    """Base class for all decoders."""
 
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
         """

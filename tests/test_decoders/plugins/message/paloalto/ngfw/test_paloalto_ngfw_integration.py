@@ -63,11 +63,24 @@ def test_paloalto_traffic_with_rfc3164():
 
     # Verify the result after PaloAlto plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "paloalto"
-    assert result.structure_classification.product == "ngfw"
-    assert result.structure_classification.msgclass == "traffic"
+    key = "PaloAltoNGFWCSVDecoder"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "traffic"
+    assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
     assert result.event_data["type"] == "TRAFFIC"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "traffic"
 
 
 @pytest.mark.integration
@@ -94,12 +107,25 @@ def test_paloalto_threat_with_rfc5424():
 
     # Verify the result after PaloAlto plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "paloalto"
-    assert result.structure_classification.product == "ngfw"
-    assert result.structure_classification.msgclass == "threat"
+    key = "PaloAltoNGFWCSVDecoder"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "threat"
+    assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
     assert result.event_data["type"] == "THREAT"
     assert result.event_data["threat_content_type"] == "vulnerability"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "threat"
 
 
 @pytest.mark.integration
@@ -126,11 +152,24 @@ def test_paloalto_system_log_with_rfc3164():
 
     # Verify the result after PaloAlto plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "paloalto"
-    assert result.structure_classification.product == "ngfw"
-    assert result.structure_classification.msgclass == "system"
+    key = "PaloAltoNGFWCSVDecoder"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "system"
+    assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
     assert result.event_data["type"] == "SYSTEM"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "system"
 
 
 @pytest.mark.integration
@@ -157,11 +196,24 @@ def test_paloalto_config_log_with_rfc5424():
 
     # Verify the result after PaloAlto plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "paloalto"
-    assert result.structure_classification.product == "ngfw"
-    assert result.structure_classification.msgclass == "config"
+    key = "PaloAltoNGFWCSVDecoder"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "config"
+    assert result.event_data is not None
     assert result.event_data["serial_number"] == "001122334455"
     assert result.event_data["type"] == "CONFIG"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "config"
 
 
 @pytest.mark.integration
@@ -178,9 +230,15 @@ def test_unknown_syslog_decoder_chain_for_paloalto():
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 
-    # The result should already have PaloAlto classification from the plugin chain
+    # The result should already have PaloAlto handler_data from the plugin chain
     assert isinstance(result, SyslogRFCBaseModel)
-    assert result.structure_classification.vendor == "paloalto"
-    assert result.structure_classification.product == "ngfw"
-    assert result.structure_classification.msgclass == "traffic"
+    key = "PaloAltoNGFWCSVDecoder"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "paloalto"
+    assert sp.product == "ngfw"
+    assert handler_entry["msgclass"] == "traffic"
+    assert result.event_data is not None
     assert result.event_data.get("type", "").lower() == "traffic"

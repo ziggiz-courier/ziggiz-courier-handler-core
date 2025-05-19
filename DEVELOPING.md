@@ -124,14 +124,14 @@ pattern = re.compile(r"(?P<field>\w+):(?P<value>\S+)")
 
 ### 1. Determine Plugin Location
 
-Plugins are organized by vendor and product:
+Plugins are organized by organization and product:
 
 ```
 ziggiz_courier_handler_core/
   decoders/
     plugins/
       message/
-        <vendor>/
+        <organization>/
           __init__.py
           <product>/
             __init__.py
@@ -253,9 +253,8 @@ class YourPluginClassName(MessageDecoderPluginBase):
             # Use apply_field_mapping method from base class
             self.apply_field_mapping(
                 model=model,
-                fields=self._extract_fields(parsed_data),
-                field_names=self._extract_field_names(parsed_data),
-                vendor="vendor_name",
+                event_data=self._extract_event_data(parsed_data),
+                organization="organization_name",
                 product="product_name",
                 msgclass=msgclass,
             )
@@ -355,8 +354,7 @@ For formats with key=value pairs where field names are known at runtime:
 # Extract field names and values directly from the parsed data
 self.apply_field_mapping(
     model=model,
-    fields=list(event_data.values()),
-    field_names=list(event_data.keys()),
+    event_data=event_data,
     vendor="vendor_name",
     product="product_name",
     msgclass=msgclass,
@@ -376,8 +374,7 @@ msgclass = parsed_data.get("name", "unknown").lower()
 # Use dynamic values from the parsed data
 self.apply_field_mapping(
     model=model,
-    fields=list(parsed_data.values()),
-    field_names=list(parsed_data.keys()),
+    event_data=parsed_data,
     vendor=vendor,
     product=product,
     msgclass=msgclass,
@@ -423,8 +420,7 @@ For formats with predefined field positions (like CSV):
    if field_names:
        self.apply_field_mapping(
            model=model,
-           fields=parsed_data,
-           field_names=field_names,
+           event_data=dict(zip(field_names, parsed_data)),
            vendor="vendor_name",
            product="product_name",
            msgclass=type_field.lower(),
@@ -710,8 +706,7 @@ def decode(self, model: EventEnvelopeBaseModel) -> bool:
         # Use apply_field_mapping method from base class
         self.apply_field_mapping(
             model=model,
-            fields=list(event_data.values()),
-            field_names=list(event_data.keys()),
+            event_data=event_data,
             vendor="fortinet",
             product="fortigate",
             msgclass=msgclass,
@@ -755,8 +750,7 @@ def decode(self, model: EventEnvelopeBaseModel) -> bool:
         if field_names:
             self.apply_field_mapping(
                 model=model,
-                fields=fields,
-                field_names=field_names,
+                event_data=dict(zip(field_names, fields)),
                 vendor="paloalto",
                 product="ngfw",
                 msgclass=type_field.lower(),

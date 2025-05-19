@@ -24,8 +24,9 @@ def test_generic_json_basic_case():
     """Test GenericJSONDecoderPlugin with basic JSON message format."""
     # Create a model with a test JSON message
     msg = '{"event": "login", "user": "admin", "status": "success"}'
+    from datetime import datetime, timezone
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,  # LOCAL0
         severity=6,  # INFO
         message=msg,
@@ -39,14 +40,24 @@ def test_generic_json_basic_case():
 
     # Verify the result
     assert result is True
-    assert model.structure_classification.vendor == "generic"
-    assert model.structure_classification.product == "unknown_json"
-    assert model.structure_classification.msgclass == "unknown"
+    # Check handler_data for the decoder's FQCN
+    key = "GenericJSONDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+
+    handler_info = model.handler_data[key]
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_json"
+    assert handler_info["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "event" in model.event_data
     assert model.event_data["event"] == "login"
+    assert "user" in model.event_data
     assert model.event_data["user"] == "admin"
+    assert "status" in model.event_data
     assert model.event_data["status"] == "success"
 
 
@@ -57,8 +68,9 @@ def test_generic_json_nested_data():
     msg = (
         '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
     )
+    from datetime import datetime, timezone
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
         severity=6,
         message=msg,
@@ -72,6 +84,16 @@ def test_generic_json_nested_data():
 
     # Verify the result
     assert result is True
+    key = "GenericJSONDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_json"
+    assert handler_entry["msgclass"] == "unknown"
+    # Check event data
+    assert model.event_data is not None
     assert "user" in model.event_data
     assert model.event_data["user"] == {"id": 123, "name": "John"}
     assert "actions" in model.event_data
@@ -83,8 +105,9 @@ def test_generic_json_negative_case():
     """Test GenericJSONDecoderPlugin with non-matching message format."""
     # Create a model with a message that should not match JSON format
     msg = "This is not a JSON formatted message"
+    from datetime import datetime, timezone
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 16, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
         severity=6,
         message=msg,

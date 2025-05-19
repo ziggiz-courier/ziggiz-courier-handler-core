@@ -74,9 +74,17 @@ def test_fortigate_traffic_with_rfc3164():
 
     # Verify the result after FortiGate plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "fortinet"
-    assert result.structure_classification.product == "fortigate"
-    assert result.structure_classification.msgclass == "traffic_sniffer"
+    key = "FortinetFortiGateKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    # Validate SourceProducer entry
+    assert "SourceProducer" in result.handler_data
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
+    assert handler_entry["msgclass"] == "traffic_sniffer"
+    assert result.event_data is not None
     assert result.event_data["type"] == "traffic"
     assert result.event_data["subtype"] == "sniffer"
     assert result.event_data["action"] == "accept"
@@ -116,9 +124,17 @@ def test_fortigate_utm_with_rfc5424():
 
     # Verify the result after FortiGate plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "fortinet"
-    assert result.structure_classification.product == "fortigate"
-    assert result.structure_classification.msgclass == "utm_webfilter"
+    key = "FortinetFortiGateKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    # Validate SourceProducer entry
+    assert "SourceProducer" in result.handler_data
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
+    assert handler_entry["msgclass"] == "utm_webfilter"
+    assert result.event_data is not None
     assert result.event_data["type"] == "utm"
     assert result.event_data["subtype"] == "webfilter"
     assert result.event_data["action"] == "blocked"
@@ -154,9 +170,15 @@ def test_fortigate_event_log():
 
     # Verify the result after FortiGate plugin is applied
     assert success is True
-    assert result.structure_classification.vendor == "fortinet"
-    assert result.structure_classification.product == "fortigate"
-    assert result.structure_classification.msgclass == "event_system"
+    key = "FortinetFortiGateKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
+    assert handler_entry["msgclass"] == "event_system"
+    assert result.event_data is not None
     assert result.event_data["type"] == "event"
     assert result.event_data["subtype"] == "system"
     assert result.event_data["msg"] == "Admin admin logged in from 10.1.1.100"
@@ -190,13 +212,20 @@ def test_unknown_syslog_decoder_and_plugin_for_fortigate():
     # Apply the FortiGate KV decoder explicitly
     fortigate_decoder = FortinetFortiGateKVDecoderPlugin()
     success = fortigate_decoder.decode(result)
-
-    # Verify the result after FortiGate plugin is applied
-    assert success is True
-    assert result.structure_classification.vendor == "fortinet"
-    assert result.structure_classification.product == "fortigate"
-    assert result.structure_classification.msgclass == "traffic_sniffer"
+    key = "FortinetFortiGateKVDecoderPlugin"
+    assert result.handler_data is not None
+    assert key in result.handler_data
+    handler_entry = result.handler_data[key]
+    sp = result.handler_data["SourceProducer"]
+    assert sp.organization == "fortinet"
+    assert sp.product == "fortigate"
+    assert handler_entry["msgclass"] == "traffic_sniffer"
+    assert result.event_data is not None
     assert result.event_data["type"] == "traffic"
     assert result.event_data["subtype"] == "sniffer"
     assert result.event_data["action"] == "accept"
     assert result.event_data["utmaction"] == "allow"
+
+    # Verify the result after FortiGate plugin is applied
+    assert success is True
+    # Already checked handler_data and event_data above

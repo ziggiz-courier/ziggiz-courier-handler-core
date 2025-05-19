@@ -17,9 +17,7 @@ from pydantic import BaseModel as PydanticBaseModel
 
 # Local/package imports
 # Import BaseEventStructureClassification from the new event_structure_classification.py file
-from ziggiz_courier_handler_core.models.event_structure_classification import (
-    BaseEventStructureClassification,
-)
+
 
 
 class EventEnvelopeBaseModel(PydanticBaseModel):
@@ -47,9 +45,7 @@ class EventEnvelopeBaseModel(PydanticBaseModel):
     )  # First touch by a Courier receiver, don't modify during processing
     message: Optional[str] = None  # Common message field for all models
     event_data: Optional[dict] = None  # Optional: Additional event data
-    structure_classification: Optional[BaseEventStructureClassification] = (
-        None  # Optional: Event structure classification metadata
-    )
+    handler_data: Optional[dict] = None  # Optional: Ordered dict for handler/decoder metadata
 
     # Use model_config instead of Config class (Pydantic v2)
     model_config = {

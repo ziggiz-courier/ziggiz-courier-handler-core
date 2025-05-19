@@ -41,12 +41,19 @@ def test_generic_kv_basic_case():
     result = decoder.decode(model)
 
     # Verify the result
+
     assert result is True
-    assert model.structure_classification.vendor == "generic"
-    assert model.structure_classification.product == "unknown_kv"
-    assert model.structure_classification.msgclass == "unknown"
+    key = "GenericKVDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_kv"
+    assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "src" in model.event_data
     assert model.event_data["src"] == "10.0.0.1"
     assert model.event_data["dst"] == "8.8.8.8"
@@ -74,6 +81,7 @@ def test_generic_kv_quoted_values():
 
     # Verify the result
     assert result is True
+    assert model.event_data is not None
     assert "user" in model.event_data
     assert model.event_data["user"] == "john doe"
     assert model.event_data["action"] == "login"
@@ -101,6 +109,7 @@ def test_generic_kv_escaped_quotes():
 
     # Verify the result
     assert result is True
+    assert model.event_data is not None
     assert "user" in model.event_data
     assert model.event_data["user"] == "admin"
     assert model.event_data["path"] == '/var/log/"test"'

@@ -95,16 +95,15 @@ class GenericKVDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            vendor = "generic"
+            organization = "generic"
             product = "unknown_kv"
             msgclass = "unknown"
 
             # Apply parsed data to model
             self.apply_field_mapping(
                 model=model,
-                fields=list(parsed_data.values()),
-                field_names=list(parsed_data.keys()),
-                vendor=vendor,
+                event_data=parsed_data,
+                organization=organization,
                 product=product,
                 msgclass=msgclass,
             )

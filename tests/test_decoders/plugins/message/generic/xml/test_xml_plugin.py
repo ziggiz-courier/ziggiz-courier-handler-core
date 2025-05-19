@@ -24,8 +24,9 @@ def test_generic_xml_basic_case():
     """Test GenericXMLDecoderPlugin with basic XML message format."""
     # Create a model with a test XML message
     msg = "<event><type>login</type><user>admin</user><status>success</status></event>"
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,  # LOCAL0
         severity=6,  # INFO
         message=msg,
@@ -39,16 +40,24 @@ def test_generic_xml_basic_case():
 
     # Verify the result
     assert result is True
-    assert model.structure_classification.vendor == "generic"
-    assert model.structure_classification.product == "unknown_xml"
-    assert model.structure_classification.msgclass == "unknown"
+    key = "GenericXMLDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    # Validate SourceProducer entry
+    assert "SourceProducer" in model.handler_data
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
+    assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "event" in model.event_data
-    assert "type" in model.event_data["event"]
-    assert model.event_data["event"]["type"] == "login"
-    assert model.event_data["event"]["user"] == "admin"
-    assert model.event_data["event"]["status"] == "success"
+    event = model.event_data["event"]
+    assert event["type"] == "login"
+    assert event["user"] == "admin"
+    assert event["status"] == "success"
 
 
 @pytest.mark.unit
@@ -56,8 +65,9 @@ def test_generic_xml_with_attributes():
     """Test GenericXMLDecoderPlugin with XML containing attributes."""
     # Create a model with a test XML message with attributes
     msg = '<event id="123"><user role="admin">John Doe</user><action type="login">User Login</action></event>'
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
         severity=6,
         message=msg,
@@ -71,13 +81,15 @@ def test_generic_xml_with_attributes():
 
     # Verify the result
     assert result is True
+    assert model.event_data is not None
     assert "event" in model.event_data
-    assert model.event_data["event"]["@id"] == "123"
-    assert model.event_data["event"]["user"]["#text"] == "John Doe"
-    assert model.event_data["event"]["user"]["@role"] == "admin"
-    assert "action" in model.event_data["event"]
-    assert model.event_data["event"]["action"]["#text"] == "User Login"
-    assert model.event_data["event"]["action"]["@type"] == "login"
+    event = model.event_data["event"]
+    assert event["@id"] == "123"
+    assert event["user"]["#text"] == "John Doe"
+    assert event["user"]["@role"] == "admin"
+    assert "action" in event
+    assert event["action"]["#text"] == "User Login"
+    assert event["action"]["@type"] == "login"
 
 
 @pytest.mark.unit
@@ -91,8 +103,9 @@ def test_generic_xml_with_dtd():
     <severity>high</severity>
     <description>Unauthorized access attempt</description>
 </security_event>"""
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
         severity=6,
         message=msg,
@@ -106,17 +119,23 @@ def test_generic_xml_with_dtd():
 
     # Verify the result
     assert result is True
-    assert model.structure_classification.vendor == "generic"
-    assert model.structure_classification.product == "unknown_xml"
-    assert model.structure_classification.msgclass == "security_event"
+    key = "GenericXMLDecoderPlugin"
+    assert model.handler_data is not None
+    assert key in model.handler_data
+    handler_entry = model.handler_data[key]
+    # Validate SourceProducer entry
+    assert "SourceProducer" in model.handler_data
+    sp = model.handler_data["SourceProducer"]
+    assert sp.organization == "generic"
+    assert sp.product == "unknown_xml"
+    assert handler_entry["msgclass"] == "security_event"
 
     # Verify specific fields in the parsed data
+    assert model.event_data is not None
     assert "security_event" in model.event_data
-    assert model.event_data["security_event"]["severity"] == "high"
-    assert (
-        model.event_data["security_event"]["description"]
-        == "Unauthorized access attempt"
-    )
+    sec_event = model.event_data["security_event"]
+    assert sec_event["severity"] == "high"
+    assert sec_event["description"] == "Unauthorized access attempt"
 
 
 @pytest.mark.unit
@@ -124,8 +143,9 @@ def test_generic_xml_with_escaped_entities():
     """Test GenericXMLDecoderPlugin with XML containing escaped entities."""
     # Create a model with a test XML message with escaped entities
     msg = "<event><description>User &lt;admin&gt; logged in with privileges &amp; access rights</description></event>"
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
         severity=6,
         message=msg,
@@ -139,12 +159,11 @@ def test_generic_xml_with_escaped_entities():
 
     # Verify the result
     assert result is True
+    assert model.event_data is not None
     assert "event" in model.event_data
-    assert "description" in model.event_data["event"]
-    assert (
-        model.event_data["event"]["description"]
-        == "User <admin> logged in with privileges & access rights"
-    )
+    event = model.event_data["event"]
+    assert "description" in event
+    assert event["description"] == "User <admin> logged in with privileges & access rights"
 
 
 @pytest.mark.unit
@@ -152,8 +171,9 @@ def test_generic_xml_with_incorrect_escaping():
     """Test GenericXMLDecoderPlugin with XML containing incorrectly escaped entities."""
     # Create a model with a test XML message with improperly escaped entities
     msg = "<event><description>User login with email user@example.com & password</description></event>"
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
         severity=6,
         message=msg,
@@ -167,12 +187,11 @@ def test_generic_xml_with_incorrect_escaping():
 
     # Verify the result
     assert result is True
+    assert model.event_data is not None
     assert "event" in model.event_data
-    assert "description" in model.event_data["event"]
-    assert (
-        model.event_data["event"]["description"]
-        == "User login with email user@example.com & password"
-    )
+    event = model.event_data["event"]
+    assert "description" in event
+    assert event["description"] == "User login with email user@example.com & password"
 
 
 @pytest.mark.unit
@@ -180,8 +199,9 @@ def test_generic_xml_negative_case():
     """Test GenericXMLDecoderPlugin with non-matching message format."""
     # Create a model with a message that should not match XML format
     msg = "This is not an XML formatted message"
+    from datetime import datetime
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-16T12:34:56.000Z",
+        timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
         severity=6,
         message=msg,

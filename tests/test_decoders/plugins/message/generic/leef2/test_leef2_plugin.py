@@ -43,12 +43,18 @@ class TestGenericLEEF2DecoderPlugin:
 
         # Check that the message was decoded correctly
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("dst") == "2.1.2.2"
         assert model.event_data.get("spt") == "1232"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "12345"
+        key = "GenericLEEF2DecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_info = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_info["msgclass"] == "12345"
 
     def test_leef_2_message_with_category(self):
         """Test LEEF 2.0 message with category field decoding."""
@@ -67,13 +73,19 @@ class TestGenericLEEF2DecoderPlugin:
 
         # Check that the message was decoded correctly with category incorporated into msgclass
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
         assert model.event_data.get("dst") == "2.1.2.2"
         assert model.event_data.get("spt") == "1232"
         assert model.event_data.get("event_category") == "SecurityAlert"
-        assert model.structure_classification.vendor == "ibm"
-        assert model.structure_classification.product == "qradar"
-        assert model.structure_classification.msgclass == "securityalert_12345"
+        key = "GenericLEEF2DecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_info = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "ibm"
+        assert sp.product == "qradar"
+        assert handler_info["msgclass"] == "securityalert_12345"
 
     def test_non_leef_2_message(self):
         """Test that non-LEEF 2.0 messages are not decoded."""
@@ -141,8 +153,14 @@ class TestGenericLEEF2DecoderPlugin:
 
         # Check that the cached values were used (not the actual message content)
         assert result is True
+        assert model.event_data is not None
         assert model.event_data.get("src") == "192.168.1.1"  # From cache
         assert model.event_data.get("dst") == "192.168.1.2"  # From cache
-        assert model.structure_classification.vendor == "mockvendor"  # From cache
-        assert model.structure_classification.product == "mockproduct"  # From cache
-        assert model.structure_classification.msgclass == "mockeventid"  # From cache
+        key = "GenericLEEF2DecoderPlugin"
+        assert model.handler_data is not None
+        assert key in model.handler_data
+        handler_info = model.handler_data[key]
+        sp = model.handler_data["SourceProducer"]
+        assert sp.organization == "mockvendor"  # From cache
+        assert sp.product == "mockproduct"  # From cache
+        assert handler_info["msgclass"] == "mockeventid"  # From cache

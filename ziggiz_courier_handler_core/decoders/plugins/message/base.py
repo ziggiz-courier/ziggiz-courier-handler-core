@@ -16,18 +16,18 @@ including caching and common utility methods.
 # Standard library imports
 import logging
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessageDecoderPlugin,
 )
+
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
-from ziggiz_courier_handler_core.models.event_structure_classification import (
-    StructuredEventStructureClassification,
-)
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,31 +53,54 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
     def apply_field_mapping(
         self,
         model: EventEnvelopeBaseModel,
-        fields: List[Any],
-        field_names: List[str],
-        vendor: str,
+        event_data: Dict[str, Any],
+        organization: str,
         product: str,
         msgclass: str,
+        handler_metadata: Optional[dict] = None,
     ) -> None:
         """
-        Apply field mapping to the model.
+        Apply field mapping to the model and update handler_data.
 
         Args:
             model (EventEnvelopeBaseModel): The model to update with parsed fields
-            fields (List[Any]): The parsed field values
-            field_names (List[str]): The field names corresponding to the values
-            vendor (str): Vendor name for structure classification
-            product (str): Product name for structure classification
-            msgclass (str): Message class for structure classification
+            event_data (Dict[str, Any]): Dictionary containing event data to be stored
+            organization (str): Organization name for the source producer
+            product (str): Product name for the source producer
+            msgclass (str): Message class for handler_data
+            handler_metadata (Optional[dict]): Additional metadata for this handler entry
         """
-        model.structure_classification = StructuredEventStructureClassification(
-            vendor=vendor,
-            product=product,
-            msgclass=msgclass,
-            fields=field_names,
-        )
-        model.event_data = {k: v for k, v in zip(field_names, fields)}
+        # Set event_data directly
+        model.event_data = event_data
+
+        # Use only the class name as key for first-party, or package..Type for third-party plugins
+        cls = self.__class__
+        module = cls.__module__
+        typename = cls.__name__
+        if module.startswith("ziggiz_courier_handler_core."):
+            key = typename
+        else:
+            # Abbreviated: package..Type (e.g., vendorpkg..PluginType)
+            pkg = module.split(".")[0]
+            key = f"{pkg}..{typename}"
+
+        entry = {
+            "msgclass": msgclass,
+        }
+        if handler_metadata:
+            entry.update(handler_metadata)
+
+        # Maintain insertion order (Python 3.7+ dicts are ordered)
+        if model.handler_data is None:
+            model.handler_data = {}
+        model.handler_data[key] = entry
+
+        # Store organization and product information solely in the SourceProducer object
+        model.handler_data["SourceProducer"] = SourceProducer(organization=organization, product=product)
         logger.debug(
-            f"{vendor} {product} plugin parsed event_data",
-            extra={"event_data": model.event_data},
+            "plugin parsed event_data",
+            extra={
+                "event_data": model.event_data,
+                "handler_data": model.handler_data,
+            },
         )
