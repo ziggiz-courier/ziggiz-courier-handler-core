@@ -27,6 +27,7 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
@@ -36,11 +37,19 @@ def test_decode_rfc5424():
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
     assert isinstance(result, SyslogRFC5424Message)
-    assert result.hostname == "mymachine"
-    assert result.app_name == "app"
-    assert result.proc_id == "1234"
-    assert result.msg_id == "ID47"
-    assert result.message.endswith("BOMAn application event log entry...")
+    
+    # Use the validation utility instead of separate assertions
+    validate_syslog_model(
+        result,
+        facility=4,  # 34 = 4*8 + 2
+        severity=2,
+        hostname="mymachine",
+        app_name="app",
+        proc_id="1234",
+        msg_id="ID47",
+        message="BOMAn application event log entry...",
+        structured_data={"exampleSDID@32473": {"iut": "3", "eventSource": "Application"}}
+    )
 
 
 @pytest.mark.unit
@@ -50,8 +59,16 @@ def test_decode_rfc3164():
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
     assert isinstance(result, SyslogRFC3164Message)
-    assert result.hostname == "mymachine"
-    assert result.message.endswith("This is a BSD syslog message.")
+    
+    # Use the validation utility instead of separate assertions
+    validate_syslog_model(
+        result,
+        facility=1,  # 13 = 1*8 + 5
+        severity=5,
+        hostname="mymachine",
+        app_name="su",
+        message="This is a BSD syslog message."
+    )
 
 
 @pytest.mark.unit
@@ -61,7 +78,14 @@ def test_decode_rfcbase():
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
     assert isinstance(result, SyslogRFCBaseModel)
-    assert result.message.endswith("This is a base syslog message.")
+    
+    # Use the validation utility instead of separate assertions
+    validate_syslog_model(
+        result,
+        facility=1,  # 13 = 1*8 + 5
+        severity=5,
+        message="This is a base syslog message."
+    )
 
 
 @pytest.mark.unit

@@ -28,6 +28,7 @@ import pytest
 
 from tests.test_decoders.utils.test_timestamp_parser import TIMESTAMP_PARSE_CASES
 from tests.test_models.test_syslog_rfc_base import FROM_PRIORITY_TEST_CASES
+from tests.test_utils.validation import validate_syslog_model
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.syslog_rfc3164_decoder import (
@@ -215,19 +216,25 @@ class TestSyslogRFC3164Decoder:
             tag_str = message
         raw_syslog = f"<{pri}>{timestamp_str} {tag_str}"
         result = decoder.decode(raw_syslog)
+        
         expected_hostname = (
             expected_func(input_hostname) if input_hostname is not None else None
         )
         if expected_hostname is not None:
             expected_hostname = expected_hostname.lower()
-            assert result.hostname == expected_hostname
-        else:
-            assert result.hostname is None
-        assert result.app_name == expected_app_name
-        assert result.proc_id == expected_proc_id
-        assert result.message == expected_message
-        assert result.facility == expected_facility.value
-        assert result.severity == expected_severity.value
+        
+        # Use validate_syslog_model utility for consistent validation
+        validate_syslog_model(
+            result,
+            facility=expected_facility.value,
+            severity=expected_severity.value,
+            hostname=expected_hostname,
+            app_name=expected_app_name,
+            proc_id=expected_proc_id,
+            message=expected_message
+        )
+        
+        # Validate timestamp which is specific to this test
         assert isinstance(result.timestamp, datetime)
 
     # def test_decode_minimal_message(self):
@@ -259,12 +266,16 @@ class TestSyslogRFC3164Decoder:
 
         result = decoder.decode(raw_syslog)
 
-        assert result.facility == 1
-        assert result.severity == 5
-        assert result.hostname == "host1"
-        assert result.app_name == "app"
-        assert result.proc_id == "123"
-        assert result.message == "Test with space after PRI"
+        # Use validate_syslog_model for consistent validation
+        validate_syslog_model(
+            result,
+            facility=1,
+            severity=5,
+            hostname="host1",
+            app_name="app",
+            proc_id="123",
+            message="Test with space after PRI"
+        )
         assert isinstance(result.timestamp, datetime)
 
     def test_common_words_hostname_filtering(self):

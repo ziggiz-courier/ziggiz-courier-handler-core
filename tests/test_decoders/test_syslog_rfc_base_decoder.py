@@ -24,6 +24,7 @@ from tests.test_models.test_syslog_rfc_base import (
     FROM_PRIORITY_TEST_CASES,
     INVALID_PRIORITY_TEST_CASES,
 )
+from tests.test_utils.validation import validate_syslog_model
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
@@ -52,10 +53,14 @@ class TestSyslogRFCBaseDecoder:
         # Decode the message
         result = decoder.decode(raw_syslog)
 
-        # Verify the decoder correctly extracted PRI components
-        assert result.get_facility_enum() == expected_facility
-        assert result.get_severity_enum() == expected_severity
-        assert result.message == f"This is a test message with {test_id}"
+        # Validate using our shared utility
+        validate_syslog_model(
+            result,
+            facility=expected_facility.value,
+            severity=expected_severity.value,
+            message=f"This is a test message with {test_id}",
+            priority=pri
+        )
 
     @pytest.mark.parametrize(
         "pri, expected_facility, expected_severity, test_id",
@@ -78,9 +83,12 @@ class TestSyslogRFCBaseDecoder:
         # Decode the message
         result = decoder.decode(raw_syslog)
 
-        # Verify the decoder handles invalid PRI correctly
-        assert result.get_facility_enum() == expected_facility
-        assert result.get_severity_enum() == expected_severity
+        # Use validate_syslog_model for facility and severity validation
+        validate_syslog_model(
+            result,
+            facility=expected_facility,
+            severity=expected_severity
+        )
 
         # Verify message is captured correctly
         if pri is None:
@@ -102,10 +110,13 @@ class TestSyslogRFCBaseDecoder:
 
         for raw_syslog, expected_message in test_cases:
             result = decoder.decode(raw_syslog)
-            assert result.message == expected_message
-            # Verify facility and severity (13 = 1 << 3 | 5 = USER.NOTICE)
-            assert result.get_facility_enum() == Facility.USER
-            assert result.get_severity_enum() == Severity.NOTICE
+            # Use validate_syslog_model for consistent validation
+            validate_syslog_model(
+                result,
+                message=expected_message,
+                facility=Facility.USER,
+                severity=Severity.NOTICE
+            )
 
     @pytest.mark.parametrize(
         "invalid_message",

@@ -9,6 +9,7 @@
 """Tests for the syslog RFC3164 encoder."""
 
 # Standard library imports
+from datetime import datetime
 
 # Third-party imports
 import pytest
@@ -18,6 +19,7 @@ from ziggiz_courier_handler_core.encoders.syslog_rfc3164_encoder import (
     SyslogRFC3164Encoder,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
@@ -31,10 +33,6 @@ class TestSyslogRFC3164Encoder:
         encoder = SyslogRFC3164Encoder()
 
         # Create test messages
-        # Import datetime for timestamp
-        # Standard library imports
-        from datetime import datetime
-
         test_cases = [
             (
                 SyslogRFC3164Message(
@@ -67,5 +65,22 @@ class TestSyslogRFC3164Encoder:
 
         # Test each case
         for syslog_message, expected_output in test_cases:
+            # Validate the model before encoding
+            if syslog_message.facility == 13 and syslog_message.severity == 7:
+                validate_syslog_model(
+                    syslog_message,
+                    facility=13,
+                    severity=7,
+                    priority=111  # 13 * 8 + 7 = 111
+                )
+            elif syslog_message.facility == 4 and syslog_message.severity == 2:
+                validate_syslog_model(
+                    syslog_message,
+                    facility=4,
+                    severity=2,
+                    priority=34  # 4 * 8 + 2 = 34
+                )
+            
+            # Test encoding
             result = encoder.encode(syslog_message)
             assert result == expected_output

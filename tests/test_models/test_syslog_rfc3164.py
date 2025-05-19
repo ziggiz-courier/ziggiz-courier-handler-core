@@ -16,6 +16,7 @@ import pytest
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
@@ -31,6 +32,7 @@ class TestSyslogRFC3164Message:
             facility=13, severity=7, message="This is a message", timestamp=now
         )
 
+        # Original assertions
         assert message.facility == 13
         assert message.severity == 7
         assert (
@@ -38,16 +40,35 @@ class TestSyslogRFC3164Message:
         )  # message is now from EventEnvelopeBaseModel
         assert message.timestamp == now  # timestamp is now required
 
+        # Alternative using validation utility
+        validate_syslog_model(
+            message,
+            facility=13,
+            severity=7,
+            message="This is a message",
+            timestamp=now
+        )
+
         # Create with all fields
         now = datetime.now()
         message = SyslogRFC3164Message(
             facility=13, severity=7, message="This is a message", timestamp=now
         )
 
+        # Original assertions
         assert message.facility == 13
         assert message.severity == 7
         assert message.message == "This is a message"
         assert message.timestamp == now
+        
+        # Alternative using validation utility
+        validate_syslog_model(
+            message,
+            facility=13,
+            severity=7,
+            message="This is a message",
+            timestamp=now
+        )
 
     def test_inherited_methods(self):
         """Test methods inherited from SyslogRFCBaseModel."""
@@ -56,14 +77,26 @@ class TestSyslogRFC3164Message:
             facility=13, severity=7, message="This is a message", timestamp=now
         )
 
-        # Calculate priority
+        # Calculate priority and validate
         assert message.get_priority() == 111  # 13 * 8 + 7 = 111
+        # Alternative using validation utility
+        validate_syslog_model(message, priority=111)
 
         # Create from priority
         new_message = SyslogRFC3164Message.from_priority(
             pri=34, message="Another message"  # Facility 4, Severity 2
         )
 
+        # Original assertions
         assert new_message.facility == 4
         assert new_message.severity == 2
         assert new_message.message == "Another message"
+        
+        # Alternative using validation utility
+        validate_syslog_model(
+            new_message,
+            facility=4,
+            severity=2,
+            message="Another message",
+            priority=34
+        )

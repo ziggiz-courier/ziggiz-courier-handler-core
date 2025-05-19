@@ -23,6 +23,7 @@ from tests.test_decoders.test_syslog_rfc3164_decoder import (
 )
 from tests.test_decoders.utils.test_timestamp_parser import TIMESTAMP_PARSE_CASES
 from tests.test_models.test_syslog_rfc_base import FROM_PRIORITY_TEST_CASES
+from tests.test_utils.validation import validate_syslog_model
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
@@ -87,7 +88,26 @@ def test_unknown_decoder_returns_rfc3164_class_matrix(
         tag_str = message
     raw_syslog = f"<{pri}>{timestamp_str} {tag_str}"
     result = decoder.decode(raw_syslog)
+    
+    # First assert the correct instance type
     assert isinstance(result, SyslogRFC3164Message), f"Failed for: {raw_syslog}"
+    
+    # Now use the validation utility for deeper validation
+    expected_hostname = (
+        expected_func(input_hostname) if input_hostname is not None else None
+    )
+    if expected_hostname is not None:
+        expected_hostname = expected_hostname.lower()
+    
+    validate_syslog_model(
+        result,
+        facility=int(expected_facility),
+        severity=int(expected_severity),
+        hostname=expected_hostname,
+        app_name=expected_app_name,
+        proc_id=expected_proc_id,
+        message=expected_message
+    )
 
 
 @pytest.mark.rfc5424
@@ -163,15 +183,24 @@ def test_unknown_decoder_returns_rfc5424_class_matrix(
     decoder = UnknownSyslogDecoder()
     raw_syslog = f'<{pri}>1 {timestamp} {hostname} {app_name} {proc_id} {msg_id} [test@32473 iut="3"] This is a test message with {test_id}'
     result = decoder.decode(raw_syslog)
+    
+    # First assert the correct instance type
     assert isinstance(result, SyslogRFC5424Message), f"Failed for: {raw_syslog}"
-    assert result.facility == int(expected_facility)
-    assert result.severity == int(expected_severity)
-    assert result.hostname == expected_hostname
-    assert result.app_name == expected_app_name
-    assert result.proc_id == expected_proc_id
-    assert result.msg_id == expected_msg_id
-    assert result.message == f"This is a test message with {test_id}"
-    assert result.structured_data == {"test@32473": {"iut": "3"}}
+    
+    # Use validation utility instead of separate assertions
+    validate_syslog_model(
+        result,
+        facility=int(expected_facility),
+        severity=int(expected_severity),
+        hostname=expected_hostname,
+        app_name=expected_app_name,
+        proc_id=expected_proc_id,
+        msg_id=expected_msg_id,
+        message=f"This is a test message with {test_id}",
+        structured_data={"test@32473": {"iut": "3"}}
+    )
+    
+    # Check timestamp specifically as it needs custom validation logic
     assert result.timestamp is not None
     assert result.timestamp.tzinfo is not None
     if is_nil_timestamp:

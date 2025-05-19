@@ -18,6 +18,7 @@ from tests.test_models.test_syslog_rfc_base import (
     FROM_PRIORITY_TEST_CASES,
     INVALID_PRIORITY_TEST_CASES,
 )
+from tests.test_utils.validation import validate_syslog_model
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.syslog_rfc5424_decoder import (
@@ -109,15 +110,18 @@ class TestSyslogRFC5424Decoder:
         # Decode the message
         result = decoder.decode(raw_syslog)
 
-        # Verify the parsed message
-        assert result.facility == int(expected_facility)
-        assert result.severity == int(expected_severity)
-        assert result.hostname == expected_hostname
-        assert result.app_name == expected_app_name
-        assert result.proc_id == expected_proc_id
-        assert result.msg_id == expected_msg_id
-        assert result.message == f"This is a test message with {test_id}"
-        assert result.structured_data == {"test@32473": {"iut": "3"}}
+        # Use our validation utility to validate the model
+        validate_syslog_model(
+            result,
+            facility=int(expected_facility),
+            severity=int(expected_severity),
+            hostname=expected_hostname,
+            app_name=expected_app_name,
+            proc_id=expected_proc_id,
+            msg_id=expected_msg_id,
+            message=f"This is a test message with {test_id}",
+            structured_data={"test@32473": {"iut": "3"}}
+        )
 
         # Verify timestamp handling
         assert result.timestamp is not None
@@ -165,9 +169,12 @@ class TestSyslogRFC5424Decoder:
         # Decode the message
         result = decoder.decode(raw_syslog)
 
-        # Verify proper handling of invalid priority
-        assert result.facility == int(expected_facility)
-        assert result.severity == int(expected_severity)
+        # Use our validation utility to validate the model
+        validate_syslog_model(
+            result,
+            facility=int(expected_facility),
+            severity=int(expected_severity),
+        )
 
         # The message should contain meaningful content
         assert result.message is not None
