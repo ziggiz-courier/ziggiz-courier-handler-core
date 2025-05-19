@@ -31,68 +31,65 @@ from tests.test_utils.validation import validate_syslog_model
 
 
 @pytest.mark.unit
-def test_decode_rfc5424():
-    # Example RFC5424 message
-    msg = '<34>1 2025-05-12T23:20:50.52Z mymachine app 1234 ID47 [exampleSDID@32473 iut="3" eventSource="Application"] BOMAn application event log entry...'
-    decoder = UnknownSyslogDecoder()
-    result = decoder.decode(msg)
-    assert isinstance(result, SyslogRFC5424Message)
-    
-    # Use the validation utility instead of separate assertions
-    validate_syslog_model(
-        result,
-        facility=4,  # 34 = 4*8 + 2
-        severity=2,
-        hostname="mymachine",
-        app_name="app",
-        proc_id="1234",
-        msg_id="ID47",
-        message="BOMAn application event log entry...",
-        structured_data={"exampleSDID@32473": {"iut": "3", "eventSource": "Application"}}
-    )
+class TestUnknownSyslogDecoder:
+    """Unit tests for UnknownSyslogDecoder."""
 
+    def test_decode_rfc5424(self):
+        # Example RFC5424 message
+        msg = '<34>1 2025-05-12T23:20:50.52Z mymachine app 1234 ID47 [exampleSDID@32473 iut="3" eventSource="Application"] BOMAn application event log entry...'
+        decoder = UnknownSyslogDecoder()
+        result = decoder.decode(msg)
+        assert isinstance(result, SyslogRFC5424Message)
+        
+        # Use the validation utility instead of separate assertions
+        validate_syslog_model(
+            result,
+            facility=4,  # 34 = 4*8 + 2
+            severity=2,
+            hostname="mymachine",
+            app_name="app",
+            proc_id="1234",
+            msg_id="ID47",
+            message="BOMAn application event log entry...",
+            structured_data={"exampleSDID@32473": {"iut": "3", "eventSource": "Application"}}
+        )
 
-@pytest.mark.unit
-def test_decode_rfc3164():
-    # Example RFC3164 message
-    msg = "<13>May 12 23:20:50 mymachine su: " "This is a BSD syslog message."
-    decoder = UnknownSyslogDecoder()
-    result = decoder.decode(msg)
-    assert isinstance(result, SyslogRFC3164Message)
-    
-    # Use the validation utility instead of separate assertions
-    validate_syslog_model(
-        result,
-        facility=1,  # 13 = 1*8 + 5
-        severity=5,
-        hostname="mymachine",
-        app_name="su",
-        message="This is a BSD syslog message."
-    )
+    def test_decode_rfc3164(self):
+        # Example RFC3164 message
+        msg = "<13>May 12 23:20:50 mymachine su: " "This is a BSD syslog message."
+        decoder = UnknownSyslogDecoder()
+        result = decoder.decode(msg)
+        assert isinstance(result, SyslogRFC3164Message)
+        
+        # Use the validation utility instead of separate assertions
+        validate_syslog_model(
+            result,
+            facility=1,  # 13 = 1*8 + 5
+            severity=5,
+            hostname="mymachine",
+            app_name="su",
+            message="This is a BSD syslog message."
+        )
 
+    def test_decode_rfcbase(self):
+        # Example RFCBase message (PRI only)
+        msg = "<13>This is a base syslog message."
+        decoder = UnknownSyslogDecoder()
+        result = decoder.decode(msg)
+        assert isinstance(result, SyslogRFCBaseModel)
+        
+        # Use the validation utility instead of separate assertions
+        validate_syslog_model(
+            result,
+            facility=1,  # 13 = 1*8 + 5
+            severity=5,
+            message="This is a base syslog message."
+        )
 
-@pytest.mark.unit
-def test_decode_rfcbase():
-    # Example RFCBase message (PRI only)
-    msg = "<13>This is a base syslog message."
-    decoder = UnknownSyslogDecoder()
-    result = decoder.decode(msg)
-    assert isinstance(result, SyslogRFCBaseModel)
-    
-    # Use the validation utility instead of separate assertions
-    validate_syslog_model(
-        result,
-        facility=1,  # 13 = 1*8 + 5
-        severity=5,
-        message="This is a base syslog message."
-    )
-
-
-@pytest.mark.unit
-def test_decode_unknown():
-    # Not a syslog message
-    msg = "Completely unknown message format."
-    decoder = UnknownSyslogDecoder()
-    result = decoder.decode(msg)
-    assert isinstance(result, EventEnvelopeBaseModel)
-    assert result.message == msg
+    def test_decode_unknown(self):
+        # Not a syslog message
+        msg = "Completely unknown message format."
+        decoder = UnknownSyslogDecoder()
+        result = decoder.decode(msg)
+        assert isinstance(result, EventEnvelopeBaseModel)
+        assert result.message == msg

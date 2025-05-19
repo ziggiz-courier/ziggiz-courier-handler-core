@@ -19,45 +19,38 @@ from ziggiz_courier_handler_core.decoders.utils.csv_parser import (
 
 
 @pytest.mark.unit
-def test_parse_quoted_csv_message_simple():
-    message = "field1,field2,field3"
-    assert parse_quoted_csv_message(message) == ["field1", "field2", "field3"]
+class TestCSVParser:
+    """Unit tests for parse_quoted_csv_message utility."""
 
+    def test_parse_quoted_csv_message_simple(self):
+        message = "field1,field2,field3"
+        assert parse_quoted_csv_message(message) == ["field1", "field2", "field3"]
 
-@pytest.mark.unit
-def test_parse_quoted_csv_message_quoted():
-    message = 'field1,"field 2, with comma",field3'
-    assert parse_quoted_csv_message(message) == [
-        "field1",
-        "field 2, with comma",
-        "field3",
-    ]
+    def test_parse_quoted_csv_message_quoted(self):
+        message = 'field1,"field 2, with comma",field3'
+        assert parse_quoted_csv_message(message) == [
+            "field1",
+            "field 2, with comma",
+            "field3",
+        ]
 
+    def test_parse_quoted_csv_message_escaped_quote(self):
+        # The csv module expects double quotes to escape quotes inside quoted fields
+        message = 'field1,"field with ""quote"" inside",field3'
+        assert parse_quoted_csv_message(message) == [
+            "field1",
+            'field with "quote" inside',
+            "field3",
+        ]
 
-@pytest.mark.unit
-def test_parse_quoted_csv_message_escaped_quote():
-    # The csv module expects double quotes to escape quotes inside quoted fields
-    message = 'field1,"field with ""quote"" inside",field3'
-    assert parse_quoted_csv_message(message) == [
-        "field1",
-        'field with "quote" inside',
-        "field3",
-    ]
+    def test_parse_quoted_csv_message_empty(self):
+        assert parse_quoted_csv_message("") is None
 
+    def test_parse_quoted_csv_message_invalid(self):
+        # Not a valid CSV, but csv.reader will return a single field
+        assert parse_quoted_csv_message("not_a_csv") == ["not_a_csv"]
 
-@pytest.mark.unit
-def test_parse_quoted_csv_message_empty():
-    assert parse_quoted_csv_message("") is None
-
-
-@pytest.mark.unit
-def test_parse_quoted_csv_message_invalid():
-    # Not a valid CSV, but csv.reader will return a single field
-    assert parse_quoted_csv_message("not_a_csv") == ["not_a_csv"]
-
-
-@pytest.mark.unit
-def test_parse_quoted_csv_message_whitespace():
-    message = '  field1 ,  "field 2" , field3  '
-    # The csv module preserves spaces inside quoted fields
-    assert parse_quoted_csv_message(message) == ["field1 ", "field 2 ", "field3  "]
+    def test_parse_quoted_csv_message_whitespace(self):
+        message = '  field1 ,  "field 2" , field3  '
+        # The csv module preserves spaces inside quoted fields
+        assert parse_quoted_csv_message(message) == ["field1 ", "field 2 ", "field3  "]

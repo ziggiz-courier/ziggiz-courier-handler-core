@@ -34,80 +34,79 @@ from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Messa
 
 @pytest.mark.unit
 @pytest.mark.rfc3164
-@pytest.mark.parametrize(
-    "pri, expected_facility, expected_severity, test_id",
-    FROM_PRIORITY_TEST_CASES,
-    ids=lambda test_id: test_id if isinstance(test_id, str) else str(test_id),
-)
-@pytest.mark.parametrize(
-    "timestamp_str, _ts_formats, _ts_expected_attrs, _ts_id, _ts_reference_time",
-    TIMESTAMP_PARSE_CASES,
-    ids=[tc[3] for tc in TIMESTAMP_PARSE_CASES],
-)
-@pytest.mark.parametrize(
-    "input_hostname, expected_func, normalization_test_id",
-    HOSTNAME_NORMALIZATION_TEST_CASES,
-    ids=[tc[2] for tc in HOSTNAME_NORMALIZATION_TEST_CASES],
-)
-@pytest.mark.parametrize(
-    "message, expected_app_name, expected_proc_id, expected_message",
-    PARSE_HOSTNAME_TAG_TEST_CASES,
-    ids=[
-        "standard_format",
-        "nondigitproc_standard_format",
-        "no_proc_standard_format",
-        "host_colon_format",
-        "message",
-        "info_message",
-    ],
-)
-def test_unknown_decoder_returns_rfc3164_class_matrix(
-    pri,
-    expected_facility,
-    expected_severity,
-    test_id,
-    timestamp_str,
-    _ts_formats,
-    _ts_expected_attrs,
-    _ts_id,
-    _ts_reference_time,
-    input_hostname,
-    expected_func,
-    normalization_test_id,
-    message: str,
-    expected_app_name: str,
-    expected_proc_id: str,
-    expected_message: str,
-):
-    """Test UnknownSyslogDecoder returns SyslogRFC3164Message for valid RFC3164 messages using the full parameter matrix."""
-    decoder = UnknownSyslogDecoder()
-    # Simulate message with hostname prefix if input_hostname is not None
-    if input_hostname is not None:
-        tag_str = f"{input_hostname} {message}"
-    else:
-        tag_str = message
-    raw_syslog = f"<{pri}>{timestamp_str} {tag_str}"
-    result = decoder.decode(raw_syslog)
-    
-    # First assert the correct instance type
-    assert isinstance(result, SyslogRFC3164Message), f"Failed for: {raw_syslog}"
-    
-    # Now use the validation utility for deeper validation
-    expected_hostname = (
-        expected_func(input_hostname) if input_hostname is not None else None
+class TestUnknownSyslogDecoderClassMatrixRFC3164:
+    @pytest.mark.parametrize(
+        "pri, expected_facility, expected_severity, test_id",
+        FROM_PRIORITY_TEST_CASES,
+        ids=lambda test_id: test_id if isinstance(test_id, str) else str(test_id),
     )
-    if expected_hostname is not None:
-        expected_hostname = expected_hostname.lower()
-    
-    validate_syslog_model(
-        result,
-        facility=int(expected_facility),
-        severity=int(expected_severity),
-        hostname=expected_hostname,
-        app_name=expected_app_name,
-        proc_id=expected_proc_id,
-        message=expected_message
+    @pytest.mark.parametrize(
+        "timestamp_str, _ts_formats, _ts_expected_attrs, _ts_id, _ts_reference_time",
+        TIMESTAMP_PARSE_CASES,
+        ids=[tc[3] for tc in TIMESTAMP_PARSE_CASES],
     )
+    @pytest.mark.parametrize(
+        "input_hostname, expected_func, normalization_test_id",
+        HOSTNAME_NORMALIZATION_TEST_CASES,
+        ids=[tc[2] for tc in HOSTNAME_NORMALIZATION_TEST_CASES],
+    )
+    @pytest.mark.parametrize(
+        "message, expected_app_name, expected_proc_id, expected_message",
+        PARSE_HOSTNAME_TAG_TEST_CASES,
+        ids=[
+            "standard_format",
+            "nondigitproc_standard_format",
+            "no_proc_standard_format",
+            "host_colon_format",
+            "message",
+            "info_message",
+        ],
+    )
+    def test_unknown_decoder_returns_rfc3164_class_matrix(
+        self,
+        pri,
+        expected_facility,
+        expected_severity,
+        test_id,
+        timestamp_str,
+        _ts_formats,
+        _ts_expected_attrs,
+        _ts_id,
+        _ts_reference_time,
+        input_hostname,
+        expected_func,
+        normalization_test_id,
+        message: str,
+        expected_app_name: str,
+        expected_proc_id: str,
+        expected_message: str,
+    ):
+        """Test UnknownSyslogDecoder returns SyslogRFC3164Message for valid RFC3164 messages using the full parameter matrix."""
+        decoder = UnknownSyslogDecoder()
+        # Simulate message with hostname prefix if input_hostname is not None
+        if input_hostname is not None:
+            tag_str = f"{input_hostname} {message}"
+        else:
+            tag_str = message
+        raw_syslog = f"<{pri}>{timestamp_str} {tag_str}"
+        result = decoder.decode(raw_syslog)
+        # First assert the correct instance type
+        assert isinstance(result, SyslogRFC3164Message), f"Failed for: {raw_syslog}"
+        # Now use the validation utility for deeper validation
+        expected_hostname = (
+            expected_func(input_hostname) if input_hostname is not None else None
+        )
+        if expected_hostname is not None:
+            expected_hostname = expected_hostname.lower()
+        validate_syslog_model(
+            result,
+            facility=int(expected_facility),
+            severity=int(expected_severity),
+            hostname=expected_hostname,
+            app_name=expected_app_name,
+            proc_id=expected_proc_id,
+            message=expected_message
+        )
 
 
 @pytest.mark.rfc5424

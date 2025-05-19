@@ -17,87 +17,78 @@ import pytest
 from ziggiz_courier_handler_core.decoders.utils.json_parser import parse_json_message
 
 
-@pytest.mark.unit
-def test_parse_json_message_basic():
-    """Test basic JSON message parsing with standard JSON object."""
-    msg = '{"event": "login", "user": "admin", "status": "success"}'
-    result = parse_json_message(msg)
-    assert result["event"] == "login"
-    assert result["user"] == "admin"
-    assert result["status"] == "success"
-
 
 @pytest.mark.unit
-def test_parse_json_message_nested():
-    """Test JSON message parsing with nested structures."""
-    msg = (
-        '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
-    )
-    result = parse_json_message(msg)
-    assert result["user"]["id"] == 123
-    assert result["user"]["name"] == "John"
-    assert "login" in result["actions"]
-    assert "view_dashboard" in result["actions"]
+class TestJSONParser:
+    """Unit tests for the JSON parser utility (parse_json_message)."""
 
+    def test_parse_json_message_basic(self):
+        """Test basic JSON message parsing with standard JSON object."""
+        msg = '{"event": "login", "user": "admin", "status": "success"}'
+        result = parse_json_message(msg)
+        assert result["event"] == "login"
+        assert result["user"] == "admin"
+        assert result["status"] == "success"
 
-@pytest.mark.unit
-def test_parse_json_message_with_whitespace():
-    """Test JSON message parsing with extra whitespace."""
-    msg = '  {  "event"  :  "login"  ,  "user"  :  "admin"  }  '
-    result = parse_json_message(msg)
-    assert result["event"] == "login"
-    assert result["user"] == "admin"
+    def test_parse_json_message_nested(self):
+        """Test JSON message parsing with nested structures."""
+        msg = (
+            '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
+        )
+        result = parse_json_message(msg)
+        assert result["user"]["id"] == 123
+        assert result["user"]["name"] == "John"
+        assert "login" in result["actions"]
+        assert "view_dashboard" in result["actions"]
 
+    def test_parse_json_message_with_whitespace(self):
+        """Test JSON message parsing with extra whitespace."""
+        msg = '  {  "event"  :  "login"  ,  "user"  :  "admin"  }  '
+        result = parse_json_message(msg)
+        assert result["event"] == "login"
+        assert result["user"] == "admin"
 
-@pytest.mark.unit
-def test_parse_json_invalid_format():
-    """Test handling of invalid JSON formats."""
-    # Not a JSON object
-    assert parse_json_message("not json") is None
+    def test_parse_json_invalid_format(self):
+        """Test handling of invalid JSON formats."""
+        # Not a JSON object
+        assert parse_json_message("not json") is None
 
-    # Empty message
-    assert parse_json_message("") is None
+        # Empty message
+        assert parse_json_message("") is None
 
-    # Array instead of object (we're enforcing objects with key-value pairs)
-    assert parse_json_message("[1, 2, 3]") is None
+        # Array instead of object (we're enforcing objects with key-value pairs)
+        assert parse_json_message("[1, 2, 3]") is None
 
-    # Malformed JSON
-    assert parse_json_message('{"key": "value"') is None
+        # Malformed JSON
+        assert parse_json_message('{"key": "value"') is None
 
-    # Not starting with { and ending with }
-    assert parse_json_message('"string value"') is None
+        # Not starting with { and ending with }
+        assert parse_json_message('"string value"') is None
 
+    def test_parse_json_with_escaped_control_chars(self):
+        """Test JSON message parsing with escaped control characters."""
+        # JSON with escaped control characters (\r\n)
+        msg = '{\r\n  "event": "system_check",\r\n  "status": "success",\r\n  "details": {\r\n    "cpu": 0.45,\r\n    "memory": 1024,\r\n    "disk": {\r\n      "total": 500,\r\n      "used": 120\r\n    }\r\n  },\r\n  "timestamp": "2025-05-16T12:34:56.789Z"\r\n}'
 
-@pytest.mark.unit
-def test_parse_json_with_escaped_control_chars():
-    """Test JSON message parsing with escaped control characters."""
-    # JSON with escaped control characters (\r\n)
-    msg = '{\r\n  "event": "system_check",\r\n  "status": "success",\r\n  "details": {\r\n    "cpu": 0.45,\r\n    "memory": 1024,\r\n    "disk": {\r\n      "total": 500,\r\n      "used": 120\r\n    }\r\n  },\r\n  "timestamp": "2025-05-16T12:34:56.789Z"\r\n}'
+        result = parse_json_message(msg)
+        assert result is not None
+        assert result["event"] == "system_check"
+        assert result["status"] == "success"
+        assert "details" in result
+        assert result["details"]["cpu"] == 0.45
+        assert result["details"]["disk"]["total"] == 500
+        assert result["timestamp"] == "2025-05-16T12:34:56.789Z"
 
-    result = parse_json_message(msg)
-    assert result is not None
-    assert result["event"] == "system_check"
-    assert result["status"] == "success"
-    assert "details" in result
-    assert result["details"]["cpu"] == 0.45
-    assert result["details"]["disk"]["total"] == 500
-    assert result["timestamp"] == "2025-05-16T12:34:56.789Z"
+    def test_parse_json_with_escaped_quotes(self):
+        """Test JSON message parsing with escaped quotes in string."""
+        # JSON with escaped quotes - simpler example
+        msg = '{"name": "test_application", "message": "User \\"admin\\" logged in", "level": "info"}'
 
-
-@pytest.mark.unit
-def test_parse_json_with_escaped_quotes():
-    """Test JSON message parsing with escaped quotes in string."""
-    # JSON with escaped quotes - simpler example
-    msg = '{"name": "test_application", "message": "User \\"admin\\" logged in", "level": "info"}'
-
-    result = parse_json_message(msg)
-    assert result is not None
-    assert result["name"] == "test_application"
-    assert result["message"] == 'User "admin" logged in'
-    assert result["level"] == "info"
-
-
-@pytest.mark.unit
+        result = parse_json_message(msg)
+        assert result is not None
+        assert result["name"] == "test_application"
+        assert result["message"] == 'User "admin" logged in'
+        assert result["level"] == "info"
 def test_parse_json_with_complex_escaping():
     """Test JSON message parsing with multiple escaped characters that require special handling."""
     # Complex JSON with various escape combinations
