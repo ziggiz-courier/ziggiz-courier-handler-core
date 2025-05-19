@@ -17,6 +17,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.generic.json.plugin im
     GenericJSONDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -46,9 +47,12 @@ def test_generic_json_basic_case():
     assert key in model.handler_data
 
     handler_info = model.handler_data[key]
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_json"
+    validate_source_producer(
+        model,
+        expected_organization="generic",
+        expected_product="unknown_json",
+        handler_key=key
+    )
     assert handler_info["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
@@ -88,9 +92,12 @@ def test_generic_json_nested_data():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_json"
+    validate_source_producer(
+        model,
+        expected_organization="generic",
+        expected_product="unknown_json",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "unknown"
     # Check event data
     assert model.event_data is not None

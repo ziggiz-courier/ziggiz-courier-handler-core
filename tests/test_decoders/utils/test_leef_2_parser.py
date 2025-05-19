@@ -15,6 +15,7 @@ import pytest
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.leef_2_parser import parse_leef_message
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -24,12 +25,14 @@ def test_parse_leef_2_message_basic():
     result = parse_leef_message(msg)
     assert result is not None
     assert result["leef_version"] == "2.0"
-    assert "SourceProducer" in result
-    sp = result["SourceProducer"]
-    assert hasattr(sp, "organization")
-    assert hasattr(sp, "product")
-    assert sp.organization == "IBM"
-    assert sp.product == "QRadar"
+    
+    # Validate SourceProducer using the utility function
+    validate_source_producer(
+        result,
+        expected_organization="IBM",
+        expected_product="QRadar"
+    )
+    
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["src"] == "10.0.0.1"
@@ -44,12 +47,14 @@ def test_parse_leef_2_message_with_category():
     result = parse_leef_message(msg)
     assert result is not None
     assert result["leef_version"] == "2.0"
-    assert "SourceProducer" in result
-    sp = result["SourceProducer"]
-    assert hasattr(sp, "organization")
-    assert hasattr(sp, "product")
-    assert sp.organization == "IBM"
-    assert sp.product == "QRadar"
+    
+    # Validate SourceProducer using the utility function
+    validate_source_producer(
+        result,
+        expected_organization="IBM",
+        expected_product="QRadar"
+    )
+    
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["event_category"] == "SecurityAlert"
@@ -65,12 +70,14 @@ def test_parse_leef_2_message_with_space_delimiter():
     result = parse_leef_message(msg)
     assert result is not None
     assert result["leef_version"] == "2.0"
-    assert "SourceProducer" in result
-    sp = result["SourceProducer"]
-    assert hasattr(sp, "organization")
-    assert hasattr(sp, "product")
-    assert sp.organization == "IBM"
-    assert sp.product == "QRadar"
+    
+    # Validate SourceProducer using the utility function
+    validate_source_producer(
+        result,
+        expected_organization="IBM",
+        expected_product="QRadar"
+    )
+    
     assert result["version"] == "2.0"
     assert result["event_id"] == "12345"
     assert result["src"] == "10.0.0.1"

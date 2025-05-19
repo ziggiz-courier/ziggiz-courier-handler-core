@@ -26,6 +26,7 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -52,9 +53,12 @@ def test_kv_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_kv"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_kv",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -90,9 +94,12 @@ def test_kv_with_rfc5424():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_kv"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_kv",
+        handler_key=key
+    )
     assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"] == "admin"
@@ -124,9 +131,12 @@ def test_direct_kv_message():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_kv"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_kv",
+        handler_key=key
+    )
     assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "firewall"

@@ -20,6 +20,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.generic.kv.plugin impo
     GenericKVDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -47,9 +48,12 @@ def test_generic_kv_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_kv"
+    validate_source_producer(
+        model,
+        expected_organization="generic",
+        expected_product="unknown_kv",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data

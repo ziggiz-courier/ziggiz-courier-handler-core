@@ -24,6 +24,7 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -53,9 +54,12 @@ def test_json_with_rfc3164():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_json"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_json",
+        handler_key=plugin_key
+    )
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "event" in result.event_data
@@ -88,9 +92,12 @@ def test_json_with_rfc5424():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_json"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_json",
+        handler_key=plugin_key
+    )
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "user" in result.event_data
@@ -121,9 +128,12 @@ def test_direct_json_message():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_json"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_json",
+        handler_key=plugin_key
+    )
     assert handler_entry["msgclass"] == "unknown"
     assert result.event_data is not None
     assert result.event_data["event"] == "system_alert"

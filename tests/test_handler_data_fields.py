@@ -17,6 +17,7 @@ import pytest
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.base import MessageDecoderPluginBase
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from tests.test_utils.validation import validate_source_producer
 
 
 # Test implementation of MessageDecoderPluginBase to make it instantiable
@@ -74,7 +75,9 @@ class TestHandlerDataFields:
         print(f"Handler data: {model.handler_data}")
         
         # Verify SourceProducer
-        assert "SourceProducer" in model.handler_data
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "test_org"
-        assert sp.product == "test_product"
+        validate_source_producer(
+            model,
+            expected_organization="test_org",
+            expected_product="test_product",
+            handler_key=key
+        )

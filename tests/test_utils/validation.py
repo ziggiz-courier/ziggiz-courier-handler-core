@@ -7,7 +7,7 @@
 # # Business Source License 1.1. You may not use this file except in
 # # compliance with the License. You may obtain a copy of the License at:
 # # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
-"""Validation utilities for testing Syslog models."""
+"""Validation utilities for testing Syslog models and common components."""
 
 # Standard library imports
 from typing import Any, Dict, Optional, Type, TypeVar, Union, cast
@@ -24,6 +24,7 @@ from ziggiz_courier_handler_core.models.syslog_rfc_base import (
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
 # Type variable for the syslog model types
@@ -153,3 +154,66 @@ def validate_syslog_model(
             assert (
                 model_instance.structured_data == structured_data
             ), f"Expected structured_data {structured_data}, got {model_instance.structured_data}"
+
+
+def validate_source_producer(
+    result_or_handler_data: Any,
+    *,
+    expected_organization: str,
+    expected_product: str,
+    expected_module: Optional[str] = None,
+    handler_key: Optional[str] = None
+) -> None:
+    """Validate a SourceProducer instance against expected values.
+
+    This function validates that the SourceProducer in a result or handler data has the expected values.
+    It can validate a SourceProducer directly or one stored in a model's handler_data dictionary.
+
+    Args:
+        result_or_handler_data: Either a model with handler_data containing a SourceProducer, 
+                                a dictionary containing a SourceProducer, or a SourceProducer instance.
+        expected_organization: Expected organization value.
+        expected_product: Expected product value.
+        expected_module: Expected module value (if any).
+        handler_key: If provided, the key in handler_data where to find handler-specific data.
+
+    Raises:
+        AssertionError: If the SourceProducer doesn't match the expected values or can't be found.
+    """
+    # Get the SourceProducer instance from the input
+    sp = None
+    
+    # Case 1: Direct SourceProducer instance
+    if isinstance(result_or_handler_data, SourceProducer):
+        sp = result_or_handler_data
+    
+    # Case 2: Model with handler_data attribute
+    elif hasattr(result_or_handler_data, "handler_data") and result_or_handler_data.handler_data is not None:
+        # Verify handler_data contains SourceProducer
+        assert "SourceProducer" in result_or_handler_data.handler_data, "SourceProducer not found in handler_data"
+        sp = result_or_handler_data.handler_data["SourceProducer"]
+        
+        # If handler_key is provided, verify it exists in handler_data
+        if handler_key is not None:
+            assert handler_key in result_or_handler_data.handler_data, f"Handler key '{handler_key}' not found in handler_data"
+    
+    # Case 3: Dictionary potentially containing SourceProducer
+    elif isinstance(result_or_handler_data, dict):
+        # Verify dictionary contains SourceProducer
+        assert "SourceProducer" in result_or_handler_data, "SourceProducer not found in dictionary"
+        sp = result_or_handler_data["SourceProducer"]
+        
+        # If handler_key is provided, verify it exists in the dictionary
+        if handler_key is not None:
+            assert handler_key in result_or_handler_data, f"Handler key '{handler_key}' not found in dictionary"
+    
+    # None of the above
+    else:
+        assert False, f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
+    
+    # Validate SourceProducer fields
+    assert sp.organization == expected_organization, f"Expected organization '{expected_organization}', got '{sp.organization}'"
+    assert sp.product == expected_product, f"Expected product '{expected_product}', got '{sp.product}'"
+    
+    if expected_module is not None:
+        assert sp.module == expected_module, f"Expected module '{expected_module}', got '{sp.module}'"

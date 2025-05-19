@@ -24,6 +24,7 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -49,9 +50,12 @@ def test_cef_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "vendor"
-    assert sp.product == "product"
+    validate_source_producer(
+        result,
+        expected_organization="vendor",
+        expected_product="product",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "security alert"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -83,9 +87,12 @@ def test_cef_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "security"
-    assert sp.product == "product"
+    validate_source_producer(
+        result,
+        expected_organization="security",
+        expected_product="product",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "intrusion detected"
     assert result.event_data is not None
     assert "src" in result.event_data
@@ -115,9 +122,12 @@ def test_direct_cef_message():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "vendor"
-    assert sp.product == "product"
+    validate_source_producer(
+        result,
+        expected_organization="vendor",
+        expected_product="product",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "system alert"
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"

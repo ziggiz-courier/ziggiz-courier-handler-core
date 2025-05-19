@@ -25,6 +25,8 @@ from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plu
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -34,7 +36,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_traffic_log_decoding(self):
         """Test traffic log type decoding."""
         # Create timestamp
-        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -50,7 +51,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f'app="IPv6.ICMP" appcat="Network.Service" apprisk=elevated applist="sniffer-profile" appact=detected '
             f"utmaction=allow countapp=1"
         )
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,  # LOG_ALERT
@@ -72,10 +72,12 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        assert "SourceProducer" in model.handler_data
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "fortinet"
-        assert sp.product == "fortigate"
+        validate_source_producer(
+            model,
+            expected_organization="fortinet",
+            expected_product="fortigate",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "traffic_sniffer"
 
         # Verify specific fields
@@ -89,7 +91,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_utm_log_decoding(self):
         """Test UTM log type decoding."""
         # Create timestamp
-        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -103,7 +104,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f'sessionid=12345 proto=6 action=blocked service=HTTPS hostname="example.com" profile="default-profile" '
             f'status=blocked urlcat="Information Technology" reason=blocked category=52 catdesc="Information Technology"'
         )
-        from datetime import datetime, timezone
         model = SyslogRFC5424Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,
@@ -125,10 +125,12 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        assert "SourceProducer" in model.handler_data
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "fortinet"
-        assert sp.product == "fortigate"
+        validate_source_producer(
+            model,
+            expected_organization="fortinet",
+            expected_product="fortigate",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "utm_webfilter"
 
         # Verify specific fields
@@ -142,7 +144,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
     def test_event_log_decoding(self):
         """Test event log type decoding."""
         # Create timestamp
-        from datetime import datetime, timezone
         dt = datetime.now().astimezone()
         date = dt.strftime("%Y-%m-%d")
         time = dt.strftime("%H:%M:%S")
@@ -154,7 +155,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
             f"eventtime={eventtime_epoch} logid=0100032003 type=event subtype=system level=information vd=root "
             f'msg="Admin admin logged in from 10.1.1.100"'
         )
-        from datetime import datetime, timezone
         model = SyslogRFCBaseModel(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=14,
@@ -175,10 +175,12 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        assert "SourceProducer" in model.handler_data
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "fortinet"
-        assert sp.product == "fortigate"
+        validate_source_producer(
+            model,
+            expected_organization="fortinet",
+            expected_product="fortigate",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "event_system"
 
         # Verify specific fields

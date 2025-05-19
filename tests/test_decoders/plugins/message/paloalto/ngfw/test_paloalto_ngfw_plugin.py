@@ -13,6 +13,7 @@ These tests verify the plugin's ability to parse and interpret Palo Alto NGFW lo
 in CSV format directly, independent of the syslog decoder chain.
 """
 # Standard library imports
+from datetime import datetime, timezone
 from typing import Dict, Optional
 
 # Third-party imports
@@ -24,6 +25,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.paloalto.ngfw.plugin i
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -33,7 +35,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_traffic_log_decoding(self):
         """Test TRAFFIC log type decoding."""
         # Create a model with a TRAFFIC message
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -53,9 +54,12 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "paloalto"
-        assert sp.product == "ngfw"
+        validate_source_producer(
+            model,
+            expected_organization="paloalto",
+            expected_product="ngfw",
+            handler_key=key
+        )
         assert handler["msgclass"] == "traffic"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "TRAFFIC"
@@ -63,7 +67,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_threat_log_decoding(self):
         """Test THREAT log type decoding."""
         # Create a model with a THREAT message
-        from datetime import datetime, timezone
         model = SyslogRFC5424Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -80,11 +83,15 @@ class TestPaloAltoNGFWCSVDecoder:
         # Check that the message was decoded correctly
         assert result is True
         assert model.handler_data is not None
-        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        key = "PaloAltoNGFWCSVDecoder"
+        handler = model.handler_data.get(key)
         assert handler is not None
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "paloalto"
-        assert sp.product == "ngfw"
+        validate_source_producer(
+            model,
+            expected_organization="paloalto",
+            expected_product="ngfw",
+            handler_key=key
+        )
         assert handler["msgclass"] == "threat"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "THREAT"
@@ -93,7 +100,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_system_log_decoding(self):
         """Test SYSTEM log type decoding."""
         # Create a model with a SYSTEM message
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -110,11 +116,15 @@ class TestPaloAltoNGFWCSVDecoder:
         # Check that the message was decoded correctly
         assert result is True
         assert model.handler_data is not None
-        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        key = "PaloAltoNGFWCSVDecoder"
+        handler = model.handler_data.get(key)
         assert handler is not None
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "paloalto"
-        assert sp.product == "ngfw"
+        validate_source_producer(
+            model,
+            expected_organization="paloalto",
+            expected_product="ngfw",
+            handler_key=key
+        )
         assert handler["msgclass"] == "system"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "SYSTEM"
@@ -122,7 +132,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_config_log_decoding(self):
         """Test CONFIG log type decoding."""
         # Create a model with a CONFIG message
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -139,11 +148,15 @@ class TestPaloAltoNGFWCSVDecoder:
         # Check that the message was decoded correctly
         assert result is True
         assert model.handler_data is not None
-        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        key = "PaloAltoNGFWCSVDecoder"
+        handler = model.handler_data.get(key)
         assert handler is not None
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "paloalto"
-        assert sp.product == "ngfw"
+        validate_source_producer(
+            model,
+            expected_organization="paloalto",
+            expected_product="ngfw",
+            handler_key=key
+        )
         assert handler["msgclass"] == "config"
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "CONFIG"
@@ -159,7 +172,6 @@ class TestPaloAltoNGFWCSVDecoder:
         }
 
         # Create a model with a message that would match the cache
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -176,16 +188,19 @@ class TestPaloAltoNGFWCSVDecoder:
         # Verify that it was decoded successfully using the cache
         assert result is True
         assert model.handler_data is not None
-        handler = model.handler_data.get("PaloAltoNGFWCSVDecoder")
+        key = "PaloAltoNGFWCSVDecoder"
+        handler = model.handler_data.get(key)
         assert handler is not None
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "paloalto"
-        assert sp.product == "ngfw"
+        validate_source_producer(
+            model,
+            expected_organization="paloalto",
+            expected_product="ngfw",
+            handler_key=key
+        )
 
     def test_non_matching_message(self):
         """Test with a message that doesn't match the PaloAlto NGFW CSV format."""
         # Create a model with a non-matching message
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -205,7 +220,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_no_message_attribute(self):
         """Test PaloAltoNGFWCSVDecoder with a model without a message attribute."""
         # Create a model without a message attribute
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0
@@ -225,7 +239,6 @@ class TestPaloAltoNGFWCSVDecoder:
     def test_incorrect_structure(self):
         """Test with a message that looks like PaloAlto but has incorrect structure."""
         # Create a model with a message that starts with a number but is not a valid PA log
-        from datetime import datetime, timezone
         model = SyslogRFC3164Message(
             timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
             facility=16,  # LOCAL0

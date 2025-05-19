@@ -20,6 +20,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef2.plugin i
     GenericLEEF2DecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -51,9 +52,12 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_info["msgclass"] == "12345"
 
     def test_leef_2_message_with_category(self):
@@ -82,9 +86,12 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_info["msgclass"] == "securityalert_12345"
 
     def test_non_leef_2_message(self):
@@ -160,7 +167,10 @@ class TestGenericLEEF2DecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_info = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "mockvendor"  # From cache
-        assert sp.product == "mockproduct"  # From cache
+        validate_source_producer(
+            model,
+            expected_organization="mockvendor",  # From cache
+            expected_product="mockproduct",  # From cache
+            handler_key=key
+        )
         assert handler_info["msgclass"] == "mockeventid"  # From cache

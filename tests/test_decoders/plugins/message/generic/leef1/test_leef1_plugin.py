@@ -20,6 +20,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef1.plugin i
     GenericLEEFDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -51,9 +52,12 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_space_delimiter(self):
@@ -81,9 +85,12 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_pipes_in_content(self):
@@ -110,9 +117,12 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "12345"
 
     def test_leef_message_with_escapes(self):
@@ -139,9 +149,12 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "ibm"
-        assert sp.product == "qradar"
+        validate_source_producer(
+            model,
+            expected_organization="ibm",
+            expected_product="qradar",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "12345"
 
     def test_non_leef_message(self):
@@ -220,7 +233,10 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        sp = model.handler_data["SourceProducer"]
-        assert sp.organization == "mockvendor"
-        assert sp.product == "mockproduct"
+        validate_source_producer(
+            model,
+            expected_organization="mockvendor",
+            expected_product="mockproduct",
+            handler_key=key
+        )
         assert handler_entry["msgclass"] == "mockeventid"

@@ -11,12 +11,14 @@ Unit tests for GenericCEFDecoderPlugin.
 """
 # Third-party imports
 import pytest
+from datetime import datetime, timezone
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.cef.plugin import (
     GenericCEFDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -45,9 +47,12 @@ def test_generic_cef_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "security"
-    assert sp.product == "threatmanager"
+    validate_source_producer(
+        model,
+        expected_organization="security",
+        expected_product="threatmanager",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "worm successfully stopped"
 
     # Verify specific fields in the parsed data
@@ -84,10 +89,12 @@ def test_generic_cef_with_custom_fields():
     key = "GenericCEFDecoderPlugin"
     assert model.handler_data is not None
     assert key in model.handler_data
-    # handler_entry = model.handler_data[key]
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "vendor"
-    assert sp.product == "product"
+    validate_source_producer(
+        model,
+        expected_organization="vendor",
+        expected_product="product",
+        handler_key=key
+    )
     assert model.event_data is not None
     assert "customField" in model.event_data
     assert model.event_data["customField"] == "customValue"

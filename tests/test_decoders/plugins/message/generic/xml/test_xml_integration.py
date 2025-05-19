@@ -23,6 +23,7 @@ from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.integration
@@ -50,9 +51,12 @@ def test_xml_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert handler_info["msgclass"] == "unknown"
     assert result.event_data is not None
     assert "event" in result.event_data
@@ -86,9 +90,12 @@ def test_xml_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert result.event_data is not None
     assert "user" in result.event_data
     assert result.event_data["user"]["@id"] == "123"
@@ -128,11 +135,15 @@ def test_xml_with_dtd_integration():
     # Verify the result after XML plugin is applied
     assert success is True
     assert result.handler_data is not None
-    handler = result.handler_data.get("GenericXMLDecoderPlugin")
+    key = "GenericXMLDecoderPlugin"
+    handler = result.handler_data.get(key)
     assert handler is not None
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert handler["msgclass"] == "security_alert"
     assert "security_alert" in result.event_data
     assert result.event_data["security_alert"]["@severity"] == "high"
@@ -188,11 +199,15 @@ def test_deep_xml_structure():
     # Verify the result after XML plugin is applied
     assert success is True
     assert result.handler_data is not None
-    handler = result.handler_data.get("GenericXMLDecoderPlugin")
+    key = "GenericXMLDecoderPlugin"
+    handler = result.handler_data.get(key)
     assert handler is not None
-    sp = result.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        result,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert "system" in result.event_data
     assert "network" in result.event_data["system"]
     assert "interface" in result.event_data["system"]["network"]

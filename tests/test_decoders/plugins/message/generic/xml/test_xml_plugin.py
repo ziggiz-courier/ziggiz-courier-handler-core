@@ -11,12 +11,14 @@ Unit tests for GenericXMLDecoderPlugin.
 """
 # Third-party imports
 import pytest
+from datetime import datetime
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
     GenericXMLDecoderPlugin,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+from tests.test_utils.validation import validate_source_producer
 
 
 @pytest.mark.unit
@@ -24,7 +26,6 @@ def test_generic_xml_basic_case():
     """Test GenericXMLDecoderPlugin with basic XML message format."""
     # Create a model with a test XML message
     msg = "<event><type>login</type><user>admin</user><status>success</status></event>"
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,  # LOCAL0
@@ -44,11 +45,12 @@ def test_generic_xml_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    # Validate SourceProducer entry
-    assert "SourceProducer" in model.handler_data
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        model,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "unknown"
 
     # Verify specific fields in the parsed data
@@ -65,7 +67,6 @@ def test_generic_xml_with_attributes():
     """Test GenericXMLDecoderPlugin with XML containing attributes."""
     # Create a model with a test XML message with attributes
     msg = '<event id="123"><user role="admin">John Doe</user><action type="login">User Login</action></event>'
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
@@ -103,7 +104,6 @@ def test_generic_xml_with_dtd():
     <severity>high</severity>
     <description>Unauthorized access attempt</description>
 </security_event>"""
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
@@ -123,11 +123,12 @@ def test_generic_xml_with_dtd():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    # Validate SourceProducer entry
-    assert "SourceProducer" in model.handler_data
-    sp = model.handler_data["SourceProducer"]
-    assert sp.organization == "generic"
-    assert sp.product == "unknown_xml"
+    validate_source_producer(
+        model,
+        expected_organization="generic",
+        expected_product="unknown_xml",
+        handler_key=key
+    )
     assert handler_entry["msgclass"] == "security_event"
 
     # Verify specific fields in the parsed data
@@ -143,7 +144,6 @@ def test_generic_xml_with_escaped_entities():
     """Test GenericXMLDecoderPlugin with XML containing escaped entities."""
     # Create a model with a test XML message with escaped entities
     msg = "<event><description>User &lt;admin&gt; logged in with privileges &amp; access rights</description></event>"
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
@@ -171,7 +171,6 @@ def test_generic_xml_with_incorrect_escaping():
     """Test GenericXMLDecoderPlugin with XML containing incorrectly escaped entities."""
     # Create a model with a test XML message with improperly escaped entities
     msg = "<event><description>User login with email user@example.com & password</description></event>"
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
@@ -199,7 +198,6 @@ def test_generic_xml_negative_case():
     """Test GenericXMLDecoderPlugin with non-matching message format."""
     # Create a model with a message that should not match XML format
     msg = "This is not an XML formatted message"
-    from datetime import datetime
     model = SyslogRFCBaseModel(
         timestamp=datetime.fromisoformat("2025-05-16T12:34:56.000+00:00"),
         facility=16,
