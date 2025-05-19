@@ -20,8 +20,8 @@ from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Messa
 from tests.test_utils.validation import validate_source_producer
 
 
-# Test implementation of MessageDecoderPluginBase to make it instantiable
-class TestMessageDecoderPlugin(MessageDecoderPluginBase):
+# Implementation of MessageDecoderPluginBase for testing purposes
+class MockMessageDecoderPlugin(MessageDecoderPluginBase):
     """Test implementation of MessageDecoderPluginBase."""
     
     def decode(self, model: Any) -> bool:
@@ -36,7 +36,7 @@ class TestHandlerDataFields:
     def test_handler_data_structure(self):
         """Test to verify the structure of handler_data after apply_field_mapping."""
         # Create a concrete plugin instance
-        plugin = TestMessageDecoderPlugin()
+        plugin = MockMessageDecoderPlugin()
         
         # Create a model
         model = SyslogRFC3164Message(
@@ -59,8 +59,8 @@ class TestHandlerDataFields:
         # Check the structure of handler_data
         assert model.handler_data is not None
         
-        # Tests..TestMessageDecoderPlugin because it's a third-party plugin
-        key = "tests..TestMessageDecoderPlugin"
+        # Tests..MockMessageDecoderPlugin because it's a third-party plugin
+        key = "tests..MockMessageDecoderPlugin"
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         
