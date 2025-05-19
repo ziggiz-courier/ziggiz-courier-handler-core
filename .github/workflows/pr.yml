@@ -45,7 +45,7 @@ jobs:
           restore-keys: |
             poetry-${{ runner.os }}-${{ matrix.python-implementation }}-${{ steps.python_version.outputs.version }}-
       - name: Install dependencies
-        run: poetry install
+        run: poetry install  --with dev
       - name: Run black
         run: poetry run black --check ziggiz_courier_handler_core
       - name: Run flake8
