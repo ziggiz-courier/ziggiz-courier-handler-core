@@ -34,11 +34,10 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
 
     # Regex for parsing standard syslog format (after PRI extraction)
     # This pattern starts after the PRI field has been extracted
-    # TODO: the version field can be refactored to be starts with "1 "
     MESSAGE_PATTERN = re.compile(
-        r"(?P<version>\d+) (?P<timestamp>\S+) "
+        r"^(?P<version>1) (?P<timestamp>\S+) "
         r"(?P<hostname>\S+) (?P<app_name>\S+) (?P<proc_id>\S+) "
-        r"(?P<msg_id>\S+) (?P<structured_data>(?:\[.*?\])+|-) (?P<message>.*)"
+        r"(?P<msg_id>\S+) (?P<structured_data>(?:\[.+?\])+|-) (?P<message>.*)"
     )
 
     def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
