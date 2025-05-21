@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.1.1 (2025-05-21)
+
+### Bug Fixes
+
+- **RFC5424**: Version must be 1
+  ([`a1a5c78`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/a1a5c784cbb4d57cc0e9e88e274d2ec4aa50a4e1))
+
+
 ## v0.1.0 (2025-05-19)
 
 ### Chores
