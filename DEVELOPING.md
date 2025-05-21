@@ -41,6 +41,34 @@
 - Integration tests: mark with `@pytest.mark.integration`.
 - Use `@pytest.mark.rfc3164` and `@pytest.mark.rfc5424` for format-specific tests.
 - Place tests in `tests/` following the component structure.
+- We use tox for matrix testing across multiple Python versions (3.8-3.13).
+
+### Running Tests with tox
+
+To run tests across all supported Python versions:
+```bash
+tox
+```
+
+To run tests for a specific Python version:
+```bash
+tox -e py39  # For Python 3.9
+```
+
+To run only linting checks:
+```bash
+tox -e lint
+```
+
+To run only type checking:
+```bash
+tox -e mypy
+```
+
+To format code:
+```bash
+tox -e format
+```
 
 ## Documentation
 

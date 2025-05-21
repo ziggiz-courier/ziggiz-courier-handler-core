@@ -29,6 +29,22 @@ The project is organized into Decoders (parsing raw logs), Models (structured re
 - Follows PEP 8, uses type hints, and enforces code quality with `black`, `flake8`, `isort`, and `mypy`.
 - Logging uses the `logging` module with structured (JSON) output and context via the `extra` argument.
 - Regex patterns use raw strings, named groups, and are compiled for performance.
+- Matrix testing with tox across multiple Python versions (3.8, 3.9, 3.10, 3.11, 3.12, 3.13).
+
+## Python Compatibility
+
+The library supports the following Python versions:
+
+| Python Version | Support Status |
+|----------------|----------------|
+| 3.8            | Supported      |
+| 3.9            | Supported      |
+| 3.10           | Supported      |
+| 3.11           | Supported      |
+| 3.12           | Supported      |
+| 3.13           | Supported      |
+
+See `TOX_GUIDE.md` for details on setting up a testing environment for all supported versions.
 - Exception handling uses custom exceptions, context managers, and detailed logging.
 - Testing uses `pytest` with markers for unit, integration, and format-specific tests.
 - All public classes and methods are documented with docstrings.
