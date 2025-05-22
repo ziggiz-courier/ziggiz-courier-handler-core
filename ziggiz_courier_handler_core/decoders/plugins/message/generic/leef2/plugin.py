@@ -107,13 +107,17 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
             else:
                 return False
 
-            msgclass = parsed_data.get("event_id", "unknown").lower()
+            event_id = parsed_data.get("event_id", "unknown").lower()
+            msgclass = event_id
 
             # Add category if available (LEEF 2.0 specific)
             if "event_category" in parsed_data:
-                category = parsed_data.get("event_category", "").lower()
-                if category:
-                    msgclass = f"{category}_{msgclass}"
+                category = parsed_data.get("event_category", "")
+                # Only prepend category if it is present and not the default 'Alert' (case-insensitive)
+                if category and category.lower() != "alert":
+                    msgclass = f"{category.lower()}_{event_id}"
+                else:
+                    msgclass = event_id
 
             self.apply_field_mapping(
                 model=model,

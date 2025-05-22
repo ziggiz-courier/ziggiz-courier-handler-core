@@ -31,20 +31,25 @@ class TestGenericLEEF2DecoderPlugin:
 
     def test_basic_leef_2_message(self):
         """Test basic LEEF 2.0 message decoding."""
-        # Create a model with a LEEF 2.0 message
+        delim = "\t"
+        message = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+            + delim
+            + "spt=1232"
+        )
         model = SyslogRFC3164Message(
             facility=1,
             severity=1,
-            message="LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232",
+            message=message,
         )
 
-        # Create the decoder plugin
         decoder = GenericLEEF2DecoderPlugin(parsing_cache={})
-
-        # Decode the message
         result = decoder.decode(model)
-
-        # Check that the message was decoded correctly
         assert result is True
         assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"
@@ -64,20 +69,25 @@ class TestGenericLEEF2DecoderPlugin:
 
     def test_leef_2_message_with_category(self):
         """Test LEEF 2.0 message with category field decoding."""
-        # Create a model with a LEEF 2.0 message that includes a category
+        delim = "\t"
+        message = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+            + delim
+            + "spt=1232"
+        )
         model = SyslogRFC3164Message(
             facility=1,
             severity=1,
-            message="LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|src=10.0.0.1\tdst=2.1.2.2\tspt=1232",
+            message=message,
         )
 
-        # Create the decoder plugin
         decoder = GenericLEEF2DecoderPlugin(parsing_cache={})
-
-        # Decode the message
         result = decoder.decode(model)
-
-        # Check that the message was decoded correctly with category incorporated into msgclass
         assert result is True
         assert model.event_data is not None
         assert model.event_data.get("src") == "10.0.0.1"

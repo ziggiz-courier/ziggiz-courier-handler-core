@@ -18,7 +18,6 @@ LEEF 2.0 allows for more format flexibility and encoding options than LEEF 1.0.
 
 # Standard library imports
 import logging
-import re
 
 from typing import Any, Dict, Optional, Union, cast
 
@@ -38,7 +37,7 @@ class LEEF2Parser(BaseMessageParser):
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Union[str, SourceProducer, Any]]]:
+    def parse(message: str) -> Optional[Dict[str, Any]]:
         """
         High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
         Handles LEEF header and extension fields with proper escaping rules.
@@ -60,65 +59,42 @@ class LEEF2Parser(BaseMessageParser):
             return None
 
         try:
-            # Handle all other cases
-            # First, split by pipe and handle basic header
-            parts = message.split("|", 5)  # Split for main header fields
 
-            if len(parts) < 5:
-                return None  # Not enough fields
+            # Strict LEEF 2.0: must have 8 fields (LEEF:2.0|Vendor|Product|Version|EventID|Category|Delim|Extension)
+            parts = message.split("|", 7)
+            if len(parts) != 8:
+                return None  # Not a valid LEEF 2.0 message
 
             result = {
                 "leef_version": parts[0][5:],  # Skip "LEEF:"
+                "vendor": parts[1],
+                "product": parts[2],
                 "version": parts[3],
                 "event_id": parts[4],
+                "event_category": parts[5],
             }
-            # Store vendor and product in result dict
-            result["vendor"] = parts[1]
-            result["product"] = parts[2]
-
             # Add SourceProducer instance
             source_producer = SourceProducer(organization=parts[1], product=parts[2])
             result["source_producer"] = source_producer
+            result["SourceProducer"] = source_producer
 
-            # The rest is either event_category + extension or just extension
-            if len(parts) >= 6:
-                rest = parts[5]
+            delim = parts[6]
+            extension = parts[7]
+            if not extension:
+                return None  # Extension cannot be empty
 
-                # Check if it starts with a key=value pattern (indicating extension with no category)
-                if re.match(r"^[^=]+=", rest):
-                    # No category, just extension
-                    extension = rest
-                else:
-                    # There might be a category - find the divider between category and extension
-                    match = re.search(r"\|([^=]+=)", rest)
-                    if match:
-                        category_end = match.start()
-                        result["event_cat"] = rest[:category_end]
-                        extension = rest[category_end + 1 :]  # Skip the pipe
-                    else:
-                        # No extension found, assume everything is either category or extension
-                        if "=" in rest:
-                            extension = rest  # Treat as extension
-                        else:
-                            result["event_cat"] = rest
-                            extension = ""
+            # Split extension using the delimiter
+            pairs = extension.split(delim)
+            for pair in pairs:
+                if not pair or "=" not in pair:
+                    continue
+                key, value = pair.split("=", 1)
+                value = LEEF2Parser._process_escapes(value)
+                result[key] = value
 
-                # Process extension part
-                if extension:
-                    # Handle tab-delimited key-value pairs
-                    if "\t" in extension:
-                        pairs = extension.split("\t")
-                    else:
-                        pairs = extension.split(" ")
-
-                    for pair in pairs:
-                        if not pair or "=" not in pair:
-                            continue
-
-                        key, value = pair.split("=", 1)
-                        # Process escapes
-                        value = LEEF2Parser._process_escapes(value)
-                        result[key] = value
+            # Remove legacy event_cat if present (for test compatibility)
+            if "event_cat" in result:
+                result["event_category"] = result.pop("event_cat")
 
             # Process custom labels
             labels = {}

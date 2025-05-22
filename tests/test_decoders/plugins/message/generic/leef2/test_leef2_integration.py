@@ -33,7 +33,11 @@ from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseMode
 def test_leef2_with_rfc3164():
     """Test LEEF 2.0 decoder with an RFC3164 message."""
     # Example RFC3164 message with LEEF 2.0 payload
-    msg = "<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
+    delim = "\t"
+    msg = (
+        f"<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|Alert|{delim}|"
+        f"src=10.0.0.1{delim}dst=2.1.2.2{delim}spt=1232"
+    )
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 
@@ -64,7 +68,11 @@ def test_leef2_with_rfc3164():
 def test_leef2_with_rfc5424():
     """Test LEEF 2.0 decoder with an RFC5424 message."""
     # Example RFC5424 message with LEEF 2.0 payload
-    msg = "<34>1 2025-05-12T23:20:50.52Z mymachine app 1234 ID47 - LEEF:2.0|IBM|QRadar|2.0|12345|src=192.168.1.1\tdst=10.0.0.1\tact=blocked"
+    delim = "\t"
+    msg = (
+        f"<34>1 2025-05-12T23:20:50.52Z mymachine app 1234 ID47 - LEEF:2.0|IBM|QRadar|2.0|12345|Alert|{delim}|"
+        f"src=192.168.1.1{delim}dst=10.0.0.1{delim}act=blocked"
+    )
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 
@@ -99,7 +107,11 @@ def test_leef2_with_rfc5424():
 def test_direct_leef2_message():
     """Test with a raw LEEF 2.0 message (direct processing)."""
     # Direct LEEF 2.0 message in a basic syslog format
-    msg = "<13>LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\trt=May 12 2025 10:30:00"
+    delim = "\t"
+    msg = (
+        f"<13>LEEF:2.0|IBM|QRadar|2.0|12345|Alert|{delim}|"
+        f"src=10.0.0.1{delim}dst=2.1.2.2{delim}rt=May 12 2025 10:30:00"
+    )
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 
@@ -131,7 +143,11 @@ def test_direct_leef2_message():
 def test_leef2_with_category():
     """Test LEEF 2.0 decoder with event category field."""
     # Example with event category
-    msg = "<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
+    delim = "\t"
+    msg = (
+        f"<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|{delim}|"
+        f"src=10.0.0.1{delim}dst=2.1.2.2{delim}spt=1232"
+    )
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 
@@ -165,7 +181,11 @@ def test_leef2_with_category():
 def test_leef2_with_custom_labels():
     """Test LEEF 2.0 decoder with custom field labels."""
     # Example with custom field labels (a LEEF 2.0 feature)
-    msg = "<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|sourceAddress=10.0.0.1\tsourceAddressLabel=SourceIP\tdestAddress=2.1.2.2\tdestAddressLabel=DestIP"
+    delim = "\t"
+    msg = (
+        f"<13>May 12 23:20:50 myhost LEEF:2.0|IBM|QRadar|2.0|12345|Alert|{delim}|"
+        f"sourceAddress=10.0.0.1{delim}sourceAddressLabel=SourceIP{delim}destAddress=2.1.2.2{delim}destAddressLabel=DestIP"
+    )
     decoder = UnknownSyslogDecoder()
     result = decoder.decode(msg)
 

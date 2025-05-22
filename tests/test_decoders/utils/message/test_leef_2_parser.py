@@ -26,39 +26,69 @@ class TestLEEF2Parser:
 
     def test_parse_leef_2_message_basic(self):
         """Test basic LEEF 2.0 message parsing with standard header and extension fields."""
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
+        delim = "\t"
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+            + delim
+            + "spt=1232"
+        )
         result = LEEF2Parser.parse(msg)
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"
+        assert result["event_category"] == "Alert"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
         assert result["spt"] == "1232"
 
     def test_parse_leef_2_message_with_category(self):
         """Test LEEF 2.0 message parsing with event category."""
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|Authentication|src=10.0.0.1\tdst=2.1.2.2"
+        delim = "\t"
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Authentication|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+        )
         result = LEEF2Parser.parse(msg)
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"
-        assert result["event_cat"] == "Authentication"
+        assert result["event_category"] == "Authentication"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
 
     def test_parse_leef_2_message_with_space_delimiter(self):
         """Test LEEF 2.0 message parsing with space-delimited extension fields."""
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1 dst=2.1.2.2 spt=1232"
+        delim = " "
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+            + delim
+            + "spt=1232"
+        )
         result = LEEF2Parser.parse(msg)
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
         assert result["version"] == "2.0"
         assert result["event_id"] == "12345"
+        assert result["event_category"] == "Alert"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
         assert result["spt"] == "1232"
@@ -66,7 +96,17 @@ class TestLEEF2Parser:
     def test_parse_leef_2_message_with_pipes_in_content(self):
         """Test LEEF message parsing with pipe characters in the content."""
         # In LEEF 2.0 format, pipes in values must be escaped with a backslash
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2\tcommand=cat /var/log/messages \\| grep error"
+        delim = "\t"
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+            + delim
+            + "command=cat /var/log/messages \\| grep error"
+        )
         result = LEEF2Parser.parse(msg)
         assert result["command"] == "cat /var/log/messages | grep error"
         assert result["src"] == "10.0.0.1"
@@ -74,19 +114,34 @@ class TestLEEF2Parser:
 
     def test_parse_leef_2_message_with_escapes(self):
         """Test LEEF message with escaped characters in extension fields."""
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tmessage=Multiple\\=value\\thas\\=escapes"
+        delim = "\t"
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "message=Multiple\\=value\\thas\\=escapes"
+        )
         result = LEEF2Parser.parse(msg)
         assert result["message"] == "Multiple=value\thas=escapes"
         assert result["src"] == "10.0.0.1"
 
     def test_parse_leef_2_message_with_source_producer(self):
         """Test LEEF message with source producer information."""
-        msg = "LEEF:2.0|IBM|QRadar|2.0|12345|src=10.0.0.1\tdst=2.1.2.2"
+        delim = "\t"
+        msg = (
+            "LEEF:2.0|IBM|QRadar|2.0|12345|Alert|"
+            + delim
+            + "|"
+            + "src=10.0.0.1"
+            + delim
+            + "dst=2.1.2.2"
+        )
         result = LEEF2Parser.parse(msg)
         # Check if SourceProducer is created correctly
-        source_producer = result["source_producer"]
         validate_source_producer(
-            {"source_producer": source_producer},  # Simulate model with source_producer
+            result,  # Pass the full result dict, which contains both keys
             expected_organization="IBM",  # vendor/organization
             expected_product="QRadar",  # product
             handler_key=None,
