@@ -16,18 +16,18 @@ import pytest
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.cef_parser import (
-    parse_cef_message,
+    CEFParser,
 )
 
 
 @pytest.mark.unit
 class TestCEFParser:
-    """Unit tests for the CEF parser utility (parse_cef_message)."""
+    """Unit tests for the CEF parser utility."""
 
     def test_parse_cef_message_basic(self):
         """Test basic CEF message parsing with standard header and extension fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232"
-        result = parse_cef_message(msg)
+        result = CEFParser.parse(msg)
         assert result["cef_version"] == "0"
         assert result["device_vendor"] == "Security"
         assert result["device_product"] == "threatmanager"
@@ -43,7 +43,7 @@ class TestCEFParser:
         """Test CEF message parsing with pipe characters in the content."""
         # In CEF format, pipes in values must be escaped with a backslash: \|
         msg = "CEF:0|Security|threatmanager|1.0|100|command: cat /var/log/messages \\| grep error|10|src=10.0.0.1 dst=2.1.2.2"
-        result = parse_cef_message(msg)
+        result = CEFParser.parse(msg)
         assert result["name"] == "command: cat /var/log/messages | grep error"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
@@ -51,14 +51,14 @@ class TestCEFParser:
     def test_parse_cef_message_with_escapes(self):
         """Test CEF message with escaped characters in extension fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected\\|blocked|10|src=10.0.0.1 message=Multiple\\ spaces\\ in\\ value"
-        result = parse_cef_message(msg)
+        result = CEFParser.parse(msg)
         assert result["message"] == "Multiple spaces in value"
         assert result["src"] == "10.0.0.1"
 
     def test_parse_cef_message_with_user_labels(self):
         """Test CEF message with user-defined labels for custom fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected|10|src=10.0.0.1 deviceCustomNumber1=5 deviceCustomNumber1Label=ImportantMetric"
-        result = parse_cef_message(msg)
+        result = CEFParser.parse(msg)
         assert result["deviceCustomNumber1"] == "5"
         assert result["deviceCustomNumber1Label"] == "ImportantMetric"
         assert (
@@ -68,17 +68,17 @@ class TestCEFParser:
     def test_parse_cef_message_with_spaces_in_values(self):
         """Test CEF message with spaces in values."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected|10|src=10.0.0.1 msg=This is a message with spaces dvc=mydevice"
-        result = parse_cef_message(msg)
+        result = CEFParser.parse(msg)
         assert result["msg"] == "This is a message with spaces"
         assert result["dvc"] == "mydevice"
 
     def test_parse_cef_invalid_format(self):
         """Test handling of invalid CEF formats."""
         # Not starting with CEF:
-        assert parse_cef_message("Something else") is None
+        assert CEFParser.parse("Something else") is None
 
         # Empty message
-        assert parse_cef_message("") is None
+        assert CEFParser.parse("") is None
 
         # Incomplete header (fewer than 7 pipes)
-        assert parse_cef_message("CEF:0|Vendor|Product|1.0|100|name") is None
+        assert CEFParser.parse("CEF:0|Vendor|Product|1.0|100|name") is None

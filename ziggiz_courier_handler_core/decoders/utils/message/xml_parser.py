@@ -23,6 +23,11 @@ from typing import Any, Dict, Optional
 # Third-party imports
 import xmltodict
 
+# Local/package imports
+from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
+    BaseMessageParser,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,65 +49,79 @@ def _extract_dtd_name(message: str) -> Optional[str]:
     return None
 
 
-def parse_xml_message(message: str) -> Optional[Dict[str, Any]]:
+class XMLParser(BaseMessageParser):
     """
-    Parse an XML message into a dictionary structure using xmltodict.
-
-    This function attempts to parse the given string as XML and convert it to a
-    dictionary. It checks if the message appears to be XML (starts with < and contains
-    a valid XML tag structure) before attempting to parse. If initial parsing fails,
-    it attempts to fix common escaping issues before trying again.
-
-    Args:
-        message: The raw message that should be in XML format
-
-    Returns:
-        Dictionary representing the parsed XML structure, or None if
-        parsing fails or if the input is not valid XML.
-
-    Example:
-        >>> message = '<root><user id="123">John</user><status>active</status></root>'
-        >>> parse_xml_message(message)
-        {'root': {'user': 'John', '@id': '123', 'status': 'active'}}
+    Parser for XML message strings.
+    Handles XML formatted messages and common escaping issues.
     """
-    if not message:
-        return None
 
-    # Quick check if the message appears to be XML (starts with < and contains >)
-    message = message.strip()
-    if not (message.startswith("<") and ">" in message):
-        return None
+    @staticmethod
+    def parse(message: str) -> Optional[Dict[str, Any]]:
+        """
+        Parse an XML message into a dictionary structure using xmltodict.
 
-    # Extract DTD name if present
-    dtd_name = _extract_dtd_name(message)
+        This function attempts to parse the given string as XML and convert it to a
+        dictionary. It checks if the message appears to be XML (starts with < and contains
+        a valid XML tag structure) before attempting to parse. If initial parsing fails,
+        it attempts to fix common escaping issues before trying again.
 
-    # Attempt XML parsing
-    try:
-        result = xmltodict.parse(
-            message, attr_prefix="@", cdata_key="#text", dict_constructor=dict
-        )
-    except Exception:
-        # First attempt failed, try fixing common issues
-        try:
-            # Fix common XML escaping issues
-            fixed_message = message.replace("&", "&amp;")
-            # Don't double-escape already properly escaped entities
-            fixed_message = fixed_message.replace("&amp;amp;", "&amp;")
-            fixed_message = fixed_message.replace("&amp;lt;", "&lt;")
-            fixed_message = fixed_message.replace("&amp;gt;", "&gt;")
-            fixed_message = fixed_message.replace("&amp;quot;", "&quot;")
-            fixed_message = fixed_message.replace("&amp;apos;", "&apos;")
+        Args:
+            message: The raw message that should be in XML format
 
-            result = xmltodict.parse(
-                fixed_message, attr_prefix="@", cdata_key="#text", dict_constructor=dict
-            )
-        except Exception as e:
-            # If that fails too, log the error and return None
-            logger.debug("Failed to parse XML message", extra={"error": str(e)})
+        Returns:
+            Dictionary representing the parsed XML structure, or None if
+            parsing fails or if the input is not valid XML.
+
+        Example:
+            >>> message = '<root><user id="123">John</user><status>active</status></root>'
+            >>> XMLParser.parse(message)
+            {'root': {'user': 'John', '@id': '123', 'status': 'active'}}
+        """
+        if not message:
             return None
 
-    # Add DTD information if available
-    if dtd_name and result:
-        result["_dtd_name"] = dtd_name
+        # Quick check if the message appears to be XML (starts with < and contains >)
+        message = message.strip()
+        if not (message.startswith("<") and ">" in message):
+            return None
 
-    return result
+        # Extract DTD name if present
+        dtd_name = _extract_dtd_name(message)
+
+        # Attempt XML parsing
+        try:
+            result = xmltodict.parse(
+                message, attr_prefix="@", cdata_key="#text", dict_constructor=dict
+            )
+        except Exception:
+            # First attempt failed, try fixing common issues
+            try:
+                # Fix common XML escaping issues
+                fixed_message = message.replace("&", "&amp;")
+                # Don't double-escape already properly escaped entities
+                fixed_message = fixed_message.replace("&amp;amp;", "&amp;")
+                fixed_message = fixed_message.replace("&amp;lt;", "&lt;")
+                fixed_message = fixed_message.replace("&amp;gt;", "&gt;")
+                fixed_message = fixed_message.replace("&amp;quot;", "&quot;")
+                fixed_message = fixed_message.replace("&amp;apos;", "&apos;")
+
+                result = xmltodict.parse(
+                    fixed_message,
+                    attr_prefix="@",
+                    cdata_key="#text",
+                    dict_constructor=dict,
+                )
+            except Exception as e:
+                # If that fails too, log the error and return None
+                logger.debug("Failed to parse XML message", extra={"error": str(e)})
+                return None
+
+        # Add DTD information if available
+        if dtd_name and result:
+            result["_dtd_name"] = dtd_name
+
+        return result
+
+
+# The old function has been removed in favor of the class method
+# Use XMLParser.parse() directly

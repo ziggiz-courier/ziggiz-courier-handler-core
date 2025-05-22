@@ -33,9 +33,7 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
-from ziggiz_courier_handler_core.decoders.utils.message.csv_parser import (
-    parse_quoted_csv_message,
-)
+from ziggiz_courier_handler_core.decoders.utils.message.csv_parser import CSVParser
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
@@ -83,12 +81,10 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
         if not isinstance(message, str):
             return False
 
-        if "parse_quoted_csv_message" not in self.parsing_cache:
-            self.parsing_cache["parse_quoted_csv_message"] = parse_quoted_csv_message(
-                message
-            )
+        if "csv_parser" not in self.parsing_cache:
+            self.parsing_cache["csv_parser"] = CSVParser.parse(message)
 
-        fields = self.parsing_cache["parse_quoted_csv_message"]
+        fields = self.parsing_cache["csv_parser"]
 
         if fields and isinstance(fields, list) and len(fields) > 3:
             type_field = fields[3] if len(fields) > 3 else None

@@ -8,50 +8,55 @@
 # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
 #
 """
-Unit tests for parse_quoted_csv_message utility.
+Unit tests for CSVParser utility.
 """
 # Third-party imports
 import pytest
 
 # Local/package imports
-from ziggiz_courier_handler_core.decoders.utils.message.csv_parser import (
-    parse_quoted_csv_message,
-)
+from ziggiz_courier_handler_core.decoders.utils.message.csv_parser import CSVParser
 
 
 @pytest.mark.unit
 class TestCSVParser:
-    """Unit tests for parse_quoted_csv_message utility."""
+    """Unit tests for CSVParser utility."""
 
-    def test_parse_quoted_csv_message_simple(self):
+    def test_parse_simple(self):
+        """Test parsing a simple CSV message."""
         message = "field1,field2,field3"
-        assert parse_quoted_csv_message(message) == ["field1", "field2", "field3"]
+        assert CSVParser.parse(message) == ["field1", "field2", "field3"]
 
-    def test_parse_quoted_csv_message_quoted(self):
+    def test_parse_quoted(self):
+        """Test parsing a CSV message with quoted fields containing commas."""
         message = 'field1,"field 2, with comma",field3'
-        assert parse_quoted_csv_message(message) == [
+        assert CSVParser.parse(message) == [
             "field1",
             "field 2, with comma",
             "field3",
         ]
 
-    def test_parse_quoted_csv_message_escaped_quote(self):
+    def test_parse_escaped_quote(self):
+        """Test parsing a CSV message with escaped quotes inside quoted fields."""
         # The csv module expects double quotes to escape quotes inside quoted fields
         message = 'field1,"field with ""quote"" inside",field3'
-        assert parse_quoted_csv_message(message) == [
+        assert CSVParser.parse(message) == [
             "field1",
             'field with "quote" inside',
             "field3",
         ]
 
-    def test_parse_quoted_csv_message_empty(self):
-        assert parse_quoted_csv_message("") is None
+    def test_parse_empty(self):
+        """Test parsing an empty message."""
+        assert CSVParser.parse("") is None
 
-    def test_parse_quoted_csv_message_invalid(self):
+    def test_parse_invalid(self):
+        """Test parsing an invalid CSV message."""
         # Not a valid CSV, but csv.reader will return a single field
-        assert parse_quoted_csv_message("not_a_csv") == ["not_a_csv"]
+        message = "not_a_csv"
+        assert CSVParser.parse(message) == ["not_a_csv"]
 
-    def test_parse_quoted_csv_message_whitespace(self):
+    def test_parse_whitespace(self):
+        """Test parsing a CSV message with whitespace around values."""
         message = '  field1 ,  "field 2" , field3  '
-        # The csv module preserves spaces inside quoted fields
-        assert parse_quoted_csv_message(message) == ["field1 ", "field 2 ", "field3  "]
+        # The csv module preserves spaces inside quoted fields and around unquoted fields
+        assert CSVParser.parse(message) == ["field1 ", "field 2 ", "field3  "]

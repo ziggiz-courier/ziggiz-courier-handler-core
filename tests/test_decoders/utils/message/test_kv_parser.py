@@ -8,23 +8,23 @@
 # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
 #
 """
-Unit tests for the generic key=value parser utility (parse_kv_message).
+Unit tests for the generic key=value parser utility (KVParser).
 Covers FortiGate and generic log formats.
 """
 # Third-party imports
 import pytest
 
 # Local/package imports
-from ziggiz_courier_handler_core.utils.kv_parser import parse_kv_message
+from ziggiz_courier_handler_core.decoders.utils.message.kv_parser import KVParser
 
 
 @pytest.mark.unit
 class TestKVParser:
-    """Unit tests for the generic key=value parser utility (parse_kv_message)."""
+    """Unit tests for the generic key=value parser utility (KVParser)."""
 
     def test_parse_kv_message_basic(self):
         msg = 'date=2025-05-12 time=12:34:56 devname=FGT1 devid=FG100E logid=000000001 type=event subtype=system level=notice msg="System rebooted"'
-        result = parse_kv_message(msg)
+        result = KVParser.parse(msg)
         assert result["date"] == "2025-05-12"
         assert result["time"] == "12:34:56"
         assert result["devname"] == "FGT1"
@@ -37,7 +37,7 @@ class TestKVParser:
 
     def test_parse_kv_message_quoted_and_escaped(self):
         msg = 'user="john doe" action=login status=success path="/var/log/\\"test\\""'
-        result = parse_kv_message(msg)
+        result = KVParser.parse(msg)
         assert result["user"] == "john doe"
         assert result["action"] == "login"
         assert result["status"] == "success"
@@ -45,9 +45,9 @@ class TestKVParser:
 
     def test_parse_kv_message_invalid(self):
         msg = "not_a_kv_message"
-        result = parse_kv_message(msg)
+        result = KVParser.parse(msg)
         assert result is None
 
     def test_parse_kv_message_empty(self):
-        assert parse_kv_message("") is None
-        assert parse_kv_message(None) is None
+        assert KVParser.parse("") is None
+        assert KVParser.parse(None) is None

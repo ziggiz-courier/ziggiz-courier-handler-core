@@ -16,23 +16,39 @@ import io
 
 from typing import List, Optional
 
+# Local/package imports
+from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
+    BaseMessageParser,
+)
 
-def parse_quoted_csv_message(message: str) -> Optional[List[str]]:
-    """
-    High-performance parser for quoted CSV message strings.
-    Handles quoted values and escaped characters using the csv module.
 
-    Args:
-        message: The raw message string (e.g., 'field1,"field 2, with comma",field3')
-    Returns:
-        List of parsed fields, or None if the message is empty or not valid CSV.
+class CSVParser(BaseMessageParser):
     """
-    if not message:
-        return None
-    try:
-        # Use csv.reader to handle quoted fields and escapes
-        reader = csv.reader(io.StringIO(message), skipinitialspace=True)
-        fields = next(reader)
-        return fields if fields else None
-    except Exception:
-        return None
+    Parser for quoted CSV message strings.
+    Handles quoted values and escaped characters.
+    """
+
+    @staticmethod
+    def parse(message: str) -> Optional[List[str]]:
+        """
+        High-performance parser for quoted CSV message strings.
+        Handles quoted values and escaped characters using the csv module.
+
+        Args:
+            message: The raw message string (e.g., 'field1,"field 2, with comma",field3')
+        Returns:
+            List of parsed fields, or None if the message is empty or not valid CSV.
+        """
+        if not message:
+            return None
+        try:
+            # Use csv.reader to handle quoted fields and escapes
+            reader = csv.reader(io.StringIO(message), skipinitialspace=True)
+            fields = next(reader)
+            return fields if fields else None
+        except Exception:
+            return None
+
+
+# The old function has been removed in favor of the class method
+# Use CSVParser.parse() directly

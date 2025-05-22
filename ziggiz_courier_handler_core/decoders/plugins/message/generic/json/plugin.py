@@ -38,9 +38,7 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
-from ziggiz_courier_handler_core.decoders.utils.message.json_parser import (
-    parse_json_message,
-)
+from ziggiz_courier_handler_core.decoders.utils.message.json_parser import JSONParser
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
@@ -90,10 +88,10 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_json_message" not in self.parsing_cache:
-            self.parsing_cache["parse_json_message"] = parse_json_message(message)
+        if "json_parser" not in self.parsing_cache:
+            self.parsing_cache["json_parser"] = JSONParser.parse(message)
 
-        parsed_data = self.parsing_cache["parse_json_message"]
+        parsed_data = self.parsing_cache["json_parser"]
 
         if parsed_data:
             # Set generic classification values

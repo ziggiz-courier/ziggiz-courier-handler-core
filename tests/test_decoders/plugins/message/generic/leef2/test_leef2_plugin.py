@@ -142,7 +142,7 @@ class TestGenericLEEF2DecoderPlugin:
 
         # Create a mock cache that simulates a previous parsing result
         mock_cache: Dict[str, Optional[Dict[str, str]]] = {
-            "parse_leef2_message": {
+            "leef2_parser": {
                 "leef_version": "2.0",
                 "vendor": "MockVendor",
                 "product": "MockProduct",

@@ -39,7 +39,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
 from ziggiz_courier_handler_core.decoders.utils.message.leef_2_parser import (
-    parse_leef2_message,
+    LEEF2Parser,
 )
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
@@ -90,10 +90,10 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_leef2_message" not in self.parsing_cache:
-            self.parsing_cache["parse_leef2_message"] = parse_leef2_message(message)
+        if "leef2_parser" not in self.parsing_cache:
+            self.parsing_cache["leef2_parser"] = LEEF2Parser.parse(message)
 
-        parsed_data = self.parsing_cache["parse_leef2_message"]
+        parsed_data = self.parsing_cache["leef2_parser"]
 
         if parsed_data:
             # Support both new (SourceProducer) and legacy (vendor/product) cache/test dicts

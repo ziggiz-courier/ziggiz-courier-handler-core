@@ -14,9 +14,7 @@ Unit tests for XML parser utilities.
 import pytest
 
 # Local/package imports
-from ziggiz_courier_handler_core.decoders.utils.message.xml_parser import (
-    parse_xml_message,
-)
+from ziggiz_courier_handler_core.decoders.utils.message.xml_parser import XMLParser
 
 
 @pytest.mark.unit
@@ -25,7 +23,7 @@ class TestXMLParser:
 
     def test_parse_xml_message_simple(self):
         xml = "<root><item>value</item></root>"
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "item" in result["root"]
@@ -33,7 +31,7 @@ class TestXMLParser:
 
     def test_parse_xml_message_with_attributes(self):
         xml = '<root><item id="123" type="test">value</item></root>'
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "item" in result["root"]
@@ -53,7 +51,7 @@ class TestXMLParser:
             </parent>
         </root>
         """
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "parent" in result["root"]
@@ -72,7 +70,7 @@ class TestXMLParser:
             <body>Test message</body>
         </note>
         """
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "_dtd_name" in result
         assert result["_dtd_name"] == "note"
@@ -83,7 +81,7 @@ class TestXMLParser:
 
     def test_parse_xml_message_with_broken_entities(self):
         xml = "<root><item>Value with & ampersand</item></root>"
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "item" in result["root"]
@@ -91,7 +89,7 @@ class TestXMLParser:
 
     def test_parse_xml_message_with_cdata(self):
         xml = "<root><item><![CDATA[Value with <special> characters & entities]]></item></root>"
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "item" in result["root"]
@@ -99,7 +97,7 @@ class TestXMLParser:
 
     def test_parse_xml_message_with_multiple_root_attributes(self):
         xml = '<root id="1" version="2.0"><item>value</item></root>'
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is not None
         assert "root" in result
         assert "@id" in result["root"]
@@ -111,16 +109,16 @@ class TestXMLParser:
 
     def test_parse_xml_message_invalid_xml(self):
         xml = "<root><item>value</wrong_tag></root>"
-        result = parse_xml_message(xml)
+        result = XMLParser.parse(xml)
         assert result is None
 
     def test_parse_xml_message_not_xml(self):
         not_xml = "This is not XML content"
-        result = parse_xml_message(not_xml)
+        result = XMLParser.parse(not_xml)
         assert result is None
 
     def test_parse_xml_message_empty(self):
-        result = parse_xml_message("")
+        result = XMLParser.parse("")
         assert result is None
-        result = parse_xml_message(None)
+        result = XMLParser.parse(None)
         assert result is None

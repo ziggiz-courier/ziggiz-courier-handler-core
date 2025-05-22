@@ -205,7 +205,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
 
         # Create a mock cache with predetermined parsing results
         mock_cache = {
-            "parse_kv_message": {
+            "kv_parser": {
                 "date": "2025-05-14",  # Different date than in the message
                 "time": "13:45:00",
                 "devname": "cached-fortigate",

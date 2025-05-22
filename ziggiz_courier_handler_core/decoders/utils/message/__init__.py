@@ -11,21 +11,22 @@
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.timestamp_parser import TimestampParser
-from .cef_parser import parse_cef_message
-from .csv_parser import parse_quoted_csv_message
-from .json_parser import parse_json_message
-from .kv_parser import parse_kv_message
-from .leef_1_parser import parse_leef1_message
-from .leef_2_parser import parse_leef2_message
-from .xml_parser import parse_xml_message
+from .base_parser import BaseMessageParser
+from .cef_parser import CEFParser
+from .csv_parser import CSVParser
+from .json_parser import JSONParser
+from .kv_parser import KVParser
+from .leef_1_parser import LEEF1Parser
+from .leef_2_parser import LEEF2Parser
+from .xml_parser import XMLParser
 
 __all__ = [
-    "parse_cef_message",
-    "parse_quoted_csv_message",
-    "parse_kv_message",
-    "parse_leef1_message",
-    "parse_leef2_message",
-    "parse_cef_message",
-    "parse_json_message",
-    "parse_xml_message",
+    "BaseMessageParser",
+    "CEFParser",
+    "CSVParser",
+    "JSONParser",
+    "KVParser",
+    "LEEF1Parser",
+    "LEEF2Parser",
+    "XMLParser",
 ]

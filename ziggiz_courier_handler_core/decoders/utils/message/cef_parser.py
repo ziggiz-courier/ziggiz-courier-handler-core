@@ -19,81 +19,112 @@ The Extension part contains key-value pairs in the format key=value.
 from typing import Dict, List, Optional, Union, cast
 
 # Local/package imports
+from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
+    BaseMessageParser,
+)
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
+# For backward compatibility
 def parse_cef_message(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
     """
-    High-performance parser for Common Event Format (CEF) message strings.
-    Handles CEF header and extension fields with proper escaping rules.
+    Backward compatibility function for parsing CEF messages.
 
-    The CEF format is:
-    CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severity|Extension
-
-    Where Extension contains key=value pairs which may include custom field labels.
+    This function is maintained for backward compatibility.
+    New code should use CEFParser.parse() directly.
 
     Args:
         message: The raw CEF message string
 
     Returns:
-        Dictionary of parsed key-value pairs from both header and extension fields,
-        or None if not a valid CEF format. Uses user-defined labels when available.
+        Dictionary of parsed key-value pairs or None if not valid CEF format
     """
-    if not message or not message.startswith("CEF:"):
-        return None
+    return CEFParser.parse(message)
 
-    # Split the message for initial processing
-    try:
-        # Split the initial format to get the extension
-        parts = _safe_split_header(message[4:])  # Skip "CEF:" prefix
 
-        if len(parts) < 8:
-            return None  # Not enough fields
+class CEFParser(BaseMessageParser):
+    """
+    Parser for Common Event Format (CEF) message strings.
+    Handles CEF header and extension fields with proper escaping rules.
+    """
 
-        # Extract header fields
-        header_fields = [
-            "cef_version",
-            "device_vendor",
-            "device_product",
-            "device_version",
-            "signature_id",
-            "name",
-            "severity",
-        ]
+    @staticmethod
+    def parse(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
+        """
+        High-performance parser for Common Event Format (CEF) message strings.
+        Handles CEF header and extension fields with proper escaping rules.
 
-        result = {}
-        for i, field in enumerate(header_fields):
-            result[field] = parts[i]
+        The CEF format is:
+        CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severity|Extension
 
-        # Add SourceProducer instance
-        source_producer = SourceProducer(
-            organization=result["device_vendor"], product=result["device_product"]
-        )
-        result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
+        Where Extension contains key=value pairs which may include custom field labels.
 
-        # Process extension (key=value pairs)
-        extension = parts[7]
-        if extension:
-            extension_dict = _parse_extension(extension)
-            result.update(extension_dict)
+        Args:
+            message: The raw CEF message string
 
-            # Process custom labels
-            labels = {}
-            for key, value in result.items():
-                if key.endswith("Label"):
-                    base_field = key[:-5]  # Remove 'Label' suffix
-                    if base_field in result:
-                        labels[value] = base_field
+        Returns:
+            Dictionary of parsed key-value pairs from both header and extension fields,
+            or None if not a valid CEF format. Uses user-defined labels when available.
+        """
+        if not message or not message.startswith("CEF:"):
+            return None
 
-            # Apply custom labels
-            for label, field in labels.items():
-                result[label] = result[field]
+        # Split the message for initial processing
+        try:
+            # Split the initial format to get the extension
+            parts = _safe_split_header(message[4:])  # Skip "CEF:" prefix
 
-        return cast(Dict[str, Union[str, SourceProducer]], result)
+            if len(parts) < 8:
+                return None  # Not enough fields
 
-    except Exception:
-        # Fall back to None if any errors occur
-        return None
+            # Extract header fields
+            header_fields = [
+                "cef_version",
+                "device_vendor",
+                "device_product",
+                "device_version",
+                "signature_id",
+                "name",
+                "severity",
+            ]
+
+            result = {}
+            for i, field in enumerate(header_fields):
+                result[field] = parts[i]
+
+            # Add SourceProducer instance
+            source_producer = SourceProducer(
+                organization=result["device_vendor"], product=result["device_product"]
+            )
+            result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
+
+            # Process extension (key=value pairs)
+            extension = parts[7]
+            if extension:
+                extension_dict = _parse_extension(extension)
+                result.update(extension_dict)
+
+                # Process custom labels
+                labels = {}
+                for key, value in result.items():
+                    if key.endswith("Label"):
+                        base_field = key[:-5]  # Remove 'Label' suffix
+                        if base_field in result:
+                            labels[value] = base_field
+
+                # Apply custom labels
+                for label, field in labels.items():
+                    result[label] = result[field]
+
+            return cast(Dict[str, Union[str, SourceProducer]], result)
+
+        except Exception:
+            # Fall back to None if any errors occur
+            return None
+
+
+# The old function has been removed in favor of the class method
+# Use CEFParser.parse() directly
 
 
 def _safe_split_header(text: str) -> List[str]:

@@ -39,7 +39,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
 from ziggiz_courier_handler_core.decoders.utils.message.xml_parser import (
-    parse_xml_message,
+    XMLParser,
 )
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
@@ -90,10 +90,10 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_xml_message" not in self.parsing_cache:
-            self.parsing_cache["parse_xml_message"] = parse_xml_message(message)
+        if "xml_parser" not in self.parsing_cache:
+            self.parsing_cache["xml_parser"] = XMLParser.parse(message)
 
-        parsed_data = self.parsing_cache["parse_xml_message"]
+        parsed_data = self.parsing_cache["xml_parser"]
 
         if parsed_data:
             # Set generic classification values

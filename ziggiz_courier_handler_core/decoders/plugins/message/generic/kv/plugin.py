@@ -34,13 +34,13 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
+from ziggiz_courier_handler_core.decoders.utils.message.kv_parser import KVParser
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
-from ziggiz_courier_handler_core.utils.kv_parser import parse_kv_message
 
 logger = logging.getLogger(__name__)
 
@@ -89,10 +89,10 @@ class GenericKVDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_kv_message" not in self.parsing_cache:
-            self.parsing_cache["parse_kv_message"] = parse_kv_message(message)
+        if "kv_parser" not in self.parsing_cache:
+            self.parsing_cache["kv_parser"] = KVParser.parse(message)
 
-        parsed_data = self.parsing_cache["parse_kv_message"]
+        parsed_data = self.parsing_cache["kv_parser"]
 
         if parsed_data:
             # Set generic classification values

@@ -37,9 +37,7 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
-from ziggiz_courier_handler_core.decoders.utils.message.kv_parser import (
-    parse_kv_message,
-)
+from ziggiz_courier_handler_core.decoders.utils.message.kv_parser import KVParser
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
@@ -86,10 +84,10 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_kv_message" not in self.parsing_cache:
-            self.parsing_cache["parse_kv_message"] = parse_kv_message(message)
+        if "kv_parser" not in self.parsing_cache:
+            self.parsing_cache["kv_parser"] = KVParser.parse(message)
 
-        event_data = self.parsing_cache["parse_kv_message"]
+        event_data = self.parsing_cache["kv_parser"]
 
         if (
             event_data

@@ -22,6 +22,9 @@ from ziggiz_courier_handler_core.decoders.syslog_rfc3164_decoder import (
 from ziggiz_courier_handler_core.decoders.syslog_rfc5424_decoder import (
     SyslogRFC5424Decoder,
 )
+from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
+    SyslogRFCBaseDecoder,
+)
 from ziggiz_courier_handler_core.decoders.unknown_syslog_decoder import (
     UnknownSyslogDecoder,
 )
@@ -32,6 +35,7 @@ __all__ = [
     "MessageDecoderPlugin",
     "register_message_decoder",
     "get_message_decoders",
+    "SyslogRFCBaseDecoder",
     "SyslogRFC5424Decoder",
     "SyslogRFC3164Decoder",
     "UnknownSyslogDecoder",
