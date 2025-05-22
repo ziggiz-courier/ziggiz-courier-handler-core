@@ -31,8 +31,8 @@ class SyslogRFC5424Message(SyslogRFCCommonModel):
     """
 
     # Core syslog message fields
-    timestamp: (
-        datetime  # Required message timestamp (overrides optional BaseModel.timestamp)
+    timestamp: Optional[datetime] = (
+        None  # Message timestamp (can be None as per protocol)
     )
     # hostname, app_name, and proc_id are inherited from SyslogRFCCommonModel
     msg_id: Optional[str] = None  # Identifies the message type
