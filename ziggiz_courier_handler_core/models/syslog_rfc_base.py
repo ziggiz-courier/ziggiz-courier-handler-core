@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-# # SPDX-License-Identifier: BSL-1.1
-# # Copyright (c) 2025 Ziggiz Inc.
-# #
-# # This file is part of the ziggiz-courier-core-data-processing and is licensed under the
-# # Business Source License 1.1. You may not use this file except in
-# # compliance with the License. You may obtain a copy of the License at:
-# # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+
+# SPDX-License-Identifier: BSL-1.1
+# Copyright (c) 2025 Ziggiz Inc.
+#
+# This file is part of the ziggiz-courier-core-data-processing and is licensed under the
+# Business Source License 1.1. You may not use this file except in
+# compliance with the License. You may obtain a copy of the License at:
+# https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
 """Syslog base model for shared components between different RFC formats.
 
 This module defines base data models for Syslog protocols that share common
@@ -104,26 +105,43 @@ class Severity(IntEnum):
     # Lower numbers (more severe) are "greater than" higher numbers (less severe)
 
     def __lt__(self, other):
+        """Compare severity levels for less than.
+
+        With severity, lower value means higher severity, so comparison is inverted.
+        """
         if isinstance(other, Severity):
             return self.value > other.value
         return NotImplemented
 
     def __gt__(self, other):
+        """Compare severity levels for greater than.
+
+        With severity, lower value means higher severity, so comparison is inverted.
+        """
         if isinstance(other, Severity):
             return self.value < other.value
         return NotImplemented
 
     def __le__(self, other):
+        """Compare severity levels for less than or equal.
+
+        With severity, lower value means higher severity, so comparison is inverted.
+        """
         if isinstance(other, Severity):
             return self.value >= other.value
         return NotImplemented
 
     def __ge__(self, other):
+        """Compare severity levels for greater than or equal.
+
+        With severity, lower value means higher severity, so comparison is inverted.
+        """
         if isinstance(other, Severity):
             return self.value <= other.value
         return NotImplemented
 
     def __eq__(self, other):
+        """Compare severity levels for equality."""
         if isinstance(other, Severity):
             return self.value == other.value
         return NotImplemented
@@ -200,44 +218,45 @@ class SyslogRFCBaseModel(BaseModel):
             from datetime import datetime
 
             kwargs["timestamp"] = datetime.now()
-        # Default facility for invalid inputs as per RFC
+        # Default values for invalid inputs
         DEFAULT_FACILITY = Facility.LOGAUDIT
+        DEFAULT_SEVERITY = Severity.NOTICE
 
         # Validate priority value
         # Non-numeric values should have been filtered before this point
         # but handling it here for robustness
         try:
-            pri_int = int(pri)
-
-            # Check for invalid values (negative, too large values, or string of multiple zeros)
-            if pri_int < 0:  # Negative values are invalid
+            # Handle None specifically with default values
+            if pri is None:
                 facility = int(DEFAULT_FACILITY)
-                severity = int(
-                    Severity.DEBUG
-                )  # Use default severity for negative values
-            elif pri_int >= 1000:  # >3 digits
-                facility = int(DEFAULT_FACILITY)
-                severity = pri_int & 0x07  # Still extract severity if possible
-            elif isinstance(pri, str) and pri.startswith("0") and len(pri) > 1:
-                # Handle case of multiple zeros like "000" or "0000" as invalid
-                facility = int(DEFAULT_FACILITY)
-                severity = int(
-                    Severity.EMERGENCY
-                )  # Extract severity (always 0 for multiple zeros)
+                severity = int(DEFAULT_SEVERITY)
             else:
-                # Valid priority value (including single digit "0")
-                facility = pri_int >> 3  # Standard calculation
-                severity = pri_int & 0x07
+                pri_int = int(pri)
+
+                # Check for invalid values
+                if pri_int < 0:  # Negative values
+                    facility = int(DEFAULT_FACILITY)
+                    severity = int(DEFAULT_SEVERITY)
+                elif pri_int >= 1000:  # More than 3 digits
+                    facility = int(DEFAULT_FACILITY)
+                    severity = int(DEFAULT_SEVERITY)
+                elif isinstance(pri, str) and pri.startswith("0") and len(pri) > 1:
+                    # Multiple zeros like "000" or "0000" are invalid
+                    facility = int(DEFAULT_FACILITY)
+                    severity = int(DEFAULT_SEVERITY)
+                else:
+                    # Valid priority value (including single digit "0")
+                    facility = pri_int >> 3  # Standard calculation
+                    severity = pri_int & 0x07
 
             # Cap facility at 23 (max valid facility)
             if facility > 23:
                 facility = int(DEFAULT_FACILITY)
+                severity = int(DEFAULT_SEVERITY)
         except (ValueError, TypeError):
             # Handle any conversion issues
             facility = int(DEFAULT_FACILITY)
-            severity = int(
-                Severity.DEBUG
-            )  # Use debug severity as default for completely invalid inputs
+            severity = int(DEFAULT_SEVERITY)
 
         return cls(facility=facility, severity=severity, **kwargs)
 

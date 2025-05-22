@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-# # SPDX-License-Identifier: BSL-1.1
-# # Copyright (c) 2025 Ziggiz Inc.
-# #
-# # This file is part of the ziggiz-courier-core-data-processing and is licensed under the
-# # Business Source License 1.1. You may not use this file except in
-# # compliance with the License. You may obtain a copy of the License at:
-# # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# SPDX-License-Identifier: BSL-1.1
+# Copyright (c) 2025 Ziggiz Inc.
+#
+# This file is part of the ziggiz-courier-core-data-processing and is licensed under the
+# Business Source License 1.1. You may not use this file except in
+# compliance with the License. You may obtain a copy of the License at:
+# https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+#
 """Tests for the syslog RFC base model."""
 
 # Standard library imports
@@ -103,49 +104,49 @@ INVALID_PRIORITY_TEST_CASES = [
     (
         192,
         Facility.LOGAUDIT,
-        Severity.EMERGENCY,
+        Severity.NOTICE,
         "above_max_valid",
-    ),  # Just above max valid (191) should use default facility
+    ),  # Just above max valid (191) should use default facility and severity
     (
         200,
         Facility.LOGAUDIT,
-        Severity.EMERGENCY,
+        Severity.NOTICE,
         "well_above_max",
-    ),  # Well above max valid should use default facility
+    ),  # Well above max valid should use default facility and severity
     (
         -1,
         Facility.LOGAUDIT,
-        Severity.DEBUG,
+        Severity.NOTICE,
         "negative_value",
-    ),  # Negative values should use default facility
+    ),  # Negative values should use default facility and severity
     (
         1000,
         Facility.LOGAUDIT,
-        Severity.EMERGENCY,
+        Severity.NOTICE,
         "more_than_3_digits",
-    ),  # >3 digits should use default facility
+    ),  # >3 digits should use default facility and severity
     (
         "ABC",
         Facility.LOGAUDIT,
-        Severity.DEBUG,
+        Severity.NOTICE,
         "non_numeric",
     ),  # Non-numeric should use default facility and severity
     (
         "0000",
         Facility.LOGAUDIT,
-        Severity.EMERGENCY,
+        Severity.NOTICE,
         "multiple_zeros",
-    ),  # Multiple zeros should use default facility
+    ),  # Multiple zeros should use default facility and severity
     (
         "00",
         Facility.LOGAUDIT,
-        Severity.EMERGENCY,
+        Severity.NOTICE,
         "double_zero",
-    ),  # Any string of multiple zeros is invalid
+    ),  # Any string of multiple zeros is invalid, should use default severity
     (
         None,
         Facility.LOGAUDIT,
-        Severity.DEBUG,
+        Severity.NOTICE,
         "none_value",
     ),  # None should use default facility and severity
 ]
