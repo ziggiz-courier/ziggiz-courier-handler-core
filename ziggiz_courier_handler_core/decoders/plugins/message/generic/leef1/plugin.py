@@ -89,11 +89,7 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
         if not isinstance(message, str) or not message.startswith("LEEF:1."):
             return False
 
-        # Use parsing cache if available
-        if "leef1_parser" not in self.parsing_cache:
-            self.parsing_cache["leef1_parser"] = LEEF1Parser.parse(message)
-
-        parsed_data = self.parsing_cache["leef1_parser"]
+        parsed_data = self._get_or_parse_message(message, LEEF1Parser)
 
         if parsed_data and "vendor" in parsed_data and "product" in parsed_data:
             # Extract organization, product, and event_id from LEEF headers for classification

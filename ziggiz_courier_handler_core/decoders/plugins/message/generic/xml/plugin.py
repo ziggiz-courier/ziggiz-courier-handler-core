@@ -90,10 +90,7 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "xml_parser" not in self.parsing_cache:
-            self.parsing_cache["xml_parser"] = XMLParser.parse(message)
-
-        parsed_data = self.parsing_cache["xml_parser"]
+        parsed_data = self._get_or_parse_message(message, XMLParser)
 
         if parsed_data:
             # Set generic classification values

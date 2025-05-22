@@ -83,11 +83,7 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
         if not isinstance(message, str):
             return False
 
-        # Use parsing cache if available
-        if "kv_parser" not in self.parsing_cache:
-            self.parsing_cache["kv_parser"] = KVParser.parse(message)
-
-        event_data = self.parsing_cache["kv_parser"]
+        event_data = self._get_or_parse_message(message, KVParser)
 
         if (
             event_data

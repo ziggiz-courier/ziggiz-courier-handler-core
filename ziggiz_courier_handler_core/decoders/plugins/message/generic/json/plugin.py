@@ -88,10 +88,7 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "json_parser" not in self.parsing_cache:
-            self.parsing_cache["json_parser"] = JSONParser.parse(message)
-
-        parsed_data = self.parsing_cache["json_parser"]
+        parsed_data = self._get_or_parse_message(message, JSONParser)
 
         if parsed_data:
             # Set generic classification values

@@ -14,14 +14,18 @@ This module provides common functionality for message decoder plugins,
 including caching and common utility methods.
 """
 
+
 # Standard library imports
 import logging
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessageDecoderPlugin,
+)
+from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
+    BaseMessageParser,
 )
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
@@ -40,12 +44,49 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
     and utility methods for field mapping.
     """
 
+    def _get_or_parse_message(
+        self,
+        message: str,
+        parser_cls: "Type[BaseMessageParser]",
+    ) -> Any:
+        """
+        Retrieve a parsed message from cache or parse and cache it.
+
+        Args:
+            message (str): The raw message string to parse
+            parser_cls (Type[BaseMessageParser]):
+                The BaseMessageParser subclass to use for parsing.
+
+        Returns:
+            The parsed result (usually a dict or None).
+
+        Raises:
+            TypeError: If parser_cls does not inherit from BaseMessageParser.
+        """
+        if not hasattr(parser_cls, "parse"):
+            raise TypeError(
+                f"parser_cls must implement a staticmethod 'parse', got {parser_cls}"
+            )
+        key = parser_cls.__name__
+        if key not in self.parsing_cache:
+            self.parsing_cache[key] = parser_cls.parse(message)
+        return self.parsing_cache[key]
+
+    """
+    Base class for all message decoder plugins with common functionality.
+
+    This class extends the MessageDecoderPlugin abstract base class with
+    functionality common to all message decoder plugins, such as caching
+    and utility methods for field mapping.
+    """
+
     def __init__(self, parsing_cache: Optional[Dict[str, Any]] = None):
         """
         Initialize the message decoder plugin.
 
         Args:
-            parsing_cache (Optional[Dict[str, Any]]): A dictionary for caching parsed message results
+            parsing_cache (Optional[Dict[str, Any]]):
+                A dictionary for caching parsed message results
         """
         self.parsing_cache = parsing_cache if parsing_cache is not None else {}
 
@@ -67,12 +108,14 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             organization (str): Organization name for the source producer
             product (str): Product name for the source producer
             msgclass (str): Message class for handler_data
-            handler_metadata (Optional[dict]): Additional metadata for this handler entry
+            handler_metadata (Optional[dict]):
+                Additional metadata for this handler entry
         """
         # Set event_data directly
         model.event_data = event_data
 
-        # Use only the class name as key for first-party, or package..Type for third-party plugins
+        # Use only the class name as key for first-party, or package..Type for
+        # third-party plugins
         cls = self.__class__
         module = cls.__module__
         typename = cls.__name__

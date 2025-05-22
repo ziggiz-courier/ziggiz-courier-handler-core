@@ -81,10 +81,7 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
         if not isinstance(message, str):
             return False
 
-        if "csv_parser" not in self.parsing_cache:
-            self.parsing_cache["csv_parser"] = CSVParser.parse(message)
-
-        fields = self.parsing_cache["csv_parser"]
+        fields = self._get_or_parse_message(message, CSVParser)
 
         if fields and isinstance(fields, list) and len(fields) > 3:
             type_field = fields[3] if len(fields) > 3 else None

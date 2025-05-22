@@ -89,11 +89,7 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
         if not isinstance(message, str) or not message.startswith("LEEF:2."):
             return False
 
-        # Use parsing cache if available
-        if "leef2_parser" not in self.parsing_cache:
-            self.parsing_cache["leef2_parser"] = LEEF2Parser.parse(message)
-
-        parsed_data = self.parsing_cache["leef2_parser"]
+        parsed_data = self._get_or_parse_message(message, LEEF2Parser)
 
         if parsed_data:
             # Support both new (SourceProducer) and legacy (vendor/product) cache/test dicts

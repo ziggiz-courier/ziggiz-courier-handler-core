@@ -90,23 +90,17 @@ class GenericCEFDecoderPlugin(MessageDecoderPluginBase):
         if not isinstance(message, str) or not message.startswith("CEF:1"):
             return False
 
-        # Use parsing cache if available
-        if "parse_cef_message" not in self.parsing_cache:
-            self.parsing_cache["parse_cef_message"] = CEFParser.parse(message)
-
-        parsed_data = self.parsing_cache["parse_cef_message"]
+        parsed_data = self._get_or_parse_message(message, CEFParser)
 
         if (
             parsed_data
             and "device_vendor" in parsed_data
             and "device_product" in parsed_data
         ):
-            # Extract organization, product, and name from CEF headers for classification
             organization = parsed_data.get("device_vendor", "unknown").lower()
             product = parsed_data.get("device_product", "unknown").lower()
             msgclass = parsed_data.get("name", "unknown").lower()
 
-            # Use apply_field_mapping method from base class with direct event_data
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,

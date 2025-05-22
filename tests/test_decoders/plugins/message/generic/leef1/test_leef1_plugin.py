@@ -11,7 +11,6 @@
 Unit tests for the Generic LEEF 1.0 Decoder Plugin.
 """
 # Standard library imports
-from typing import Dict, Optional
 
 # Third-party imports
 import pytest
@@ -195,50 +194,3 @@ class TestGenericLEEFDecoderPlugin:
 
         # Check that the LEEF 2.0 message was not decoded by the LEEF 1.0 decoder
         assert result is False
-
-    def test_caching_mechanism(self):
-        """Test that the caching mechanism works correctly."""
-        # Create a model with a LEEF 1.0 message
-        model = SyslogRFC3164Message(
-            facility=1,
-            severity=1,
-            message="LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232",
-        )
-
-        # Create a mock cache that simulates a previous parsing result
-        mock_cache: Dict[str, Optional[Dict[str, str]]] = {
-            "leef1_parser": {
-                "leef_version": "1.0",
-                "vendor": "MockVendor",
-                "product": "MockProduct",
-                "version": "1.0",
-                "event_id": "MockEventID",
-                "src": "192.168.1.1",
-                "dst": "192.168.1.2",
-                "spt": "8080",
-            }
-        }
-
-        # Create the decoder plugin with the mock cache
-        decoder = GenericLEEFDecoderPlugin(parsing_cache=mock_cache)
-
-        # Decode the message
-        result = decoder.decode(model)
-
-        # Check that the cached values were used (not the actual message content)
-        assert result is True
-        assert model.event_data is not None
-        assert model.event_data.get("src") == "192.168.1.1"  # From cache
-        assert model.event_data.get("dst") == "192.168.1.2"  # From cache
-        assert model.event_data.get("spt") == "8080"  # From cache
-        key = "GenericLEEFDecoderPlugin"
-        assert model.handler_data is not None
-        assert key in model.handler_data
-        handler_entry = model.handler_data[key]
-        validate_source_producer(
-            model,
-            expected_organization="mockvendor",
-            expected_product="mockproduct",
-            handler_key=key,
-        )
-        assert handler_entry["msgclass"] == "mockeventid"

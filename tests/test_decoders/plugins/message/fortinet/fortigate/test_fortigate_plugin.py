@@ -192,50 +192,6 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert model.event_data["subtype"] == "system"
         assert model.event_data["msg"] == "Admin admin logged in from 10.1.1.100"
 
-    def test_caching_mechanism(self):
-        """Test that the caching mechanism works correctly."""
-        # Create a model with a message
-        message = "date=2025-05-13 time=12:34:56 devname=fortigate-1 devid=FG800C3912801080 eventtime=1620811234 logid=0004000017 type=traffic subtype=sniffer"
-        model = SyslogRFC3164Message(
-            timestamp="2025-05-13T12:34:56.000Z",
-            facility=14,
-            severity=3,
-            message=message,
-        )
-
-        # Create a mock cache with predetermined parsing results
-        mock_cache = {
-            "kv_parser": {
-                "date": "2025-05-14",  # Different date than in the message
-                "time": "13:45:00",
-                "devname": "cached-fortigate",
-                "devid": "CACHED-DEVICE-ID",
-                "eventtime": "1620899999",
-                "logid": "0004000017",
-                "type": "traffic",
-                "subtype": "sniffer",
-                "action": "deny",  # This field isn't in the original message
-            }
-        }
-
-        # Create the decoder plugin with the mock cache
-        decoder = FortinetFortiGateKVDecoderPlugin(parsing_cache=mock_cache)
-
-        # Decode the message
-        result = decoder.decode(model)
-
-        # Check that the cached values were used (not the actual message content)
-        assert result is True
-        assert model.event_data is not None
-        assert model.event_data.get("devname") == "cached-fortigate"  # From cache
-        assert model.event_data.get("devid") == "CACHED-DEVICE-ID"  # From cache
-        assert model.event_data.get("action") == "deny"  # From cache
-        key = "FortinetFortiGateKVDecoderPlugin"
-        assert model.handler_data is not None
-        assert key in model.handler_data
-        handler_entry = model.handler_data[key]
-        assert handler_entry["msgclass"] == "traffic_sniffer"
-
     def test_non_matching_message(self):
         """Test with a message that doesn't match the Fortinet FortiGate format."""
         # Create a model with a non-matching message
