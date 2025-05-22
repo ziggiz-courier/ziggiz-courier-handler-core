@@ -220,11 +220,3 @@ class LEEF1Parser(BaseMessageParser):
                 i += 1
 
         return result
-
-
-# For backwards compatibility
-def parse_leef1_message(
-    message: str,
-) -> Optional[Dict[str, Union[str, SourceProducer]]]:
-    """Backwards compatibility wrapper for LEEF1Parser.parse()"""
-    return LEEF1Parser.parse(message)
