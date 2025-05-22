@@ -16,7 +16,7 @@ LEEF:Version|Vendor|Product|Version|EventID|Extension
 The Extension part contains key-value pairs in the format key=value.
 """
 # Standard library imports
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, cast
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
@@ -75,7 +75,7 @@ def parse_leef_message(message: str) -> Optional[Dict[str, Union[str, SourceProd
             extension_dict = _parse_extension(extension)
             result.update(extension_dict)
 
-        return result
+        return cast(Dict[str, Union[str, SourceProducer]], result)
 
     except Exception:
         # Fall back to None if any errors occur

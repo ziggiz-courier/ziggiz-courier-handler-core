@@ -20,7 +20,7 @@ LEEF 2.0 allows for more format flexibility and encoding options than LEEF 1.0.
 import logging
 import re
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, cast
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
@@ -72,7 +72,7 @@ def parse_leef_message(
             # Create SourceProducer and store in result dict
             source_producer = SourceProducer(organization="IBM", product="QRadar")
             result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
-            return result
+            return cast(Dict[str, Union[str, SourceProducer, Any]], result)
 
         # Handle all other cases
         # First, split by pipe and handle basic header
@@ -143,7 +143,7 @@ def parse_leef_message(
         for label, field in labels.items():
             result[label] = result[field]
 
-        return result
+        return cast(Dict[str, Union[str, SourceProducer, Any]], result)
 
     except Exception as e:
         logger.debug("Error parsing LEEF 2.0 message", extra={"error": str(e)})

@@ -16,7 +16,7 @@ CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severi
 The Extension part contains key-value pairs in the format key=value.
 """
 # Standard library imports
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, cast
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
@@ -89,7 +89,7 @@ def parse_cef_message(message: str) -> Optional[Dict[str, Union[str, SourceProdu
             for label, field in labels.items():
                 result[label] = result[field]
 
-        return result
+        return cast(Dict[str, Union[str, SourceProducer]], result)
 
     except Exception:
         # Fall back to None if any errors occur
