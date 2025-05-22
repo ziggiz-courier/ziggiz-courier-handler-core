@@ -16,13 +16,13 @@ CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severi
 The Extension part contains key-value pairs in the format key=value.
 """
 # Standard library imports
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-def parse_cef_message(message: str) -> Optional[Dict[str, str]]:
+def parse_cef_message(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
     """
     High-performance parser for Common Event Format (CEF) message strings.
     Handles CEF header and extension fields with proper escaping rules.
@@ -66,9 +66,10 @@ def parse_cef_message(message: str) -> Optional[Dict[str, str]]:
             result[field] = parts[i]
 
         # Add SourceProducer instance
-        result["SourceProducer"] = SourceProducer(
+        source_producer = SourceProducer(
             organization=result["device_vendor"], product=result["device_product"]
         )
+        result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
 
         # Process extension (key=value pairs)
         extension = parts[7]

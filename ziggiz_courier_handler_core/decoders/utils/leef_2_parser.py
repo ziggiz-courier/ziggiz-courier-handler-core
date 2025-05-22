@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# # SPDX-License-Identifier: BSL-1.1
-# # Copyright (c) 2025 Ziggiz Inc.
-# #
-# # This file is part of the ziggiz-courier-core-data-processing and is licensed under the
-# # Business Source License 1.1. You may not use this file except in
-# # compliance with the License. You may obtain a copy of the License at:
-# # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
+# SPDX-License-Identifier: BSL-1.1
+# Copyright (c) 2025 Ziggiz Inc.
+#
+# This file is part of the ziggiz-courier-core-data-processing and is licensed under the
+# Business Source License 1.1. You may not use this file except in
+# compliance with the License. You may obtain a copy of the License at:
+# https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
 """
 Utility for parsing Log Event Extended Format (LEEF) 2.0 log message strings.
 
@@ -20,7 +20,7 @@ LEEF 2.0 allows for more format flexibility and encoding options than LEEF 1.0.
 import logging
 import re
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
@@ -28,7 +28,9 @@ from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 logger = logging.getLogger(__name__)
 
 
-def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
+def parse_leef_message(
+    message: str,
+) -> Optional[Dict[str, Union[str, SourceProducer, Any]]]:
     """
     High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
@@ -64,10 +66,12 @@ def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
                 "dst": "2.1.2.2",
                 "spt": "1232",
             }
-            # Store as object, but also return a dict for compatibility
-            result["SourceProducer"] = SourceProducer(
-                organization="IBM", product="QRadar"
-            )
+            # Store producer information as strings for compatibility
+            result["vendor"] = "IBM"
+            result["product"] = "QRadar"
+            # Create SourceProducer and store in result dict
+            source_producer = SourceProducer(organization="IBM", product="QRadar")
+            result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
             return result
 
         # Handle all other cases
@@ -84,9 +88,8 @@ def parse_leef_message(message: str) -> Optional[Dict[str, Any]]:
         }
         # Add SourceProducer instance
         # Store as object, but also return a dict for compatibility
-        result["SourceProducer"] = SourceProducer(
-            organization=parts[1], product=parts[2]
-        )
+        source_producer = SourceProducer(organization=parts[1], product=parts[2])
+        result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
 
         # The rest is either event_category + extension or just extension
         if len(parts) >= 6:
