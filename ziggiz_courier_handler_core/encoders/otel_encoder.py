@@ -11,6 +11,9 @@
 
 # Standard library imports
 
+# Standard library imports
+from typing import cast
+
 # Third-party imports
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import Span
@@ -75,9 +78,14 @@ class OtelSpanEncoder(Encoder[CommonEvent, Span]):
         ) as span:
             # Set span attributes
             span.set_attribute("event.id", model.event_id)
-            span.set_attribute("event.timestamp", model.timestamp.isoformat())
+            if model.timestamp:
+                span.set_attribute("event.timestamp", model.timestamp.isoformat())
             # Also add event_time if it's different from timestamp
-            if model.event_time and model.event_time != model.timestamp:
+            if (
+                model.event_time
+                and model.timestamp
+                and model.event_time != model.timestamp
+            ):
                 span.set_attribute("event.time", model.event_time.isoformat())
             span.set_attribute("source.component", model.source_component)
             span.set_attribute("severity.text", model.severity)
@@ -100,4 +108,4 @@ class OtelSpanEncoder(Encoder[CommonEvent, Span]):
             # Add message as an event
             span.add_event("message", {"content": model.message})
 
-            return span
+            return cast(Span, span)

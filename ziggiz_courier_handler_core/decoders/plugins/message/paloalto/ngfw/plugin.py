@@ -94,7 +94,7 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
             type_field = fields[3] if len(fields) > 3 else None
             field_names = None
 
-            if type_field:
+            if type_field is not None:
                 field_names = PAN_TYPE_FIELD_MAP.get(type_field.upper())
 
             if field_names:
@@ -105,7 +105,9 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                     event_data=event_data,
                     organization="paloalto",
                     product="ngfw",
-                    msgclass=type_field.lower(),
+                    msgclass=(
+                        type_field.lower() if type_field is not None else "unknown"
+                    ),
                 )
                 logger.debug(
                     "PaloAlto NGFW plugin parsed event_data",

@@ -12,9 +12,12 @@
 
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, TypeVar
+from typing import Any, Generic, Optional, TypeVar, cast
 
 # Local/package imports
+from ziggiz_courier_handler_core.decoders.plugins.message.base import (
+    MessageDecoderPluginBase,
+)
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
@@ -67,11 +70,22 @@ class Decoder(Generic[T], ABC):
                 MessagePluginStage.UNPROCESSED_MESSAGES,
             ]:
                 for plugin_cls in plugin_groups.get(stage, []):
-                    plugin = plugin_cls(parsing_cache)
+                    # Use issubclass to check if the plugin class is MessageDecoderPluginBase
+                    # which accepts parsing_cache in __init__
+                    # Create the plugin instance with or without parsing_cache
+                    if issubclass(plugin_cls, MessageDecoderPluginBase):
+                        plugin = plugin_cls(parsing_cache)
+                    else:
+                        # Use cast to tell mypy this is a MessageDecoderPlugin
+                        plugin = cast(MessageDecoderPluginBase, plugin_cls())
                     if plugin.decode(model):
                         return
 
-    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+    def __init__(
+        self,
+        connection_cache: Optional[dict] = None,
+        event_parsing_cache: Optional[dict] = None,
+    ):
         """
         Initialize the decoder.
 
