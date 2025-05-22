@@ -25,23 +25,6 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-# For backward compatibility
-def parse_cef_message(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
-    """
-    Backward compatibility function for parsing CEF messages.
-
-    This function is maintained for backward compatibility.
-    New code should use CEFParser.parse() directly.
-
-    Args:
-        message: The raw CEF message string
-
-    Returns:
-        Dictionary of parsed key-value pairs or None if not valid CEF format
-    """
-    return CEFParser.parse(message)
-
-
 class CEFParser(BaseMessageParser):
     """
     Parser for Common Event Format (CEF) message strings.

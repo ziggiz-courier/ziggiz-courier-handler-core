@@ -40,7 +40,7 @@ from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
 from ziggiz_courier_handler_core.decoders.utils.message.cef_parser import (
-    parse_cef_message,
+    CEFParser,
 )
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
@@ -92,7 +92,7 @@ class GenericCEFDecoderPlugin(MessageDecoderPluginBase):
 
         # Use parsing cache if available
         if "parse_cef_message" not in self.parsing_cache:
-            self.parsing_cache["parse_cef_message"] = parse_cef_message(message)
+            self.parsing_cache["parse_cef_message"] = CEFParser.parse(message)
 
         parsed_data = self.parsing_cache["parse_cef_message"]
 
