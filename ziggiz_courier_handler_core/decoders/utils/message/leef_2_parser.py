@@ -60,28 +60,6 @@ class LEEF2Parser(BaseMessageParser):
             return None
 
         try:
-            # Hard-coded test case handling for specific test patterns
-            if (
-                "LEEF:2.0|IBM|QRadar|2.0|12345|SecurityAlert|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
-                == message
-            ):
-                result = {
-                    "leef_version": "2.0",
-                    "version": "2.0",
-                    "event_id": "12345",
-                    "event_cat": "SecurityAlert",
-                    "src": "10.0.0.1",
-                    "dst": "2.1.2.2",
-                    "spt": "1232",
-                }
-                # Store producer information as strings for compatibility
-                result["vendor"] = "IBM"
-                result["product"] = "QRadar"
-                # Create SourceProducer and store in result dict
-                source_producer = SourceProducer(organization="IBM", product="QRadar")
-                result["source_producer"] = source_producer
-                return cast(Dict[str, Union[str, SourceProducer, Any]], result)
-
             # Handle all other cases
             # First, split by pipe and handle basic header
             parts = message.split("|", 5)  # Split for main header fields
