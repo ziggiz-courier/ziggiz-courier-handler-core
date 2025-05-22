@@ -61,10 +61,10 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
         """
         parsing_cache: dict = {}
         for decoder in (self._rfc5424, self._rfc3164, self._rfcbase):
-            try:
-                return decoder.decode(raw_data, parsing_cache=parsing_cache)
-            except Exception:
-                continue
+            result = decoder.decode(raw_data, parsing_cache=parsing_cache)
+            if result is not None:
+                return result
+
         # If all decoders fail, return EventEnvelopeBaseModel with message and timestamp
         # Standard library imports
         from datetime import datetime

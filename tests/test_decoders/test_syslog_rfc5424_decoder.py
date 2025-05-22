@@ -148,9 +148,9 @@ class TestSyslogRFC5424Decoder:
         # Invalid syslog message
         invalid_syslog = "This is not a valid syslog message"
 
-        # Decoding should raise an error
-        with pytest.raises(ValueError):
-            decoder.decode(invalid_syslog)
+        # Decoding should return None
+        result = decoder.decode(invalid_syslog)
+        assert result is None
 
     @pytest.mark.parametrize(
         "pri, expected_facility, expected_severity, test_id",

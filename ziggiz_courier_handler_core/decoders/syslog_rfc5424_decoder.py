@@ -56,7 +56,7 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
 
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
-    ) -> SyslogRFC5424Message:
+    ) -> Optional[SyslogRFC5424Message]:
         """
         Decode a syslog RFC5424 message from raw string data.
 
@@ -65,10 +65,7 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             parsing_cache: Optional dictionary for caching parsing data
 
         Returns:
-            A SyslogRFC5424Message instance representing the decoded data
-
-        Raises:
-            ValueError: If the raw_data does not match syslog format
+            A SyslogRFC5424Message instance representing the decoded data, or None if decoding fails
         """
         try:
             # Extract PRI and message content using the reusable method
@@ -79,13 +76,14 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             # Parse the rest of the message using the message pattern
             match = self.MESSAGE_PATTERN.match(message_content)
             if not match:
-                raise ValueError(f"Invalid RFC5424 format after PRI: {message_content}")
+                # Return None instead of raising an exception
+                return None
 
             data = match.groupdict()
             structured_data = self._parse_structured_data(data["structured_data"])
 
             # Create RFC5424 message with extracted data using from_priority
-            model = SyslogRFC5424Message.from_priority(
+            model: SyslogRFC5424Message = SyslogRFC5424Message.from_priority(
                 pri,
                 timestamp=self._parse_timestamp(data["timestamp"]),
                 hostname=self._normalize_hostname(data["hostname"]),
@@ -101,9 +99,9 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
                 model, SyslogRFC5424Message, parsing_cache
             )
             return model
-        except ValueError as e:
-            # Maintain original error format for compatibility
-            raise ValueError(f"Invalid RFC5424 format: {raw_data}") from e
+        except ValueError:
+            # Return None instead of raising an exception
+            return None
 
     def _parse_timestamp(self, timestamp: str) -> datetime:
         """

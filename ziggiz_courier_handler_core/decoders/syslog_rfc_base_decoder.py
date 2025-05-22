@@ -83,7 +83,7 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
 
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
-    ) -> SyslogRFCBaseModel:
+    ) -> Optional[SyslogRFCBaseModel]:
         """
         Decode a syslog message by extracting the PRI field and remaining message.
 
@@ -96,18 +96,21 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
             parsing_cache: Optional dictionary for caching parsing data
 
         Returns:
-            A SyslogRFCBaseModel instance representing the decoded data
-
-        Raises:
-            ValueError: If the raw_data does not match basic syslog format
+            A SyslogRFCBaseModel instance representing the decoded data, or None if decoding fails
         """
         if parsing_cache is None:
             parsing_cache = self.event_parsing_cache
 
-        pri, message = self.extract_pri_and_content(raw_data)
+        try:
+            pri, message = self.extract_pri_and_content(raw_data)
 
-        # Create the model using from_priority which handles validation
-        model = SyslogRFCBaseModel.from_priority(pri, message=message)
+            # Create the model using from_priority which handles validation
+            model: SyslogRFCBaseModel = SyslogRFCBaseModel.from_priority(
+                pri, message=message
+            )
 
-        self._run_message_decoder_plugins(model, SyslogRFCBaseModel, parsing_cache)
-        return model
+            self._run_message_decoder_plugins(model, SyslogRFCBaseModel, parsing_cache)
+            return model
+        except ValueError:
+            # Return None instead of raising an exception
+            return None

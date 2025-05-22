@@ -232,7 +232,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
 
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
-    ) -> SyslogRFC3164Message:  # Explicit return type
+    ) -> Optional[SyslogRFC3164Message]:  # Updated return type to include None
         """
         Decode a syslog RFC3164 message from raw string data.
 
@@ -248,10 +248,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             **kwargs: Additional keyword arguments for extensibility
 
         Returns:
-            A SyslogRFC3164Message instance representing the decoded data
-
-        Raises:
-            ValueError: If the raw_data does not match syslog format
+            A SyslogRFC3164Message instance representing the decoded data, or None if decoding fails
         """
 
         # Initialize default values for the model
@@ -283,8 +280,8 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 and app_name is None
                 and proc_id is None
             ):
-                # This is a simple <PRI>MESSAGE format
-                raise ValueError(f"Invalid BSD-style syslog format: {raw_data}")
+                # This is a simple <PRI>MESSAGE format that doesn't match RFC3164
+                return None
 
             model: SyslogRFC3164Message = SyslogRFC3164Message.from_priority(
                 pri,
@@ -301,10 +298,9 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             )
 
             return model
-        except ValueError as e:
-            # Maintain original error format for compatibility
-            raise ValueError(f"Invalid BSD-style syslog format: {raw_data}") from e
-        except Exception as e:
-            # Catch any other exceptions and convert to ValueError
-            # This ensures we never return None or Any implicitly
-            raise ValueError(f"Error decoding syslog message: {raw_data}") from e
+        except ValueError:
+            # Return None instead of raising an exception
+            return None
+        except Exception:
+            # Return None for any other exceptions
+            return None

@@ -248,11 +248,11 @@ class TestSyslogRFC3164Decoder:
     #     assert result.proc_id is None
 
     def test_decode_invalid_format(self):
-        """Test that the decoder raises ValueError for invalid format."""
+        """Test that the decoder returns None for invalid format."""
         decoder = SyslogRFC3164Decoder()
 
-        with pytest.raises(ValueError, match="Invalid BSD-style syslog format"):
-            decoder.decode("This is not a valid syslog message")
+        result = decoder.decode("This is not a valid syslog message")
+        assert result is None
 
     def test_decode_with_space_after_pri(self):
         """Test decoding a message with space after PRI."""

@@ -128,5 +128,6 @@ class TestSyslogRFCBaseDecoder:
         """Test decoding messages with invalid syslog format."""
         decoder = SyslogRFCBaseDecoder()
 
-        with pytest.raises(ValueError, match="Invalid syslog format"):
-            decoder.decode(invalid_message)
+        # Decoding should return None
+        result = decoder.decode(invalid_message)
+        assert result is None

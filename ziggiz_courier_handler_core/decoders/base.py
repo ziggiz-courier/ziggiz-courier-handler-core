@@ -99,7 +99,7 @@ class Decoder(Generic[T], ABC):
         )
 
     @abstractmethod
-    def decode(self, raw_data: Any) -> T:
+    def decode(self, raw_data: Any) -> Optional[T]:
         """
         Decode raw data into a model.
 
@@ -107,5 +107,5 @@ class Decoder(Generic[T], ABC):
             raw_data: The raw data to decode.
 
         Returns:
-            A model instance representing the decoded data.
+            A model instance representing the decoded data, or None if decoding fails.
         """
