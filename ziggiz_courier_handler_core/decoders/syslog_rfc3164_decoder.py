@@ -13,7 +13,7 @@
 import re
 
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import List, Optional, Pattern, Tuple, TypedDict
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
@@ -34,6 +34,13 @@ TAG_PATTERN = re.compile(
 plugins = get_message_decoders(SyslogRFC3164Message)
 
 
+class DateFormatSpec(TypedDict):
+    """Type definition for date format specifications."""
+
+    strpfmt: List[str]
+    regex: Pattern
+
+
 class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
     """Decoder for syslog messages following RFC3164 format (BSD-style syslog).
 
@@ -48,7 +55,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
     # strpfmt for known date formats used in RFC3164 and similar logs
     # The regex patterns are pre-compiled to improve performance
     # The strptime formats are used to parse the date strings
-    DATE_FORMATS = [
+    DATE_FORMATS: List[DateFormatSpec] = [
         {
             "strpfmt": ["%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ"],
             "regex": re.compile(
@@ -135,8 +142,11 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         )
 
     def _parse_timestamp(
-        self, timestamp_str: str, formats, reference_time: Optional[datetime] = None
-    ):
+        self,
+        timestamp_str: str,
+        formats: List[str],
+        reference_time: Optional[datetime] = None,
+    ) -> Optional[datetime]:
         """
         Parse timestamp using the TimestampParser utility class.
 
@@ -172,14 +182,16 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         # Try to parse timestamp using all available formats
         for format_spec in self.DATE_FORMATS:
             # Extract timestamp and remaining content using regex
-            match = format_spec["regex"].match(message_content)
+            regex: Pattern = format_spec["regex"]
+            match = regex.match(message_content)
             if match:
                 # Get timestamp string and remaining content
                 timestamp_str = match.group("ts")
                 remaining = match.group("remaining")
 
                 # Parse the timestamp using format from specification
-                timestamp = self._parse_timestamp(timestamp_str, format_spec["strpfmt"])
+                strpfmt: List[str] = format_spec["strpfmt"]
+                timestamp = self._parse_timestamp(timestamp_str, strpfmt)
                 if timestamp is not None:
                     return timestamp, remaining
 
@@ -220,7 +232,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
 
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
-    ) -> SyslogRFC3164Message:
+    ) -> SyslogRFC3164Message:  # Explicit return type
         """
         Decode a syslog RFC3164 message from raw string data.
 
@@ -257,7 +269,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             # Try to parse timestamp
             timestamp, remaining = self._try_parse_timestamp(message_content)
 
-            if timestamp is not None:
+            if timestamp is not None and remaining is not None:
                 hostname, app_name, proc_id, message_content = self._parse_hostname_tag(
                     remaining
                 )
@@ -274,7 +286,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 # This is a simple <PRI>MESSAGE format
                 raise ValueError(f"Invalid BSD-style syslog format: {raw_data}")
 
-            model = SyslogRFC3164Message.from_priority(
+            model: SyslogRFC3164Message = SyslogRFC3164Message.from_priority(
                 pri,
                 message=message_content,
                 timestamp=timestamp,
@@ -292,3 +304,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         except ValueError as e:
             # Maintain original error format for compatibility
             raise ValueError(f"Invalid BSD-style syslog format: {raw_data}") from e
+        except Exception as e:
+            # Catch any other exceptions and convert to ValueError
+            # This ensures we never return None or Any implicitly
+            raise ValueError(f"Error decoding syslog message: {raw_data}") from e
