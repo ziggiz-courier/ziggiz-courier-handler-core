@@ -38,7 +38,9 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
-from ziggiz_courier_handler_core.decoders.utils.leef_1_parser import parse_leef_message
+from ziggiz_courier_handler_core.decoders.utils.message.leef_1_parser import (
+    parse_leef1_message,
+)
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
@@ -88,10 +90,10 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
             return False
 
         # Use parsing cache if available
-        if "parse_leef_message" not in self.parsing_cache:
-            self.parsing_cache["parse_leef_message"] = parse_leef_message(message)
+        if "parse_leef1_message" not in self.parsing_cache:
+            self.parsing_cache["parse_leef1_message"] = parse_leef1_message(message)
 
-        parsed_data = self.parsing_cache["parse_leef_message"]
+        parsed_data = self.parsing_cache["parse_leef1_message"]
 
         if parsed_data and "vendor" in parsed_data and "product" in parsed_data:
             # Extract organization, product, and event_id from LEEF headers for classification

@@ -15,7 +15,9 @@ Covers parsing of JSON formats.
 import pytest
 
 # Local/package imports
-from ziggiz_courier_handler_core.decoders.utils.json_parser import parse_json_message
+from ziggiz_courier_handler_core.decoders.utils.message.json_parser import (
+    parse_json_message,
+)
 
 
 @pytest.mark.unit

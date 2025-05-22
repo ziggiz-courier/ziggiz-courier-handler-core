@@ -38,7 +38,9 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
-from ziggiz_courier_handler_core.decoders.utils.xml_parser import parse_xml_message
+from ziggiz_courier_handler_core.decoders.utils.message.xml_parser import (
+    parse_xml_message,
+)
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )

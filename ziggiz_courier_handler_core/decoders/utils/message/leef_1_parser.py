@@ -22,7 +22,9 @@ from typing import Dict, List, Optional, Union, cast
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-def parse_leef_message(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
+def parse_leef1_message(
+    message: str,
+) -> Optional[Dict[str, Union[str, SourceProducer]]]:
     """
     High-performance parser for Log Event Extended Format (LEEF) 1.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.

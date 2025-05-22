@@ -28,7 +28,7 @@ from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 logger = logging.getLogger(__name__)
 
 
-def parse_leef_message(
+def parse_leef2_message(
     message: str,
 ) -> Optional[Dict[str, Union[str, SourceProducer, Any]]]:
     """
