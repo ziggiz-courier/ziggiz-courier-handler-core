@@ -11,7 +11,7 @@
 """Decoder for unknown syslog string: tries RFC5424, then RFC3164, then RFCBase, else returns EventEnvelopeBaseModel."""
 
 # Standard library imports
-from typing import Any
+from typing import Any, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
@@ -32,7 +32,11 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
 class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
     """Decoder that attempts RFC5424, then RFC3164, then RFCBase, else returns EventEnvelopeBaseModel with message."""
 
-    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+    def __init__(
+        self,
+        connection_cache: Optional[dict] = None,
+        event_parsing_cache: Optional[dict] = None,
+    ):
         super().__init__(
             connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
         )
@@ -55,7 +59,7 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
         Returns:
             EventEnvelopeBaseModel or subclass instance
         """
-        parsing_cache = {}
+        parsing_cache: dict = {}
         for decoder in (self._rfc5424, self._rfc3164, self._rfcbase):
             try:
                 return decoder.decode(raw_data, parsing_cache=parsing_cache)

@@ -35,7 +35,11 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
         r"(?P<msg_id>\S+) (?P<structured_data>(?:\[.+?\])+|-) (?P<message>.*)"
     )
 
-    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+    def __init__(
+        self,
+        connection_cache: Optional[dict] = None,
+        event_parsing_cache: Optional[dict] = None,
+    ):
         """
         Initialize the decoder.
 
@@ -50,7 +54,9 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
         )
 
-    def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFC5424Message:
+    def decode(
+        self, raw_data: str, parsing_cache: Optional[dict] = None
+    ) -> SyslogRFC5424Message:
         """
         Decode a syslog RFC5424 message from raw string data.
 

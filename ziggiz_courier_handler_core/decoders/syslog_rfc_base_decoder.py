@@ -10,6 +10,9 @@
 
 """Syslog RFC Base decoder implementation for basic PRI extraction."""
 
+# Standard library imports
+from typing import Optional, Tuple
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
@@ -31,7 +34,7 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
     """
 
     @staticmethod
-    def extract_pri_and_content(raw_data: str) -> tuple[str | None, str]:
+    def extract_pri_and_content(raw_data: str) -> Tuple[Optional[str], str]:
         """
         Extract the PRI value and remaining message content from a syslog message.
 
@@ -78,7 +81,9 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         message = raw_data[message_start:] if message_start < message_len else ""
         return pri, message
 
-    def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFCBaseModel:
+    def decode(
+        self, raw_data: str, parsing_cache: Optional[dict] = None
+    ) -> SyslogRFCBaseModel:
         """
         Decode a syslog message by extracting the PRI field and remaining message.
 

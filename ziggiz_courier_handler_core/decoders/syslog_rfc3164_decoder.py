@@ -115,7 +115,11 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         "panic",
     }
 
-    def __init__(self, connection_cache: dict = None, event_parsing_cache: dict = None):
+    def __init__(
+        self,
+        connection_cache: Optional[dict] = None,
+        event_parsing_cache: Optional[dict] = None,
+    ):
         """
         Initialize the decoder.
 
@@ -214,7 +218,9 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
 
         return hostname, app_name, proc_id, message_content
 
-    def decode(self, raw_data: str, parsing_cache: dict = None) -> SyslogRFC3164Message:
+    def decode(
+        self, raw_data: str, parsing_cache: Optional[dict] = None
+    ) -> SyslogRFC3164Message:
         """
         Decode a syslog RFC3164 message from raw string data.
 
