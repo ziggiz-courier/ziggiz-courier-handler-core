@@ -38,6 +38,9 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.const import (
+    ORGANIZATION,
+)
 from ziggiz_courier_handler_core.decoders.utils.message.leef_1_parser import (
     LEEF1Parser,
 )
@@ -93,7 +96,7 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data and "vendor" in parsed_data and "product" in parsed_data:
             # Extract organization, product, and event_id from LEEF headers for classification
-            organization = parsed_data.get("vendor", "unknown").lower()
+            organization = parsed_data.get("vendor", ORGANIZATION).lower()
             product = parsed_data.get("product", "unknown").lower()
             msgclass = parsed_data.get("event_id", "unknown").lower()
 
@@ -101,10 +104,9 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
-                organization=organization,
-                product=product,
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, organization, product)
 
             logger.debug(
                 "LEEF plugin parsed event_data",

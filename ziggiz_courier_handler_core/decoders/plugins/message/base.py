@@ -94,9 +94,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         self,
         model: EventEnvelopeBaseModel,
         event_data: Dict[str, Any],
-        organization: str,
-        product: str,
-        msgclass: str,
+        msgclass: str = "unknown",
         handler_metadata: Optional[dict] = None,
     ) -> None:
         """
@@ -105,8 +103,6 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         Args:
             model (EventEnvelopeBaseModel): The model to update with parsed fields
             event_data (Dict[str, Any]): Dictionary containing event data to be stored
-            organization (str): Organization name for the source producer
-            product (str): Product name for the source producer
             msgclass (str): Message class for handler_data
             handler_metadata (Optional[dict]):
                 Additional metadata for this handler entry
@@ -137,14 +133,33 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             model.handler_data = {}
         model.handler_data[key] = entry
 
-        # Store organization and product information solely in the SourceProducer object
-        model.handler_data["SourceProducer"] = SourceProducer(
-            organization=organization, product=product
-        )
+        # NOTE: The plugin should call _set_source_producer_handler_data(model, organization, product) separately if needed.
+
         logger.debug(
             "plugin parsed event_data",
             extra={
                 "event_data": model.event_data,
                 "handler_data": model.handler_data,
             },
+        )
+
+    def _set_source_producer_handler_data(
+        self,
+        model: EventEnvelopeBaseModel,
+        organization: str,
+        product: str,
+    ) -> None:
+        """
+        Set the SourceProducer object in the handler_data dict using the string version of the type as key.
+
+        Args:
+            model (EventEnvelopeBaseModel): The model whose handler_data will be updated
+            organization (str): Organization name
+            product (str): Product name
+        """
+        if model.handler_data is None:
+            model.handler_data = {}
+        key = SourceProducer.__name__
+        model.handler_data[key] = SourceProducer(
+            organization=organization, product=product
         )

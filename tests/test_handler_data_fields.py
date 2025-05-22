@@ -16,8 +16,6 @@ from typing import Any
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
-
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
@@ -52,22 +50,22 @@ class TestHandlerDataFields:
         # Sample event data
         event_data = {"field1": "value1", "field2": "value2"}
 
-        # Apply field mapping
+        # Apply field mapping (no organization/product)
         plugin.apply_field_mapping(
             model=model,
             event_data=event_data,
-            organization="test_org",
-            product="test_product",
             msgclass="test_class",
         )
+        # Set SourceProducer handler data
+        plugin._set_source_producer_handler_data(model, "test_org", "test_product")
 
         # Check the structure of handler_data
         assert model.handler_data is not None
 
         # Tests..MockMessageDecoderPlugin because it's a third-party plugin
-        key = "tests..MockMessageDecoderPlugin"
-        assert key in model.handler_data
-        handler_entry = model.handler_data[key]
+        plugin_key = "tests..MockMessageDecoderPlugin"
+        assert plugin_key in model.handler_data
+        handler_entry = model.handler_data[plugin_key]
 
         # Assert expected keys
         assert "msgclass" in handler_entry
@@ -79,10 +77,9 @@ class TestHandlerDataFields:
         # Print the full handler_data for inspection
         print(f"Handler data: {model.handler_data}")
 
-        # Verify SourceProducer
-        validate_source_producer(
-            model,
-            expected_organization="test_org",
-            expected_product="test_product",
-            handler_key=key,
-        )
+        # Verify SourceProducer (now keyed by "SourceProducer")
+        sp_key = "SourceProducer"
+        assert sp_key in model.handler_data
+        sp = model.handler_data[sp_key]
+        assert sp.organization == "test_org"
+        assert sp.product == "test_product"

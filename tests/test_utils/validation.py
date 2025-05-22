@@ -186,11 +186,11 @@ def validate_source_producer(
         hasattr(result_or_handler_data, "handler_data")
         and result_or_handler_data.handler_data is not None
     ):
-        # Verify handler_data contains SourceProducer
+        sp_key = "SourceProducer"
         assert (
-            "SourceProducer" in result_or_handler_data.handler_data
-        ), "SourceProducer not found in handler_data"
-        sp = result_or_handler_data.handler_data["SourceProducer"]
+            sp_key in result_or_handler_data.handler_data
+        ), f"{sp_key} not found in handler_data"
+        sp = result_or_handler_data.handler_data[sp_key]
 
         # If handler_key is provided, verify it exists in handler_data
         if handler_key is not None:
@@ -200,11 +200,9 @@ def validate_source_producer(
 
     # Case 3: Dictionary potentially containing SourceProducer
     elif isinstance(result_or_handler_data, dict):
-        # Verify dictionary contains SourceProducer
-        assert (
-            "SourceProducer" in result_or_handler_data
-        ), "SourceProducer not found in dictionary"
-        sp = result_or_handler_data["SourceProducer"]
+        sp_key = "SourceProducer"
+        assert sp_key in result_or_handler_data, f"{sp_key} not found in dictionary"
+        sp = result_or_handler_data[sp_key]
 
         # If handler_key is provided, verify it exists in the dictionary
         if handler_key is not None:
@@ -214,9 +212,9 @@ def validate_source_producer(
 
     # None of the above
     else:
-        assert (
-            False
-        ), f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
+        raise AssertionError(
+            f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
+        )
 
     # Validate SourceProducer fields
     assert (

@@ -99,13 +99,16 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
             )
 
             # Use apply_field_mapping method from base class
+
+            from ..const import ORGANIZATION
+
+            product = "fortigate"
             self.apply_field_mapping(
                 model=model,
                 event_data=event_data,
-                organization="fortinet",
-                product="fortigate",
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, ORGANIZATION, product)
 
             logger.debug(
                 "FortiGate plugin parsed event_data",

@@ -94,7 +94,8 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            organization = "generic"
+            from ..const import ORGANIZATION
+
             product = "unknown_xml"
 
             # Check if we have a DTD name to use as msgclass
@@ -105,13 +106,13 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
                 del parsed_data["_dtd_name"]
 
             # Apply parsed data to model
+
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
-                organization=organization,
-                product=product,
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, ORGANIZATION, product)
 
             logger.debug(
                 "XML plugin parsed event_data",

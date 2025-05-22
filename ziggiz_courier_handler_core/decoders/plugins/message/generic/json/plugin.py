@@ -48,6 +48,9 @@ from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseMode
 
 logger = logging.getLogger(__name__)
 
+# Module-level product constant
+PRODUCT = "unknown_json"
+
 
 class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
     """
@@ -92,18 +95,17 @@ class GenericJSONDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            organization = "generic"
-            product = "unknown_json"
+            from ..const import ORGANIZATION
+
             msgclass = "unknown"
 
             # Apply parsed data to model
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
-                organization=organization,
-                product=product,
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, ORGANIZATION, PRODUCT)
 
             logger.debug(
                 "JSON plugin parsed event_data",

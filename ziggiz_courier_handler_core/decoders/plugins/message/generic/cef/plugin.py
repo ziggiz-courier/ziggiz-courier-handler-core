@@ -39,6 +39,9 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.const import (
+    ORGANIZATION,
+)
 from ziggiz_courier_handler_core.decoders.utils.message.cef_parser import (
     CEFParser,
 )
@@ -97,16 +100,20 @@ class GenericCEFDecoderPlugin(MessageDecoderPluginBase):
             and "device_vendor" in parsed_data
             and "device_product" in parsed_data
         ):
-            organization = parsed_data.get("device_vendor", "unknown").lower()
+            # Organization and product from parsed_data
+            organization = parsed_data.get("device_vendor", ORGANIZATION).lower()
             product = parsed_data.get("device_product", "unknown").lower()
             msgclass = parsed_data.get("name", "unknown").lower()
 
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
+                msgclass=msgclass,
+            )
+            self._set_source_producer_handler_data(
+                model=model,
                 organization=organization,
                 product=product,
-                msgclass=msgclass,
             )
 
             logger.debug(

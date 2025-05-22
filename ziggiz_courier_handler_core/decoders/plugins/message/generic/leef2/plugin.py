@@ -38,6 +38,9 @@ from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
 from ziggiz_courier_handler_core.decoders.plugins.message.base import (
     MessageDecoderPluginBase,
 )
+from ziggiz_courier_handler_core.decoders.plugins.message.generic.const import (
+    ORGANIZATION,
+)
 from ziggiz_courier_handler_core.decoders.utils.message.leef_2_parser import (
     LEEF2Parser,
 )
@@ -93,16 +96,10 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Support both new (SourceProducer) and legacy (vendor/product) cache/test dicts
-            if "SourceProducer" in parsed_data:
-                sp = parsed_data["SourceProducer"]
-                organization = getattr(sp, "organization", "unknown").lower()
-                product = getattr(sp, "product", "unknown").lower()
-            elif "vendor" in parsed_data and "product" in parsed_data:
-                organization = parsed_data.get("vendor", "unknown").lower()
-                product = parsed_data.get("product", "unknown").lower()
-            else:
-                return False
 
+            # Organization and product from parsed_data
+            organization = parsed_data.get("vendor", ORGANIZATION).lower()
+            product = parsed_data.get("product", "unknown").lower()
             event_id = parsed_data.get("event_id", "unknown").lower()
             msgclass = event_id
 
@@ -118,10 +115,9 @@ class GenericLEEF2DecoderPlugin(MessageDecoderPluginBase):
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
-                organization=organization,
-                product=product,
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, organization, product)
 
             logger.debug(
                 "LEEF 2.0 plugin parsed event_data",

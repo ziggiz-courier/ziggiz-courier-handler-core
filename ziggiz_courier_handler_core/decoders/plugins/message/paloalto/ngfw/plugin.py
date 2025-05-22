@@ -39,7 +39,15 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
 )
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+
+# Import ORGANIZATION constant from const.py in parent package
+from ..const import ORGANIZATION
+
+# Import PAN_TYPE_FIELD_MAP from field_maps in the same directory
 from .field_maps import PAN_TYPE_FIELD_MAP
+
+# Define product constant for this module
+PRODUCT = "ngfw"
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +77,8 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
             model (EventEnvelopeBaseModel): The event model instance to parse and update.
 
         Returns:
-            bool: True if the message was parsed as PaloAlto NGFW CSV, False otherwise.
+            bool: True if the message was parsed as PaloAlto NGFW CSV,
+                False otherwise.
 
         Example:
             >>> msg = '2024/05/13 12:34:56,001801000000,TRAFFIC,...'
@@ -96,12 +105,12 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                 self.apply_field_mapping(
                     model=model,
                     event_data=event_data,
-                    organization="paloalto",
-                    product="ngfw",
                     msgclass=(
                         type_field.lower() if type_field is not None else "unknown"
                     ),
                 )
+                # Use organization constant from parent package and product constant from this module
+                self._set_source_producer_handler_data(model, ORGANIZATION, PRODUCT)
                 logger.debug(
                     "PaloAlto NGFW plugin parsed event_data",
                     extra={"event_data": model.event_data},

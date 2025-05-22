@@ -44,6 +44,9 @@ from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseMode
 
 logger = logging.getLogger(__name__)
 
+# Module-level product constant
+PRODUCT = "unknown_kv"
+
 
 class GenericKVDecoderPlugin(MessageDecoderPluginBase):
     """
@@ -96,18 +99,17 @@ class GenericKVDecoderPlugin(MessageDecoderPluginBase):
 
         if parsed_data:
             # Set generic classification values
-            organization = "generic"
-            product = "unknown_kv"
+            from ..const import ORGANIZATION
+
             msgclass = "unknown"
 
             # Apply parsed data to model
             self.apply_field_mapping(
                 model=model,
                 event_data=parsed_data,
-                organization=organization,
-                product=product,
                 msgclass=msgclass,
             )
+            self._set_source_producer_handler_data(model, ORGANIZATION, PRODUCT)
 
             logger.debug(
                 "KV plugin parsed event_data",
