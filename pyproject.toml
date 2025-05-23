@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ziggiz-courier-handler-core"
-version = "0.2.3"
+version = "0.3.0"
 description = "Data processing library for decoding, transforming, and encoding data"
 authors = ["Ryan Faircloth <rf@ziggiz.ai>"]
 readme = "README.md"

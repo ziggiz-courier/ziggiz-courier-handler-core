@@ -1,6 +1,17 @@
 # CHANGELOG
 
 
+## v0.3.0 (2025-05-23)
+
+### Features
+
+- Add basic spans
+  ([`58635a5`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/58635a5beaa9786cb800208608b4da734945e1e9))
+
+- New modules for Connection to be used
+  ([`74df307`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/74df307a6dc9df7e148f17ba24fddb639007dd7a))
+
+
 ## v0.2.3 (2025-05-23)
 
 ### Bug Fixes
