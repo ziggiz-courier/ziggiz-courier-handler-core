@@ -14,7 +14,7 @@ Utility for parsing quoted CSV log message strings.
 import csv
 import io
 
-from typing import List, Optional
+from typing import Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
@@ -22,14 +22,14 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 )
 
 
-class CSVParser(BaseMessageParser):
+class CSVParser(BaseMessageParser[list[str]]):
     """
     Parser for quoted CSV message strings.
     Handles quoted values and escaped characters.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[List[str]]:
+    def parse(message: str) -> Optional[list[str]]:
         """
         High-performance parser for quoted CSV message strings.
         Handles quoted values and escaped characters using the csv module.

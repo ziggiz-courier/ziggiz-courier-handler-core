@@ -14,13 +14,13 @@ This module defines the common interface that all message parsers must implement
 """
 # Standard library imports
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, TypeVar
+from typing import Generic, Optional, TypeVar
 
 # Define a generic type for the return value of parse methods
-T = TypeVar("T", bound=Dict[str, Any])
+T = TypeVar("T")
 
 
-class BaseMessageParser(ABC):
+class BaseMessageParser(Generic[T], ABC):
     """
     Abstract base class for all message parsers.
 

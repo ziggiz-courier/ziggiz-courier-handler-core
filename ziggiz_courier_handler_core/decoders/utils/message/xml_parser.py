@@ -18,7 +18,7 @@ escaping of special characters.
 import logging
 import re
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 # Third-party imports
 import xmltodict
@@ -49,14 +49,14 @@ def _extract_dtd_name(message: str) -> Optional[str]:
     return None
 
 
-class XMLParser(BaseMessageParser):
+class XMLParser(BaseMessageParser[dict[str, Any]]):
     """
     Parser for XML message strings.
     Handles XML formatted messages and common escaping issues.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Any]]:
+    def parse(message: str) -> Optional[dict[str, Any]]:
         """
         Parse an XML message into a dictionary structure using xmltodict.
 

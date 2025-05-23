@@ -30,14 +30,14 @@ from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 logger = logging.getLogger(__name__)
 
 
-class LEEF2Parser(BaseMessageParser):
+class LEEF2Parser(BaseMessageParser[dict[str, Any]]):
     """
     Parser for Log Event Extended Format (LEEF) 2.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Any]]:
+    def parse(message: str) -> Optional[dict[str, Any]]:
         """
         High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
         Handles LEEF header and extension fields with proper escaping rules.
@@ -75,8 +75,8 @@ class LEEF2Parser(BaseMessageParser):
             }
             # Add SourceProducer instance
             source_producer = SourceProducer(organization=parts[1], product=parts[2])
-            result["source_producer"] = source_producer
-            result["SourceProducer"] = source_producer
+            result["source_producer"] = source_producer  # type: ignore
+            result["SourceProducer"] = source_producer  # type: ignore
 
             delim = parts[6]
             extension = parts[7]

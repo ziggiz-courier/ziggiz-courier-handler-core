@@ -18,7 +18,7 @@ including caching and common utility methods.
 # Standard library imports
 import logging
 
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
@@ -47,7 +47,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
     def _get_or_parse_message(
         self,
         message: str,
-        parser_cls: "Type[BaseMessageParser]",
+        parser_cls: "type[BaseMessageParser[Any]]",
     ) -> Any:
         """
         Retrieve a parsed message from cache or parse and cache it.

@@ -16,7 +16,7 @@ It also handles JSON with escaped control characters that might break standard p
 # Standard library imports
 import json
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 # Third-party imports
 import orjson
@@ -27,14 +27,14 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 )
 
 
-class JSONParser(BaseMessageParser):
+class JSONParser(BaseMessageParser[dict[str, Any]]):
     """
     Parser for native JSON message strings.
     Handles JSON with escaped control characters that might break standard parsing.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Any]]:
+    def parse(message: str) -> Optional[dict[str, Any]]:
         """
         Parse a native JSON message.
 
@@ -60,12 +60,12 @@ class JSONParser(BaseMessageParser):
 
         # Attempt JSON parsing
         try:
-            return orjson.loads(message)
+            return orjson.loads(message)  # type: ignore
         except (orjson.JSONDecodeError, ValueError, TypeError):
             # First attempt failed, try fixing common issues
             try:
                 # Try using the standard library json which is more forgiving
-                return json.loads(message)
+                return json.loads(message)  # type: ignore
             except (json.JSONDecodeError, ValueError, TypeError):
                 # If that fails too, try replacing literal \r\n with actual line breaks
                 # and handle escaped quotes by using a raw string equivalent
@@ -76,7 +76,7 @@ class JSONParser(BaseMessageParser):
                     fixed_message = fixed_message.replace('\\"', '"')
                     fixed_message = fixed_message.replace("\\/", "/")
                     fixed_message = fixed_message.replace("\\\\", "\\")
-                    return orjson.loads(fixed_message)
+                    return orjson.loads(fixed_message)  # type: ignore
                 except (orjson.JSONDecodeError, ValueError, TypeError):
                     return None
 

@@ -11,7 +11,7 @@
 Utility for parsing key=value log message strings (e.g., FortiGate, generic log formats).
 """
 # Standard library imports
-from typing import Dict, Optional
+from typing import Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
@@ -19,14 +19,14 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 )
 
 
-class KVParser(BaseMessageParser):
+class KVParser(BaseMessageParser[dict[str, str]]):
     """
     Parser for key=value message strings.
     Handles quoted values and escaped characters.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, str]]:
+    def parse(message: str) -> Optional[dict[str, str]]:
         """
         High-performance parser for key=value message strings.
         Avoids regex for speed. Handles quoted values and escaped characters.

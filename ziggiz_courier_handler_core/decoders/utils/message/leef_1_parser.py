@@ -25,14 +25,14 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-class LEEF1Parser(BaseMessageParser):
+class LEEF1Parser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
     """
     Parser for Log Event Extended Format (LEEF) 1.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
+    def parse(message: str) -> Optional[dict[str, Union[str, "SourceProducer"]]]:
         """
         High-performance parser for Log Event Extended Format (LEEF) 1.0 message strings.
         Handles LEEF header and extension fields with proper escaping rules.
@@ -77,7 +77,7 @@ class LEEF1Parser(BaseMessageParser):
             source_producer = SourceProducer(
                 organization=result["vendor"], product=result["product"]
             )
-            result["source_producer"] = source_producer
+            result["source_producer"] = source_producer  # type: ignore
 
             # Process extension (key=value pairs)
             extension = parts[5]

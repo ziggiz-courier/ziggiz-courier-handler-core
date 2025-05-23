@@ -25,14 +25,14 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-class CEFParser(BaseMessageParser):
+class CEFParser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
     """
     Parser for Common Event Format (CEF) message strings.
     Handles CEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[Dict[str, Union[str, SourceProducer]]]:
+    def parse(message: str) -> Optional[dict[str, Union[str, "SourceProducer"]]]:
         """
         High-performance parser for Common Event Format (CEF) message strings.
         Handles CEF header and extension fields with proper escaping rules.
