@@ -15,7 +15,7 @@ Unit tests for the Generic LEEF 1.0 Decoder Plugin.
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef1.plugin import (
@@ -53,7 +53,7 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="ibm",
             expected_product="qradar",
@@ -86,7 +86,7 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="ibm",
             expected_product="qradar",
@@ -118,7 +118,7 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="ibm",
             expected_product="qradar",
@@ -150,7 +150,7 @@ class TestGenericLEEFDecoderPlugin:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="ibm",
             expected_product="qradar",

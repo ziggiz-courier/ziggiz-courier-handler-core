@@ -13,7 +13,7 @@ Unit tests for GenericJSONDecoderPlugin.
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.json.plugin import (
@@ -51,7 +51,7 @@ def test_generic_json_basic_case():
     assert key in model.handler_data
 
     handler_info = model.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="generic",
         expected_product="unknown_json",
@@ -98,7 +98,7 @@ def test_generic_json_nested_data():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="generic",
         expected_product="unknown_json",

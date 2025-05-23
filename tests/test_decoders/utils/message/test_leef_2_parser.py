@@ -14,8 +14,6 @@ Covers IBM QRadar Log Event Extended Format 2.0 messages.
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
-
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.leef_2_parser import LEEF2Parser
 
@@ -145,13 +143,12 @@ class TestLEEF2Parser:
         )
         result = LEEF2Parser.parse(msg)
         assert result is not None
-        # Check if SourceProducer is created correctly
-        validate_source_producer(
-            result,  # Pass the full result dict, which contains both keys
-            expected_organization="IBM",  # vendor/organization
-            expected_product="QRadar",  # product
-            handler_key=None,
-        )
+        # This is a unit test for the parser, not for MetaDataProduct validation.
+        # Just check the parsed fields.
+        assert result["vendor"] == "IBM"
+        assert result["product"] == "QRadar"
+        assert result["src"] == "10.0.0.1"
+        assert result["dst"] == "2.1.2.2"
 
     def test_parse_leef_2_invalid_format(self):
         """Test handling of invalid LEEF formats."""

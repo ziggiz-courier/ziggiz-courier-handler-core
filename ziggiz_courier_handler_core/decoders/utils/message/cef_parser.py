@@ -16,23 +16,22 @@ CEF:Version|Device Vendor|Device Product|Device Version|Signature ID|Name|Severi
 The Extension part contains key-value pairs in the format key=value.
 """
 # Standard library imports
-from typing import Dict, List, Optional, Union, cast
+from typing import Dict, List, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-class CEFParser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
+class CEFParser(BaseMessageParser[dict[str, str]]):
     """
     Parser for Common Event Format (CEF) message strings.
     Handles CEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[dict[str, Union[str, "SourceProducer"]]]:
+    def parse(message: str) -> Optional[dict[str, str]]:
         """
         High-performance parser for Common Event Format (CEF) message strings.
         Handles CEF header and extension fields with proper escaping rules.
@@ -75,12 +74,6 @@ class CEFParser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
             for i, field in enumerate(header_fields):
                 result[field] = parts[i]
 
-            # Add SourceProducer instance
-            source_producer = SourceProducer(
-                organization=result["device_vendor"], product=result["device_product"]
-            )
-            result["SourceProducer"] = source_producer  # type: ignore # Explicitly storing SourceProducer object
-
             # Process extension (key=value pairs)
             extension = parts[7]
             if extension:
@@ -99,7 +92,7 @@ class CEFParser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
                 for label, field in labels.items():
                     result[label] = result[field]
 
-            return cast(Dict[str, Union[str, SourceProducer]], result)
+            return result
 
         except Exception:
             # Fall back to None if any errors occur

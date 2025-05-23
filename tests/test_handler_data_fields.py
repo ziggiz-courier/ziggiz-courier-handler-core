@@ -57,7 +57,7 @@ class TestHandlerDataFields:
             msgclass="test_class",
         )
         # Set SourceProducer handler data
-        plugin._set_source_producer_handler_data(model, "test_org", "test_product")
+        plugin._set_meta_data_product_handler_data(model, "test_org", "test_product")
 
         # Check the structure of handler_data
         assert model.handler_data is not None

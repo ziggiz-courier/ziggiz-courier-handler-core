@@ -20,7 +20,7 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plugin import (
@@ -83,7 +83,7 @@ def test_fortigate_traffic_with_rfc3164():
     handler_entry = result.handler_data[key]
 
     # Validate SourceProducer using the utility function
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
@@ -137,7 +137,7 @@ def test_fortigate_utm_with_rfc5424():
     handler_entry = result.handler_data[key]
 
     # Validate SourceProducer using the utility function
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
@@ -187,7 +187,7 @@ def test_fortigate_event_log():
     handler_entry = result.handler_data[key]
 
     # Validate SourceProducer using the utility function
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",
@@ -235,7 +235,7 @@ def test_unknown_syslog_decoder_and_plugin_for_fortigate():
     handler_entry = result.handler_data[key]
 
     # Validate SourceProducer using the utility function
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="fortinet",
         expected_product="fortigate",

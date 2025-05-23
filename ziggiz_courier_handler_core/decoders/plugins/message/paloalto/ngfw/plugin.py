@@ -110,7 +110,7 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
                     ),
                 )
                 # Use organization constant from parent package and product constant from this module
-                self._set_source_producer_handler_data(model, ORGANIZATION, PRODUCT)
+                self._set_meta_data_product_handler_data(model, ORGANIZATION, PRODUCT)
                 logger.debug(
                     "PaloAlto NGFW plugin parsed event_data",
                     extra={"event_data": model.event_data},

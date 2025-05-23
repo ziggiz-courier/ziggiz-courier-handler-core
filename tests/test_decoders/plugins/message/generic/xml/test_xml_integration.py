@@ -16,7 +16,7 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
@@ -58,7 +58,7 @@ def test_xml_with_rfc3164():
     key = "GenericXMLDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
@@ -101,7 +101,7 @@ def test_xml_with_rfc5424():
     key = "GenericXMLDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_xml",
@@ -151,7 +151,7 @@ def test_xml_with_dtd_integration():
     key = "GenericXMLDecoderPlugin"
     handler = result.handler_data.get(key)
     assert handler is not None
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_xml",

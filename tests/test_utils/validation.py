@@ -14,7 +14,7 @@
 from typing import Any, Dict, Optional, TypeVar, Union
 
 # Local/package imports
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+from ziggiz_courier_handler_core.models.meta_data_product import MetaDataProduct
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 from ziggiz_courier_handler_core.models.syslog_rfc_base import (
     Facility,
@@ -150,7 +150,7 @@ def validate_syslog_model(
             ), f"Expected structured_data {structured_data}, got {model_instance.structured_data}"
 
 
-def validate_source_producer(
+def validate_meta_data_product(
     result_or_handler_data: Any,
     *,
     expected_organization: str,
@@ -158,38 +158,38 @@ def validate_source_producer(
     expected_module: Optional[str] = None,
     handler_key: Optional[str] = None,
 ) -> None:
-    """Validate a SourceProducer instance against expected values.
+    """Validate a MetaDataProduct instance against expected values.
 
-    This function validates that the SourceProducer in a result or handler data has the expected values.
-    It can validate a SourceProducer directly or one stored in a model's handler_data dictionary.
+    This function validates that the MetaDataProduct in a result or handler data has the expected values.
+    It can validate a MetaDataProduct directly or one stored in a model's handler_data dictionary.
 
     Args:
-        result_or_handler_data: Either a model with handler_data containing a SourceProducer,
-                                a dictionary containing a SourceProducer, or a SourceProducer instance.
+        result_or_handler_data: Either a model with handler_data containing a MetaDataProduct,
+                                a dictionary containing a MetaDataProduct, or a MetaDataProduct instance.
         expected_organization: Expected organization value.
         expected_product: Expected product value.
         expected_module: Expected module value (if any).
         handler_key: If provided, the key in handler_data where to find handler-specific data.
 
     Raises:
-        AssertionError: If the SourceProducer doesn't match the expected values or can't be found.
+        AssertionError: If the MetaDataProduct doesn't match the expected values or can't be found.
     """
-    # Get the SourceProducer instance from the input
-    sp = None
+    # Get the MetaDataProduct instance from the input
+    mdp = None
 
-    # Case 1: Direct SourceProducer instance
-    if isinstance(result_or_handler_data, SourceProducer):
-        sp = result_or_handler_data
+    # Case 1: Direct MetaDataProduct instance
+    if isinstance(result_or_handler_data, MetaDataProduct):
+        mdp = result_or_handler_data
 
     # Case 2: Model with handler_data attribute
     elif (
         hasattr(result_or_handler_data, "handler_data")
         and result_or_handler_data.handler_data is not None
     ):
-        sp_key = "SourceProducer"
+        mdp_key = "MetaDataProduct"
         handler_data = result_or_handler_data.handler_data
-        assert sp_key in handler_data, f"{sp_key} not found in handler_data"
-        sp = handler_data[sp_key]
+        assert mdp_key in handler_data, f"{mdp_key} not found in handler_data"
+        mdp = handler_data[mdp_key]
 
         # If handler_key is provided, verify it exists in handler_data
         if handler_key is not None:
@@ -197,11 +197,11 @@ def validate_source_producer(
                 handler_key in handler_data
             ), f"Handler key '{handler_key}' not found in handler_data"
 
-    # Case 3: Dictionary potentially containing SourceProducer
+    # Case 3: Dictionary potentially containing MetaDataProduct
     elif isinstance(result_or_handler_data, dict):
-        sp_key = "SourceProducer"
-        assert sp_key in result_or_handler_data, f"{sp_key} not found in dictionary"
-        sp = result_or_handler_data[sp_key]
+        mdp_key = "MetaDataProduct"
+        assert mdp_key in result_or_handler_data, f"{mdp_key} not found in dictionary"
+        mdp = result_or_handler_data[mdp_key]
 
         # If handler_key is provided, verify it exists in the dictionary
         if handler_key is not None:
@@ -212,21 +212,21 @@ def validate_source_producer(
     # None of the above
     else:
         raise AssertionError(
-            f"Input of type {type(result_or_handler_data)} cannot be validated for SourceProducer"
+            f"Input of type {type(result_or_handler_data)} cannot be validated for MetaDataProduct"
         )
 
-    # Validate SourceProducer fields
-    if not isinstance(sp, SourceProducer):
-        raise AssertionError(f"Extracted object is not a SourceProducer: {type(sp)}")
+    # Validate MetaDataProduct fields
+    if not isinstance(mdp, MetaDataProduct):
+        raise AssertionError(f"Extracted object is not a MetaDataProduct: {type(mdp)}")
 
     assert (
-        sp.organization == expected_organization
-    ), f"Expected organization '{expected_organization}', got '{sp.organization}'"
+        mdp.organization == expected_organization
+    ), f"Expected organization '{expected_organization}', got '{mdp.organization}'"
     assert (
-        sp.product == expected_product
-    ), f"Expected product '{expected_product}', got '{sp.product}'"
+        mdp.product == expected_product
+    ), f"Expected product '{expected_product}', got '{mdp.product}'"
 
     if expected_module is not None:
         assert (
-            sp.module == expected_module
-        ), f"Expected module '{expected_module}', got '{sp.module}'"
+            mdp.module == expected_module
+        ), f"Expected module '{expected_module}', got '{mdp.module}'"

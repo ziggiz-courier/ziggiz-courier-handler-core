@@ -13,11 +13,11 @@
 import pytest
 
 from tests.test_utils.validation import (
-    validate_source_producer,
+    validate_meta_data_product,
 )
 
 # Local/package imports
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+from ziggiz_courier_handler_core.models.meta_data_product import MetaDataProduct
 
 
 class MockModel:
@@ -28,51 +28,51 @@ class MockModel:
 
 
 @pytest.mark.unit
-class TestSourceProducerValidation:
-    def test_validate_source_producer_direct(self):
-        """Test validating a SourceProducer directly."""
-        sp = SourceProducer(
+class TestMetaDataProductValidation:
+    def test_validate_meta_data_product_direct(self):
+        """Test validating a MetaDataProduct directly."""
+        mdp = MetaDataProduct(
             organization="testorg", product="testprod", module="testmodule"
         )
         # Should pass validation with correct values
-        validate_source_producer(
-            sp,
+        validate_meta_data_product(
+            mdp,
             expected_organization="testorg",
             expected_product="testprod",
             expected_module="testmodule",
         )
         # Should pass validation without checking module
-        validate_source_producer(
-            sp, expected_organization="testorg", expected_product="testprod"
+        validate_meta_data_product(
+            mdp, expected_organization="testorg", expected_product="testprod"
         )
         # Should fail validation with incorrect values
         with pytest.raises(AssertionError, match="Expected organization 'wrongorg'"):
-            validate_source_producer(
-                sp, expected_organization="wrongorg", expected_product="testprod"
+            validate_meta_data_product(
+                mdp, expected_organization="wrongorg", expected_product="testprod"
             )
         with pytest.raises(AssertionError, match="Expected product 'wrongprod'"):
-            validate_source_producer(
-                sp, expected_organization="testorg", expected_product="wrongprod"
+            validate_meta_data_product(
+                mdp, expected_organization="testorg", expected_product="wrongprod"
             )
         with pytest.raises(AssertionError, match="Expected module 'wrongmodule'"):
-            validate_source_producer(
-                sp,
+            validate_meta_data_product(
+                mdp,
                 expected_organization="testorg",
                 expected_product="testprod",
                 expected_module="wrongmodule",
             )
 
-    def test_validate_source_producer_in_model(self):
-        """Test validating a SourceProducer in a model's handler_data."""
-        sp = SourceProducer(organization="testorg", product="testprod")
-        handler_data = {"SourceProducer": sp, "TestPlugin": {"some": "data"}}
+    def test_validate_meta_data_product_in_model(self):
+        """Test validating a MetaDataProduct in a model's handler_data."""
+        mdp = MetaDataProduct(organization="testorg", product="testprod")
+        handler_data = {"MetaDataProduct": mdp, "TestPlugin": {"some": "data"}}
         model = MockModel(handler_data=handler_data)
         # Should pass validation with correct values
-        validate_source_producer(
+        validate_meta_data_product(
             model, expected_organization="testorg", expected_product="testprod"
         )
         # Should pass validation with handler_key
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="testorg",
             expected_product="testprod",
@@ -82,36 +82,36 @@ class TestSourceProducerValidation:
         with pytest.raises(
             AssertionError, match="Handler key 'NonExistentPlugin' not found"
         ):
-            validate_source_producer(
+            validate_meta_data_product(
                 model,
                 expected_organization="testorg",
                 expected_product="testprod",
                 handler_key="NonExistentPlugin",
             )
 
-    def test_validate_source_producer_in_dict(self):
-        """Test validating a SourceProducer in a dictionary."""
-        sp = SourceProducer(organization="testorg", product="testprod")
-        handler_data = {"SourceProducer": sp, "TestPlugin": {"some": "data"}}
+    def test_validate_meta_data_product_in_dict(self):
+        """Test validating a MetaDataProduct in a dictionary."""
+        mdp = MetaDataProduct(organization="testorg", product="testprod")
+        handler_data = {"MetaDataProduct": mdp, "TestPlugin": {"some": "data"}}
         # Should pass validation with correct values
-        validate_source_producer(
+        validate_meta_data_product(
             handler_data, expected_organization="testorg", expected_product="testprod"
         )
-        # Should fail validation with missing SourceProducer
+        # Should fail validation with missing MetaDataProduct
         with pytest.raises(
-            AssertionError, match="SourceProducer not found in dictionary"
+            AssertionError, match="MetaDataProduct not found in dictionary"
         ):
-            validate_source_producer(
+            validate_meta_data_product(
                 {}, expected_organization="testorg", expected_product="testprod"
             )
 
-    def test_validate_source_producer_invalid_input(self):
-        """Test validating a SourceProducer with invalid input types."""
+    def test_validate_meta_data_product_invalid_input(self):
+        """Test validating a MetaDataProduct with invalid input types."""
         # Should fail validation with string input
         with pytest.raises(
             AssertionError, match="Input of type <class 'str'> cannot be validated"
         ):
-            validate_source_producer(
+            validate_meta_data_product(
                 "not a valid input",
                 expected_organization="testorg",
                 expected_product="testprod",
@@ -120,6 +120,6 @@ class TestSourceProducerValidation:
         with pytest.raises(
             AssertionError, match="Input of type <class 'NoneType'> cannot be validated"
         ):
-            validate_source_producer(
+            validate_meta_data_product(
                 None, expected_organization="testorg", expected_product="testprod"
             )

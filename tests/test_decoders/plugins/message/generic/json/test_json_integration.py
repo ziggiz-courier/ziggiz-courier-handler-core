@@ -15,7 +15,7 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.json.plugin import (
@@ -56,7 +56,7 @@ def test_json_with_rfc3164():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_json",
@@ -94,7 +94,7 @@ def test_json_with_rfc5424():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_json",
@@ -130,7 +130,7 @@ def test_direct_json_message():
     assert result.handler_data is not None
     assert plugin_key in result.handler_data
     handler_entry = result.handler_data[plugin_key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_json",

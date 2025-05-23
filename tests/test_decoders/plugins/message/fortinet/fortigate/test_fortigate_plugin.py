@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.fortinet.fortigate.plugin import (
@@ -74,7 +74,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="fortinet",
             expected_product="fortigate",
@@ -127,7 +127,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="fortinet",
             expected_product="fortigate",
@@ -177,7 +177,7 @@ class TestFortinetFortiGateKVDecoderPlugin:
         assert key in model.handler_data
         handler_entry = model.handler_data[key]
         # Validate SourceProducer entry
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="fortinet",
             expected_product="fortigate",

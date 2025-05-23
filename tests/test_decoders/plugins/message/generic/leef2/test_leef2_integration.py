@@ -15,7 +15,7 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.leef2.plugin import (
@@ -55,7 +55,7 @@ def test_leef2_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
@@ -92,7 +92,7 @@ def test_leef2_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
@@ -128,7 +128,7 @@ def test_direct_leef2_message():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"
@@ -165,7 +165,7 @@ def test_leef2_with_category():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     # Check that category is incorporated into msgclass (lowercase)
@@ -203,7 +203,7 @@ def test_leef2_with_custom_labels():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_info = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result, expected_organization="ibm", expected_product="qradar", handler_key=key
     )
     assert handler_info["msgclass"] == "12345"

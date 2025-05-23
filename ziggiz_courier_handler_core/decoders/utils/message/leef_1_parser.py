@@ -16,23 +16,22 @@ LEEF:Version|Vendor|Product|Version|EventID|Extension
 The Extension part contains key-value pairs in the format key=value.
 """
 # Standard library imports
-from typing import Dict, List, Optional, Union, cast
+from typing import Dict, List, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 
-class LEEF1Parser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
+class LEEF1Parser(BaseMessageParser[dict[str, str]]):
     """
     Parser for Log Event Extended Format (LEEF) 1.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[dict[str, Union[str, "SourceProducer"]]]:
+    def parse(message: str) -> Optional[dict[str, str]]:
         """
         High-performance parser for Log Event Extended Format (LEEF) 1.0 message strings.
         Handles LEEF header and extension fields with proper escaping rules.
@@ -73,19 +72,13 @@ class LEEF1Parser(BaseMessageParser[dict[str, Union[str, "SourceProducer"]]]):
             for i, field in enumerate(header_fields):
                 result[field] = parts[i]
 
-            # Add SourceProducer instance
-            source_producer = SourceProducer(
-                organization=result["vendor"], product=result["product"]
-            )
-            result["source_producer"] = source_producer  # type: ignore
-
             # Process extension (key=value pairs)
             extension = parts[5]
             if extension:
                 extension_dict = LEEF1Parser._parse_extension(extension)
                 result.update(extension_dict)
 
-            return cast(Dict[str, Union[str, SourceProducer]], result)
+            return result
 
         except Exception:
             # Fall back to None if any errors occur

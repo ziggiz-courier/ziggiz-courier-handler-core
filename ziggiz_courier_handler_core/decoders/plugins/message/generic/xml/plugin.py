@@ -112,7 +112,7 @@ class GenericXMLDecoderPlugin(MessageDecoderPluginBase):
                 event_data=parsed_data,
                 msgclass=msgclass,
             )
-            self._set_source_producer_handler_data(model, ORGANIZATION, product)
+            self._set_meta_data_product_handler_data(model, ORGANIZATION, product)
 
             logger.debug(
                 "XML plugin parsed event_data",

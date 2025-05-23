@@ -19,25 +19,24 @@ LEEF 2.0 allows for more format flexibility and encoding options than LEEF 1.0.
 # Standard library imports
 import logging
 
-from typing import Any, Dict, Optional, Union, cast
+from typing import Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
 
 logger = logging.getLogger(__name__)
 
 
-class LEEF2Parser(BaseMessageParser[dict[str, Any]]):
+class LEEF2Parser(BaseMessageParser[dict[str, str]]):
     """
     Parser for Log Event Extended Format (LEEF) 2.0 message strings.
     Handles LEEF header and extension fields with proper escaping rules.
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[dict[str, Any]]:
+    def parse(message: str) -> Optional[dict[str, str]]:
         """
         High-performance parser for Log Event Extended Format (LEEF) 2.0 message strings.
         Handles LEEF header and extension fields with proper escaping rules.
@@ -73,10 +72,6 @@ class LEEF2Parser(BaseMessageParser[dict[str, Any]]):
                 "event_id": parts[4],
                 "event_category": parts[5],
             }
-            # Add SourceProducer instance
-            source_producer = SourceProducer(organization=parts[1], product=parts[2])
-            result["source_producer"] = source_producer  # type: ignore
-            result["SourceProducer"] = source_producer  # type: ignore
 
             delim = parts[6]
             extension = parts[7]
@@ -108,7 +103,7 @@ class LEEF2Parser(BaseMessageParser[dict[str, Any]]):
             for label, field in labels.items():
                 result[label] = result[field]
 
-            return cast(Dict[str, Union[str, SourceProducer, Any]], result)
+            return result
 
         except Exception as e:
             logger.debug("Error parsing LEEF 2.0 message", extra={"error": str(e)})

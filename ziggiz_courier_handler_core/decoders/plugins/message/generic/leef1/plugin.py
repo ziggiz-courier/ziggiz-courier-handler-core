@@ -106,7 +106,7 @@ class GenericLEEFDecoderPlugin(MessageDecoderPluginBase):
                 event_data=parsed_data,
                 msgclass=msgclass,
             )
-            self._set_source_producer_handler_data(model, organization, product)
+            self._set_meta_data_product_handler_data(model, organization, product)
 
             logger.debug(
                 "LEEF plugin parsed event_data",

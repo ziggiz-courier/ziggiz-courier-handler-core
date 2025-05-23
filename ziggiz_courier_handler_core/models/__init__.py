@@ -11,7 +11,7 @@
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.event_envelope_base import BaseModel
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+from ziggiz_courier_handler_core.models.meta_data_product import MetaDataProduct
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import (
     SyslogRFC3164Message,
 )
@@ -25,5 +25,5 @@ __all__ = [
     "SyslogRFCBaseModel",
     "SyslogRFC5424Message",
     "SyslogRFC3164Message",
-    "SourceProducer",
+    "MetaDataProduct",
 ]

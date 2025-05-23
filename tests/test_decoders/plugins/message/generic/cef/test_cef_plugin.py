@@ -15,7 +15,7 @@ Unit tests for GenericCEFDecoderPlugin.
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.cef.plugin import (
@@ -52,7 +52,7 @@ def test_generic_cef_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="security",
         expected_product="threatmanager",
@@ -96,7 +96,7 @@ def test_generic_cef_with_custom_fields():
     key = "GenericCEFDecoderPlugin"
     assert model.handler_data is not None
     assert key in model.handler_data
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="vendor",
         expected_product="product",

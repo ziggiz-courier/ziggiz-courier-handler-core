@@ -20,7 +20,7 @@ from typing import Dict, Optional
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.paloalto.ngfw.plugin import (
@@ -56,7 +56,7 @@ class TestPaloAltoNGFWCSVDecoder:
         assert model.handler_data is not None
         assert key in model.handler_data
         handler = model.handler_data[key]
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="paloalto",
             expected_product="ngfw",
@@ -90,7 +90,7 @@ class TestPaloAltoNGFWCSVDecoder:
         assert key in model.handler_data
         handler = model.handler_data[key]
         assert handler is not None
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="paloalto",
             expected_product="ngfw",
@@ -125,7 +125,7 @@ class TestPaloAltoNGFWCSVDecoder:
         assert key in model.handler_data
         handler = model.handler_data[key]
         assert handler is not None
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="paloalto",
             expected_product="ngfw",
@@ -159,7 +159,7 @@ class TestPaloAltoNGFWCSVDecoder:
         assert key in model.handler_data
         handler = model.handler_data[key]
         assert handler is not None
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="paloalto",
             expected_product="ngfw",
@@ -201,7 +201,7 @@ class TestPaloAltoNGFWCSVDecoder:
         assert key in model.handler_data
         handler = model.handler_data[key]
         assert handler is not None
-        validate_source_producer(
+        validate_meta_data_product(
             model,
             expected_organization="paloalto",
             expected_product="ngfw",

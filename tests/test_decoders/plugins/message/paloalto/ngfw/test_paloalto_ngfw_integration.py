@@ -20,7 +20,7 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.paloalto.ngfw.plugin import (
@@ -70,7 +70,7 @@ def test_paloalto_traffic_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -110,7 +110,7 @@ def test_paloalto_threat_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -122,7 +122,7 @@ def test_paloalto_threat_with_rfc5424():
     assert result.event_data["type"] == "THREAT"
     assert result.event_data["threat_content_type"] == "vulnerability"
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -159,7 +159,7 @@ def test_paloalto_system_log_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -172,7 +172,7 @@ def test_paloalto_system_log_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -209,7 +209,7 @@ def test_paloalto_config_log_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -222,7 +222,7 @@ def test_paloalto_config_log_with_rfc5424():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",
@@ -251,7 +251,7 @@ def test_unknown_syslog_decoder_chain_for_paloalto():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="paloalto",
         expected_product="ngfw",

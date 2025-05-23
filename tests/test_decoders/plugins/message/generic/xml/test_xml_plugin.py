@@ -16,7 +16,7 @@ from datetime import datetime
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.xml.plugin import (
@@ -49,7 +49,7 @@ def test_generic_xml_basic_case():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="generic",
         expected_product="unknown_xml",
@@ -127,7 +127,7 @@ def test_generic_xml_with_dtd():
     assert model.handler_data is not None
     assert key in model.handler_data
     handler_entry = model.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         model,
         expected_organization="generic",
         expected_product="unknown_xml",

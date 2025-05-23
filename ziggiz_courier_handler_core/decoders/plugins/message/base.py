@@ -30,7 +30,7 @@ from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
-from ziggiz_courier_handler_core.models.source_producer import SourceProducer
+from ziggiz_courier_handler_core.models.meta_data_product import MetaDataProduct
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +133,7 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             model.handler_data = {}
         model.handler_data[key] = entry
 
-        # NOTE: The plugin should call _set_source_producer_handler_data(model, organization, product) separately if needed.
+        # NOTE: The plugin should call _set_meta_data_product_handler_data(model, organization, product) separately if needed.
 
         logger.debug(
             "plugin parsed event_data",
@@ -143,14 +143,14 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
             },
         )
 
-    def _set_source_producer_handler_data(
+    def _set_meta_data_product_handler_data(
         self,
         model: EventEnvelopeBaseModel,
         organization: str,
         product: str,
     ) -> None:
         """
-        Set the SourceProducer object in the handler_data dict using the string version of the type as key.
+        Set the MetaDataProduct object in the handler_data dict using the key 'SourceProducer'.
 
         Args:
             model (EventEnvelopeBaseModel): The model whose handler_data will be updated
@@ -159,7 +159,8 @@ class MessageDecoderPluginBase(MessageDecoderPlugin):
         """
         if model.handler_data is None:
             model.handler_data = {}
-        key = SourceProducer.__name__
-        model.handler_data[key] = SourceProducer(
+        # Store under both 'MetaDataProduct' (legacy/tests) and 'SourceProducer' (new convention)
+        model.handler_data["MetaDataProduct"] = MetaDataProduct(
             organization=organization, product=product
         )
+        model.handler_data["SourceProducer"] = model.handler_data["MetaDataProduct"]

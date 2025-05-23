@@ -17,7 +17,7 @@ syslog messages directly without relying on the UnknownSyslogDecoder's plugin ch
 # Third-party imports
 import pytest
 
-from tests.test_utils.validation import validate_source_producer
+from tests.test_utils.validation import validate_meta_data_product
 
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.plugins.message.generic.kv.plugin import (
@@ -55,7 +55,7 @@ def test_kv_with_rfc3164():
     assert result.handler_data is not None
     assert key in result.handler_data
     handler_entry = result.handler_data[key]
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_kv",
@@ -96,7 +96,7 @@ def test_kv_with_rfc5424():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_kv",
@@ -133,7 +133,7 @@ def test_direct_kv_message():
     key = "GenericKVDecoderPlugin"
     assert result.handler_data is not None
     assert key in result.handler_data
-    validate_source_producer(
+    validate_meta_data_product(
         result,
         expected_organization="generic",
         expected_product="unknown_kv",

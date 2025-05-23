@@ -110,7 +110,7 @@ class GenericCEFDecoderPlugin(MessageDecoderPluginBase):
                 event_data=parsed_data,
                 msgclass=msgclass,
             )
-            self._set_source_producer_handler_data(
+            self._set_meta_data_product_handler_data(
                 model=model,
                 organization=organization,
                 product=product,
