@@ -25,6 +25,9 @@ import logging
 
 from typing import Any, Dict, Optional
 
+# Third-party imports
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessagePluginStage,
@@ -51,6 +54,8 @@ PRODUCT = "ngfw"
 
 logger = logging.getLogger(__name__)
 
+tracer = trace.get_tracer(__name__)
+
 
 class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
     """
@@ -69,6 +74,7 @@ class PaloAltoNGFWCSVDecoder(MessageDecoderPluginBase):
         """
         super().__init__(parsing_cache)
 
+    @tracer.start_as_current_span("decoder.plugins.message.paloalto.ngfw.decode")
     def decode(self, model: EventEnvelopeBaseModel) -> bool:
         """
         Parse a PaloAlto NGFW syslog message in CSV format into event_data on the model.

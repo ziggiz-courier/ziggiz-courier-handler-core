@@ -29,6 +29,9 @@ import logging
 
 from typing import Any, Dict, Optional
 
+# Third-party imports
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
     MessagePluginStage,
@@ -44,6 +47,8 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 
 logger = logging.getLogger(__name__)
+
+tracer = trace.get_tracer(__name__)
 
 
 class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
@@ -63,6 +68,7 @@ class FortinetFortiGateKVDecoderPlugin(MessageDecoderPluginBase):
         """
         super().__init__(parsing_cache)
 
+    @tracer.start_as_current_span("decoder.plugins.message.fortinet.fortigate.decode")
     def decode(self, model: EventEnvelopeBaseModel) -> bool:
         """
         Parse a Fortinet FortiGate syslog message in key=value format into event_data on the model.
