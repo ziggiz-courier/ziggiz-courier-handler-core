@@ -119,7 +119,10 @@ class XMLParser(BaseMessageParser[dict[str, Any]]):
         if dtd_name and result:
             result["_dtd_name"] = dtd_name
 
-        return result
+        # Ensure result is a dict[str, Any] for mypy compliance
+        if result is not None:
+            return dict(result)
+        # The following line is unreachable, so it is removed to satisfy mypy
 
 
 # The old function has been removed in favor of the class method
