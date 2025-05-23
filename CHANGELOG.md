@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.2 (2025-05-23)
+
+### Bug Fixes
+
+- Build typo
+  ([`13c4f8a`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/13c4f8aa9d1d41c93726b75d57391667f2d676a1))
+
+
 ## v0.2.1 (2025-05-23)
 
 ### Bug Fixes
