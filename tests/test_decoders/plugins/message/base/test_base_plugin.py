@@ -71,7 +71,7 @@ def test_get_or_parse_message_type_error():
         pass
 
     with pytest.raises(TypeError):
-        plugin._get_or_parse_message("valid", NotAParser)
+        plugin._get_or_parse_message("valid", NotAParser)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

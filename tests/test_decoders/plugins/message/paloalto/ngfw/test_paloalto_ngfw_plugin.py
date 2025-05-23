@@ -63,6 +63,7 @@ class TestPaloAltoNGFWCSVDecoder:
             handler_key=key,
         )
         assert handler["msgclass"] == "traffic"
+        assert model.event_data is not None
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "TRAFFIC"
 
@@ -86,7 +87,8 @@ class TestPaloAltoNGFWCSVDecoder:
         assert result is True
         assert model.handler_data is not None
         key = "PaloAltoNGFWCSVDecoder"
-        handler = model.handler_data.get(key)
+        assert key in model.handler_data
+        handler = model.handler_data[key]
         assert handler is not None
         validate_source_producer(
             model,
@@ -95,6 +97,7 @@ class TestPaloAltoNGFWCSVDecoder:
             handler_key=key,
         )
         assert handler["msgclass"] == "threat"
+        assert model.event_data is not None
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "THREAT"
         assert model.event_data["threat_content_type"] == "vulnerability"
@@ -119,7 +122,8 @@ class TestPaloAltoNGFWCSVDecoder:
         assert result is True
         assert model.handler_data is not None
         key = "PaloAltoNGFWCSVDecoder"
-        handler = model.handler_data.get(key)
+        assert key in model.handler_data
+        handler = model.handler_data[key]
         assert handler is not None
         validate_source_producer(
             model,
@@ -128,6 +132,7 @@ class TestPaloAltoNGFWCSVDecoder:
             handler_key=key,
         )
         assert handler["msgclass"] == "system"
+        assert model.event_data is not None
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "SYSTEM"
 
@@ -151,7 +156,8 @@ class TestPaloAltoNGFWCSVDecoder:
         assert result is True
         assert model.handler_data is not None
         key = "PaloAltoNGFWCSVDecoder"
-        handler = model.handler_data.get(key)
+        assert key in model.handler_data
+        handler = model.handler_data[key]
         assert handler is not None
         validate_source_producer(
             model,
@@ -160,6 +166,7 @@ class TestPaloAltoNGFWCSVDecoder:
             handler_key=key,
         )
         assert handler["msgclass"] == "config"
+        assert model.event_data is not None
         assert model.event_data["serial_number"] == "001122334455"
         assert model.event_data["type"] == "CONFIG"
 
@@ -191,7 +198,8 @@ class TestPaloAltoNGFWCSVDecoder:
         assert result is True
         assert model.handler_data is not None
         key = "PaloAltoNGFWCSVDecoder"
-        handler = model.handler_data.get(key)
+        assert key in model.handler_data
+        handler = model.handler_data[key]
         assert handler is not None
         validate_source_producer(
             model,

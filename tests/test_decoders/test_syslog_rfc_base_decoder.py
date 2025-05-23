@@ -49,6 +49,7 @@ class TestSyslogRFCBaseDecoder:
         result = decoder.decode(raw_syslog)
 
         # Validate using our shared utility
+        assert result is not None
         validate_syslog_model(
             result,
             facility=expected_facility.value,
@@ -79,6 +80,7 @@ class TestSyslogRFCBaseDecoder:
         result = decoder.decode(raw_syslog)
 
         # Use validate_syslog_model for facility and severity validation
+        assert result is not None
         validate_syslog_model(
             result, facility=expected_facility, severity=expected_severity
         )
@@ -104,6 +106,7 @@ class TestSyslogRFCBaseDecoder:
         for raw_syslog, expected_message in test_cases:
             result = decoder.decode(raw_syslog)
             # Use validate_syslog_model for consistent validation
+            assert result is not None
             validate_syslog_model(
                 result,
                 message=expected_message,

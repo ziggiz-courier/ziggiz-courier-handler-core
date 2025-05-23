@@ -26,6 +26,7 @@ class TestLEEF1Parser:
         """Test basic LEEF 1.0 message parsing with standard header and extension fields."""
         msg = "LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1\tdst=2.1.2.2\tspt=1232"
         result = LEEF1Parser.parse(msg)
+        assert result is not None
         assert result["leef_version"] == "1.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
@@ -39,6 +40,7 @@ class TestLEEF1Parser:
         """Test LEEF 1.0 message parsing with space-delimited extension fields."""
         msg = "LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1 dst=2.1.2.2 spt=1232"
         result = LEEF1Parser.parse(msg)
+        assert result is not None
         assert result["leef_version"] == "1.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
@@ -53,6 +55,7 @@ class TestLEEF1Parser:
         # In LEEF format, pipes in values must be escaped with a backslash
         msg = "LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1\tdst=2.1.2.2\tcommand=cat /var/log/messages \\| grep error"
         result = LEEF1Parser.parse(msg)
+        assert result is not None
         assert result["command"] == "cat /var/log/messages | grep error"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
@@ -61,6 +64,7 @@ class TestLEEF1Parser:
         """Test LEEF message with escaped characters in extension fields."""
         msg = "LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1\tmessage=Multiple\\=value\\thas\\=escapes"
         result = LEEF1Parser.parse(msg)
+        assert result is not None
         assert result["message"] == "Multiple=value\thas=escapes"
         assert result["src"] == "10.0.0.1"
 
@@ -68,6 +72,7 @@ class TestLEEF1Parser:
         """Test LEEF message with spaces in values."""
         msg = "LEEF:1.0|IBM|QRadar|1.0|12345|src=10.0.0.1\tmsg=This is a message with spaces\tdvc=mydevice"
         result = LEEF1Parser.parse(msg)
+        assert result is not None
         assert result["msg"] == "This is a message with spaces"
         assert result["dvc"] == "mydevice"
 

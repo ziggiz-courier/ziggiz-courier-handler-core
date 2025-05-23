@@ -38,6 +38,7 @@ class TestLEEF2Parser:
             + "spt=1232"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
@@ -60,6 +61,7 @@ class TestLEEF2Parser:
             + "dst=2.1.2.2"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
@@ -83,6 +85,7 @@ class TestLEEF2Parser:
             + "spt=1232"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         assert result["leef_version"] == "2.0"
         assert result["vendor"] == "IBM"
         assert result["product"] == "QRadar"
@@ -108,6 +111,7 @@ class TestLEEF2Parser:
             + "command=cat /var/log/messages \\| grep error"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         assert result["command"] == "cat /var/log/messages | grep error"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
@@ -124,6 +128,7 @@ class TestLEEF2Parser:
             + "message=Multiple\\=value\\thas\\=escapes"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         assert result["message"] == "Multiple=value\thas=escapes"
         assert result["src"] == "10.0.0.1"
 
@@ -139,6 +144,7 @@ class TestLEEF2Parser:
             + "dst=2.1.2.2"
         )
         result = LEEF2Parser.parse(msg)
+        assert result is not None
         # Check if SourceProducer is created correctly
         validate_source_producer(
             result,  # Pass the full result dict, which contains both keys

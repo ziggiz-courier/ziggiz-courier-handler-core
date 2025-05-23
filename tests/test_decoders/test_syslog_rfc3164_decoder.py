@@ -219,6 +219,7 @@ class TestSyslogRFC3164Decoder:
             expected_hostname = expected_hostname.lower()
 
         # Use validate_syslog_model utility for consistent validation
+        assert result is not None
         validate_syslog_model(
             result,
             facility=expected_facility.value,
@@ -262,6 +263,7 @@ class TestSyslogRFC3164Decoder:
         result = decoder.decode(raw_syslog)
 
         # Use validate_syslog_model for consistent validation
+        assert result is not None
         validate_syslog_model(
             result,
             facility=1,

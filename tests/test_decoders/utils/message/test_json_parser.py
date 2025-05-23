@@ -28,6 +28,7 @@ class TestJSONParser:
         """Test basic JSON message parsing with standard JSON object."""
         msg = '{"event": "login", "user": "admin", "status": "success"}'
         result = JSONParser.parse(msg)
+        assert result is not None
         assert result["event"] == "login"
         assert result["user"] == "admin"
         assert result["status"] == "success"
@@ -36,6 +37,7 @@ class TestJSONParser:
         """Test JSON message parsing with nested structures."""
         msg = '{"user": {"id": 123, "name": "John"}, "actions": ["login", "view_dashboard"]}'
         result = JSONParser.parse(msg)
+        assert result is not None
         assert result["user"]["id"] == 123
         assert result["user"]["name"] == "John"
         assert "login" in result["actions"]
@@ -45,6 +47,7 @@ class TestJSONParser:
         """Test JSON message parsing with extra whitespace."""
         msg = '  {  "event"  :  "login"  ,  "user"  :  "admin"  }  '
         result = JSONParser.parse(msg)
+        assert result is not None
         assert result["event"] == "login"
         assert result["user"] == "admin"
 

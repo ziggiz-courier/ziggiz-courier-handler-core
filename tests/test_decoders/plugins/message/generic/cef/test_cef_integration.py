@@ -60,6 +60,7 @@ def test_cef_with_rfc3164():
     )
     assert handler_entry["msgclass"] == "security alert"
     assert result.event_data is not None
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
 
@@ -97,6 +98,7 @@ def test_cef_with_rfc5424():
     )
     assert handler_entry["msgclass"] == "intrusion detected"
     assert result.event_data is not None
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "192.168.1.1"
     assert result.event_data["act"] == "blocked"
@@ -131,6 +133,8 @@ def test_direct_cef_message():
         handler_key=key,
     )
     assert handler_entry["msgclass"] == "system alert"
+    assert result.event_data is not None
+    assert result.event_data is not None
     assert "src" in result.event_data
     assert result.event_data["src"] == "10.0.0.1"
     assert "rt" in result.event_data

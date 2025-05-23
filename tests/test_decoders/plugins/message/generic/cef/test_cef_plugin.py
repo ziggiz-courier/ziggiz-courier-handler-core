@@ -112,8 +112,11 @@ def test_generic_cef_negative_case():
     """Test GenericCEFDecoderPlugin with non-matching message format."""
     # Create a model with a message that should not match CEF format
     msg = "This is not a CEF format message"
+    # Standard library imports
+    from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-13T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
         severity=6,
         message=msg,
@@ -134,8 +137,11 @@ def test_generic_cef_with_wrong_version():
     """Test GenericCEFDecoderPlugin with wrong CEF version."""
     # Create a model with a CEF message with a wrong version
     msg = "CEF:0|Vendor|Product|1.0|100|Name|10|src=10.0.0.1"
+    # Standard library imports
+    from datetime import datetime, timezone
+
     model = SyslogRFCBaseModel(
-        timestamp="2025-05-13T12:34:56.000Z",
+        timestamp=datetime(2025, 5, 13, 12, 34, 56, tzinfo=timezone.utc),
         facility=16,
         severity=6,
         message=msg,

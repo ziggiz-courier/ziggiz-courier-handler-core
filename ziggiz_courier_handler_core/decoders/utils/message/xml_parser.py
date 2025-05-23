@@ -56,7 +56,7 @@ class XMLParser(BaseMessageParser[dict[str, Any]]):
     """
 
     @staticmethod
-    def parse(message: str) -> Optional[dict[str, Any]]:
+    def parse(message: Optional[str]) -> Optional[dict[str, Any]]:
         """
         Parse an XML message into a dictionary structure using xmltodict.
 
@@ -79,7 +79,6 @@ class XMLParser(BaseMessageParser[dict[str, Any]]):
         """
         if not message:
             return None
-
         # Quick check if the message appears to be XML (starts with < and contains >)
         message = message.strip()
         if not (message.startswith("<") and ">" in message):

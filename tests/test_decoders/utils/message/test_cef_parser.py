@@ -28,6 +28,7 @@ class TestCEFParser:
         """Test basic CEF message parsing with standard header and extension fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|worm successfully stopped|10|src=10.0.0.1 dst=2.1.2.2 spt=1232"
         result = CEFParser.parse(msg)
+        assert result is not None
         assert result["cef_version"] == "0"
         assert result["device_vendor"] == "Security"
         assert result["device_product"] == "threatmanager"
@@ -44,6 +45,7 @@ class TestCEFParser:
         # In CEF format, pipes in values must be escaped with a backslash: \|
         msg = "CEF:0|Security|threatmanager|1.0|100|command: cat /var/log/messages \\| grep error|10|src=10.0.0.1 dst=2.1.2.2"
         result = CEFParser.parse(msg)
+        assert result is not None
         assert result["name"] == "command: cat /var/log/messages | grep error"
         assert result["src"] == "10.0.0.1"
         assert result["dst"] == "2.1.2.2"
@@ -52,6 +54,7 @@ class TestCEFParser:
         """Test CEF message with escaped characters in extension fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected\\|blocked|10|src=10.0.0.1 message=Multiple\\ spaces\\ in\\ value"
         result = CEFParser.parse(msg)
+        assert result is not None
         assert result["message"] == "Multiple spaces in value"
         assert result["src"] == "10.0.0.1"
 
@@ -59,6 +62,7 @@ class TestCEFParser:
         """Test CEF message with user-defined labels for custom fields."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected|10|src=10.0.0.1 deviceCustomNumber1=5 deviceCustomNumber1Label=ImportantMetric"
         result = CEFParser.parse(msg)
+        assert result is not None
         assert result["deviceCustomNumber1"] == "5"
         assert result["deviceCustomNumber1Label"] == "ImportantMetric"
         assert (
@@ -69,6 +73,7 @@ class TestCEFParser:
         """Test CEF message with spaces in values."""
         msg = "CEF:0|Security|threatmanager|1.0|100|detected|10|src=10.0.0.1 msg=This is a message with spaces dvc=mydevice"
         result = CEFParser.parse(msg)
+        assert result is not None
         assert result["msg"] == "This is a message with spaces"
         assert result["dvc"] == "mydevice"
 

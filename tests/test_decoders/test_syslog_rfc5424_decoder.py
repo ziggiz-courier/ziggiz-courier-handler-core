@@ -112,6 +112,7 @@ class TestSyslogRFC5424Decoder:
         result = decoder.decode(raw_syslog)
 
         # Use our validation utility to validate the model
+        assert result is not None
         validate_syslog_model(
             result,
             facility=int(expected_facility),
@@ -171,6 +172,7 @@ class TestSyslogRFC5424Decoder:
         result = decoder.decode(raw_syslog)
 
         # Use our validation utility to validate the model
+        assert result is not None
         validate_syslog_model(
             result,
             facility=int(expected_facility),

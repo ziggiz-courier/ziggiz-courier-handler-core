@@ -187,15 +187,14 @@ def validate_source_producer(
         and result_or_handler_data.handler_data is not None
     ):
         sp_key = "SourceProducer"
-        assert (
-            sp_key in result_or_handler_data.handler_data
-        ), f"{sp_key} not found in handler_data"
-        sp = result_or_handler_data.handler_data[sp_key]
+        handler_data = result_or_handler_data.handler_data
+        assert sp_key in handler_data, f"{sp_key} not found in handler_data"
+        sp = handler_data[sp_key]
 
         # If handler_key is provided, verify it exists in handler_data
         if handler_key is not None:
             assert (
-                handler_key in result_or_handler_data.handler_data
+                handler_key in handler_data
             ), f"Handler key '{handler_key}' not found in handler_data"
 
     # Case 3: Dictionary potentially containing SourceProducer
@@ -217,6 +216,9 @@ def validate_source_producer(
         )
 
     # Validate SourceProducer fields
+    if not isinstance(sp, SourceProducer):
+        raise AssertionError(f"Extracted object is not a SourceProducer: {type(sp)}")
+
     assert (
         sp.organization == expected_organization
     ), f"Expected organization '{expected_organization}', got '{sp.organization}'"

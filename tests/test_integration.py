@@ -43,6 +43,7 @@ class TestIntegration:
 
         # Process through the pipeline
         syslog_message = decoder.decode(raw_syslog)
+        assert syslog_message is not None
         common_event = adapter.transform(syslog_message)
         json_output = encoder.encode(common_event)
 
