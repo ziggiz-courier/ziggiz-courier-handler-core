@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.4.0 (2025-05-23)
+
+### Features
+
+- Additional spans
+  ([`cfa689b`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/cfa689b898c4cbc105c973887215f6ae01a67acc))
+
+
 ## v0.3.0 (2025-05-23)
 
 ### Features
