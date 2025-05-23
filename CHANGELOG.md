@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.3 (2025-05-23)
+
+### Bug Fixes
+
+- Correct storage of org and product
+  ([`eb5180d`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/eb5180d696668dae2770a4de01f9303c62fa6c53))
+
+
 ## v0.2.2 (2025-05-23)
 
 ### Bug Fixes
