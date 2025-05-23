@@ -21,7 +21,6 @@ on:
       - "poetry.lock"
       - "pyproject.toml"
       - ".github/workflows/release.yml"
-      - "tests/**"
 jobs:
   test-lint:
     name: Test & Lint with Tox
