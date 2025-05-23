@@ -1,6 +1,97 @@
 # CHANGELOG
 
 
+## v0.2.0 (2025-05-23)
+
+### Bug Fixes
+
+- Address cases where there are no fields
+  ([`fb9718b`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/fb9718b4c9bc21dca2406188ea80e7cfe99dd00e))
+
+- Address mypy reports
+  ([`8e8d059`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/8e8d059e87393376de3ba080061e0d6b7e74505f))
+
+- Correct default pri
+  ([`e34109b`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/e34109b494ce11f957ee7e3390602dbb2e526918))
+
+- Handle storage of vendor and product properly
+  ([`492e74c`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/492e74cf7d8ffda10032ec239690e0ffc55468c1))
+
+- Issues reported as PEP 484
+  ([`c5085b1`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/c5085b1f86fc66dd732941ee7b4a46fe535ce68c))
+
+- Leef to issues
+  ([`26232e5`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/26232e57a9a66f5904b2800e073800806600a439))
+
+- Mypy errors
+  ([`626acf2`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/626acf21cb5022b73290f536784d799fd3201d17))
+
+- Mypy errors with DATE_FORMATS constant
+  ([`5adf31a`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/5adf31a000af55c5b60848cf8fa95f8a5a1ebcc9))
+
+- Mypy issue where timestamp was not Optional as it should be
+  ([`f4c8579`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/f4c857994ea9a1f86b5f497a171c2e353a20ab77))
+
+- Mypy issues
+  ([`33b3188`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/33b318881a6824d1afa3794540a967204cc362e1))
+
+- Remove hard coded test cheat
+  ([`b0d6ff3`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/b0d6ff3f14eb51193aa5c1dbc5fc0ad7f6cc7433))
+
+- Return None instead of raising value error exceptions for performance
+  ([`426b236`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/426b23680c05d4579eb2e7f109006bc40bd9ec4a))
+
+- **types**: Add type ignore comments for SourceProducer assignments in parsers
+  ([`e52c334`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/e52c334f165d285efae671ed44e041adc2adcafc))
+
+- **types**: Resolve mypy errors in base.py, paloalto plugin, and otel_encoder
+  ([`21fc6e7`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/21fc6e74554c922422e10cf23a27b526af870908))
+
+- **types**: Use typing.cast to resolve return type issues in parsers
+  ([`71cb9b7`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/71cb9b7b4924c1b5e25a5d0aab8e95b4dcecbc24))
+
+### Chores
+
+- Additional mypy fixes
+  ([`8786b48`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/8786b48d68469b2aa2be68952dbb897c770cc5fb))
+
+- Cleanup cef
+  ([`25eb06c`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/25eb06cee4befc053cbf1310ac5b736ae9710f01))
+
+- Correct license header
+  ([`d27174f`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/d27174f5efae05c658c8b4935504754fef79c009))
+
+- Fix license headers
+  ([`6da57d8`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/6da57d83999840d75ae53da562a2ec7fc5c43351))
+
+- Remove parse_leef1_message
+  ([`e3f2c2d`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/e3f2c2dac9182e7fa46d0dd7bbd97ac2c1424463))
+
+- Test with tox
+  ([`dac2e73`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/dac2e73cf37a13f79de39a06874c88086c5b297c))
+
+### Features
+
+- Provide a method for message parser cache handling
+  ([`7dc06a0`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/7dc06a0e77e179839855d31490db4ea5d920373e))
+
+### Refactoring
+
+- Add ABC for message parsing
+  ([`1c2bb83`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/1c2bb835da9850b6738c97e4579acc9c836c12ef))
+
+- Move message parsers to their own folder in utils
+  ([`c73821f`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/c73821fa690a3db520b284e896b0414570c9a52f))
+
+- Tests new folder
+  ([`c4873db`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/c4873db91d0c41b123a0ddcd8bb76da236b098b0))
+
+### Testing
+
+- Fix mypy issues
+  ([`2ac347a`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/2ac347a8b4c4c2045fbe973e899ecca3e1958e52))
+
+
 ## v0.1.1 (2025-05-21)
 
 ### Bug Fixes
