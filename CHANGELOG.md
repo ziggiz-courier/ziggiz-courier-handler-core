@@ -1,6 +1,36 @@
 # CHANGELOG
 
 
+## v0.2.1 (2025-05-23)
+
+### Bug Fixes
+
+- Remove unused prompts
+  ([`1de9e4f`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/1de9e4f6de87c8fa6e34f545032eebfd1032a6a3))
+
+- Tests alone don't need releases
+  ([`09462ce`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/09462ce1bec3c2a7224f1bdeacdedb5cf7386256))
+
+### Chores
+
+- Update releaseer
+  ([`7011fdd`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/7011fddab9f215330d3b25ad08080bbda1c5dea6))
+
+### Continuous Integration
+
+- Correct test matrix
+  ([`918ffa0`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/918ffa09f35646b355c85247002d7c9e3ed98632))
+
+- Coverage
+  ([`f89f10a`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/f89f10a01a13060c48e6799a4b2451684dde2b7b))
+
+- Fix
+  ([`593f9f8`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/593f9f86fee05e67c9bff43644d51502171140bc))
+
+- Updates for tox
+  ([`da6e66d`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/da6e66d7a7d42de26eb14bc60036707c0c0703d2))
+
+
 ## v0.2.0 (2025-05-23)
 
 ### Bug Fixes
