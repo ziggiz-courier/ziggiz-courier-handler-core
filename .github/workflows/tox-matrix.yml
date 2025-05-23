@@ -41,7 +41,11 @@ jobs:
         run: tox
         env:
           TOXENV: py${{ matrix.python-version == '3.10' && '310' || matrix.python-version == '3.11' && '311' || matrix.python-version == '3.12' && '312' || matrix.python-version == '3.13' && '313' || matrix.python-version }}
-
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ziggiz-courier/ziggiz-courier-handler-core
   lint:
     name: Linting and Type Checking
     runs-on: ubuntu-latest
