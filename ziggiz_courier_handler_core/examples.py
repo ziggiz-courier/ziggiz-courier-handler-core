@@ -45,6 +45,10 @@ def process_syslog_message(raw_syslog: str) -> str:
         syslog_message = syslog_decoder.decode(raw_syslog)
 
         # Transform to common event
+        if syslog_message is None:
+            raise ValueError(
+                "Decoded syslog message is None and cannot be transformed."
+            )
         common_event = adapter.transform(syslog_message)
 
         # Encode to JSON
@@ -74,6 +78,10 @@ def process_syslog_to_otel(raw_syslog: str, tracer_provider: TracerProvider) -> 
         syslog_message = syslog_decoder.decode(raw_syslog)
 
         # Transform to common event
+        if syslog_message is None:
+            raise ValueError(
+                "Decoded syslog message is None and cannot be transformed."
+            )
         common_event = adapter.transform(syslog_message)
 
         # Encode to OTel span and export it

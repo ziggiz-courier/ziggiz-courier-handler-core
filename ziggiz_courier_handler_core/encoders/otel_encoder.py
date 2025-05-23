@@ -64,11 +64,14 @@ class OtelSpanEncoder(Encoder[CommonEvent, Span]):
 
         # Create resource attributes
         resource_attributes = {
-            "service.name": model.source_system,
+            "service.name": model.source_system or "unknown",
             "service.namespace": "courier",
             "service.version": "1.0.0",
         }
-        # Create resource which is automatically used by the tracer via the resource provider
+        # Remove None values to satisfy type checker
+        resource_attributes = {
+            k: v for k, v in resource_attributes.items() if v is not None
+        }
         Resource.create(resource_attributes)
 
         # Start a span with the event type as the name

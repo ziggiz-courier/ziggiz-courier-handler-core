@@ -10,7 +10,7 @@
 """Common event models."""
 
 # Standard library imports
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.event_envelope_base import BaseModel
@@ -28,8 +28,8 @@ class CommonEvent(BaseModel):
 
     event_id: str
     event_type: str
-    source_system: str
-    source_component: str
+    source_system: Optional[str]
+    source_component: Optional[str]
     severity: str
     tags: List[str] = []
     attributes: Dict[str, str] = {}
