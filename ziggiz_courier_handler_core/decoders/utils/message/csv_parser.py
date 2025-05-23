@@ -16,10 +16,16 @@ import io
 
 from typing import Optional
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 
 class CSVParser(BaseMessageParser[list[str]]):
@@ -28,6 +34,7 @@ class CSVParser(BaseMessageParser[list[str]]):
     Handles quoted values and escaped characters.
     """
 
+    @tracer.start_as_current_span("CSVParser.parse")
     @staticmethod
     def parse(message: str) -> Optional[list[str]]:
         """

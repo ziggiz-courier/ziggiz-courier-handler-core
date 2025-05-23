@@ -13,9 +13,15 @@
 # Standard library imports
 from typing import Optional, Tuple
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
+
+tracer = trace.get_tracer(__name__)
 
 
 class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
@@ -81,6 +87,7 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         message = raw_data[message_start:] if message_start < message_len else ""
         return pri, message
 
+    @tracer.start_as_current_span("SyslogRFCBaseDecoder.decode")
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
     ) -> Optional[SyslogRFCBaseModel]:

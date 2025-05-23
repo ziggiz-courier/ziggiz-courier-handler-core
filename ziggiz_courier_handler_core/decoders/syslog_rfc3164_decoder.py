@@ -15,6 +15,11 @@ import re
 from datetime import datetime
 from typing import List, Optional, Pattern, Tuple, TypedDict
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.decoders.message_decoder_plugins import (
@@ -25,6 +30,8 @@ from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
 )
 from ziggiz_courier_handler_core.decoders.utils.timestamp_parser import TimestampParser
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
+
+tracer = trace.get_tracer(__name__)
 
 # Compile the regex pattern for parsing hostname, app name, proc id and message at module level
 TAG_PATTERN = re.compile(
@@ -230,6 +237,7 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
 
         return hostname, app_name, proc_id, message_content
 
+    @tracer.start_as_current_span("SyslogRFC3164Decoder.decode")
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
     ) -> Optional[SyslogRFC3164Message]:  # Updated return type to include None
@@ -280,7 +288,6 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 and app_name is None
                 and proc_id is None
             ):
-                # This is a simple <PRI>MESSAGE format that doesn't match RFC3164
                 return None
 
             model: SyslogRFC3164Message = SyslogRFC3164Message.from_priority(
@@ -296,11 +303,20 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             self._run_message_decoder_plugins(
                 model, SyslogRFC3164Message, parsing_cache
             )
-
+            # OTel span enrichment example
+            span = trace.get_current_span()
+            span.set_attribute("syslog.rfc", "3164")
+            span.set_attribute("message.length", len(raw_data))
+            span.add_event(
+                "decoded",
+                {"hostname": model.hostname or "", "app_name": model.app_name or ""},
+            )
             return model
-        except ValueError:
-            # Return None instead of raising an exception
+        except ValueError as e:
+            span = trace.get_current_span()
+            span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
-        except Exception:
-            # Return None for any other exceptions
+        except Exception as e:
+            span = trace.get_current_span()
+            span.set_status(Status(StatusCode.ERROR, str(e)))
             return None

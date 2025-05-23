@@ -8,7 +8,6 @@
 # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
 #
 
-"""Syslog RFC5424 decoder implementation."""
 
 # Standard library imports
 import re
@@ -16,12 +15,18 @@ import re
 from datetime import datetime
 from typing import Dict, Optional
 
+# Third-party imports
+from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
     SyslogRFCBaseDecoder,
 )
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
+
+tracer = trace.get_tracer(__name__)
 
 
 class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
@@ -54,6 +59,7 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
         )
 
+    @tracer.start_as_current_span("SyslogRFC5424Decoder.decode")
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
     ) -> Optional[SyslogRFC5424Message]:
@@ -98,9 +104,18 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             self._run_message_decoder_plugins(
                 model, SyslogRFC5424Message, parsing_cache
             )
+            # OTel span enrichment example
+            span = trace.get_current_span()
+            span.set_attribute("syslog.rfc", "5424")
+            span.set_attribute("message.length", len(raw_data))
+            span.add_event(
+                "decoded",
+                {"hostname": model.hostname or "", "app_name": model.app_name or ""},
+            )
             return model
-        except ValueError:
-            # Return None instead of raising an exception
+        except ValueError as e:
+            span = trace.get_current_span()
+            span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
 
     def _parse_timestamp(self, timestamp: str) -> datetime:

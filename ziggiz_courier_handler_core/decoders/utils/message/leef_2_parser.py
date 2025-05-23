@@ -21,10 +21,16 @@ import logging
 
 from typing import Optional
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +41,7 @@ class LEEF2Parser(BaseMessageParser[dict[str, str]]):
     Handles LEEF header and extension fields with proper escaping rules.
     """
 
+    @tracer.start_as_current_span("LEEF2Parser.parse")
     @staticmethod
     def parse(message: str) -> Optional[dict[str, str]]:
         """

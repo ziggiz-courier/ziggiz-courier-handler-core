@@ -13,10 +13,16 @@ Utility for parsing key=value log message strings (e.g., FortiGate, generic log 
 # Standard library imports
 from typing import Optional
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 
 class KVParser(BaseMessageParser[dict[str, str]]):
@@ -25,6 +31,7 @@ class KVParser(BaseMessageParser[dict[str, str]]):
     Handles quoted values and escaped characters.
     """
 
+    @tracer.start_as_current_span("KVParser.parse")
     @staticmethod
     def parse(message: str) -> Optional[dict[str, str]]:
         """

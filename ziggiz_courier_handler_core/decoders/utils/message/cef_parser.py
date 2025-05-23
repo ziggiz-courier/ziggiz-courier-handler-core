@@ -18,10 +18,16 @@ The Extension part contains key-value pairs in the format key=value.
 # Standard library imports
 from typing import Dict, List, Optional
 
+# Third-party imports
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 
 class CEFParser(BaseMessageParser[dict[str, str]]):
@@ -30,6 +36,7 @@ class CEFParser(BaseMessageParser[dict[str, str]]):
     Handles CEF header and extension fields with proper escaping rules.
     """
 
+    @tracer.start_as_current_span("CEFParser.parse")
     @staticmethod
     def parse(message: str) -> Optional[dict[str, str]]:
         """

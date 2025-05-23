@@ -21,10 +21,15 @@ from typing import Any, Optional
 # Third-party imports
 import orjson
 
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 
 class JSONParser(BaseMessageParser[dict[str, Any]]):
@@ -33,6 +38,7 @@ class JSONParser(BaseMessageParser[dict[str, Any]]):
     Handles JSON with escaped control characters that might break standard parsing.
     """
 
+    @tracer.start_as_current_span("JSONParser.parse")
     @staticmethod
     def parse(message: str) -> Optional[dict[str, Any]]:
         """

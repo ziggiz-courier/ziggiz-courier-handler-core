@@ -13,6 +13,9 @@
 # Standard library imports
 from typing import Any, Optional
 
+# Third-party imports
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.decoders.syslog_rfc3164_decoder import (
@@ -27,6 +30,8 @@ from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
 from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
+
+tracer = trace.get_tracer(__name__)
 
 
 class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
@@ -50,6 +55,7 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
             connection_cache=connection_cache, event_parsing_cache=event_parsing_cache
         )
 
+    @tracer.start_as_current_span("UnknownSyslogDecoder.decode")
     def decode(self, raw_data: Any) -> EventEnvelopeBaseModel:
         """
         Attempt to decode as RFC5424, then RFC3164, then RFCBase. If all fail, return EventEnvelopeBaseModel with message.

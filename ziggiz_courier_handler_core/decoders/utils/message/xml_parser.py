@@ -23,10 +23,15 @@ from typing import Any, Optional
 # Third-party imports
 import xmltodict
 
+# OpenTelemetry imports for tracing
+from opentelemetry import trace
+
 # Local/package imports
 from ziggiz_courier_handler_core.decoders.utils.message.base_parser import (
     BaseMessageParser,
 )
+
+tracer = trace.get_tracer(__name__)
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +60,7 @@ class XMLParser(BaseMessageParser[dict[str, Any]]):
     Handles XML formatted messages and common escaping issues.
     """
 
+    @tracer.start_as_current_span("XMLParser.parse")
     @staticmethod
     def parse(message: Optional[str]) -> Optional[dict[str, Any]]:
         """
