@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.4.1 (2025-05-24)
+
+### Bug Fixes
+
+- Correct handling for pri
+  ([`ae291ab`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/ae291abf3fc3ef95dcbcda780bccd19d7d81b02b))
+
+### Chores
+
+- Consolidate configuration to pyproject.toml
+  ([`9f744d2`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/9f744d2c1098e28e2f6781348f780a3f3976d603))
+
+- Improve otel
+  ([`3e60477`](https://github.com/ziggiz-courier/ziggiz-courier-handler-core/commit/3e6047745ede9a1895919021ac603be41c634068))
+
+
 ## v0.4.0 (2025-05-23)
 
 ### Features
