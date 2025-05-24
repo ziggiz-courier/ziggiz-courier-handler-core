@@ -98,7 +98,6 @@ jobs:
           --token '${{ secrets.BENCHER_API_TOKEN }}' \
           --branch main \
           --testbed gh-ubuntu-latest \
-          --thresholds-reset \
           --err \
           --adapter python_pytest \
           --github-actions '${{ secrets.GITHUB_TOKEN }}' \
@@ -109,3 +108,4 @@ jobs:
           # --threshold-test t_test \
           # --threshold-max-sample-size 64 \
           # --threshold-upper-boundary 0.99 \
+          # --thresholds-reset \
