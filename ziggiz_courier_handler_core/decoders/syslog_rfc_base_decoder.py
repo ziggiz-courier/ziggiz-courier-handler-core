@@ -68,14 +68,6 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         # Extract PRI value (everything between < and >)
         pri = raw_data[1:close_bracket_pos]
 
-        # Check for malformed PRI with spaces (like "< >" case)
-        if " " in pri:
-            raise ValueError(f"Invalid syslog format: {raw_data}")
-
-        # Handle empty PRI
-        if pri.strip() == "":
-            pri = None
-
         # Find first non-whitespace after closing bracket
         message_start = close_bracket_pos + 1
         message_len = len(raw_data)

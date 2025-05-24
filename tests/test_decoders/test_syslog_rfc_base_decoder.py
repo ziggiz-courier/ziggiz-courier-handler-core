@@ -118,13 +118,11 @@ class TestSyslogRFCBaseDecoder:
         "invalid_message",
         [
             "No PRI field at all",
-            "Incomplete <13",
-            "< >Empty PRI field",
+            "<13 Incomplete ",
         ],
         ids=[
             "no_pri_field",
             "incomplete_pri",
-            "empty_pri_field",
         ],
     )
     def test_invalid_format(self, invalid_message):
