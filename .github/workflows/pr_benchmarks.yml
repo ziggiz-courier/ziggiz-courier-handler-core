@@ -37,6 +37,11 @@ jobs:
           --start-point-clone-thresholds \
           --start-point-reset \
           --testbed gh-ubuntu-latest \
+          --threshold-measure throughput \
+          --threshold-test t_test \
+          --threshold-max-sample-size 64 \
+          --threshold-upper-boundary 0.99 \
+          --thresholds-reset \
           --err \
           --adapter python_pytest \
           --github-actions '${{ secrets.GITHUB_TOKEN }}' \
