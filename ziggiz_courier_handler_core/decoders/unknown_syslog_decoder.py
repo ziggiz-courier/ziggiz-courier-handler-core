@@ -11,6 +11,7 @@
 """Decoder for unknown syslog string: tries RFC5424, then RFC3164, then RFCBase, else returns EventEnvelopeBaseModel."""
 
 # Standard library imports
+from time import sleep
 from typing import Any, Optional
 
 # Third-party imports
@@ -65,6 +66,7 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
         Returns:
             EventEnvelopeBaseModel or subclass instance
         """
+        sleep(0.2)
         parsing_cache: dict = {}
         for decoder in (self._rfc5424, self._rfc3164, self._rfcbase):
             result = decoder.decode(raw_data, parsing_cache=parsing_cache)
