@@ -52,7 +52,6 @@ flake8 = "^7"
 flake8-import-order = "^0"
 tox = "^4"
 types-xmltodict = "^0"
-pytest-opentelemetry = "^1.1.0"
 pytest-env = "^1.1.5"
 pytest-benchmark = "^5.1.0"
 
