@@ -6,10 +6,9 @@
 # Business Source License 1.1. You may not use this file except in
 # compliance with the License. You may obtain a copy of the License at:
 # https://github.com/ziggiz-courier/ziggiz-courier-core-data-processing/blob/main/LICENSE
-#
-
 
 # Standard library imports
+import logging
 import re
 
 from datetime import datetime
@@ -26,6 +25,7 @@ from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
 )
 from ziggiz_courier_handler_core.models.syslog_rfc5424 import SyslogRFC5424Message
 
+logger = logging.getLogger(__name__)
 tracer = trace.get_tracer(__name__)
 
 
@@ -73,16 +73,28 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
         Returns:
             A SyslogRFC5424Message instance representing the decoded data, or None if decoding fails
         """
+        span = trace.get_current_span()
+        logger.debug(
+            "Decoding RFC5424 syslog message", extra={"input_length": len(raw_data)}
+        )
         try:
             # Extract PRI and message content using the reusable method
             pri, message_content = SyslogRFCBaseDecoder.extract_pri_and_content(
                 raw_data
             )
+            logger.debug(
+                "Extracted PRI and message content",
+                extra={"pri": pri, "message_sample": message_content[:100]},
+            )
 
             # Parse the rest of the message using the message pattern
             match = self.MESSAGE_PATTERN.match(message_content)
             if not match:
-                # Return None instead of raising an exception
+                logger.debug(
+                    "RFC5424 pattern did not match",
+                    extra={"message_sample": message_content[:100]},
+                )
+                span.set_attribute("ziggiz.syslog.rfc5424.match", False)
                 return None
 
             data = match.groupdict()
@@ -100,21 +112,22 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
                 structured_data=structured_data,
             )
 
-            # --- Plugin-based event_data decoding ---
             self._run_message_decoder_plugins(
                 model, SyslogRFC5424Message, parsing_cache
             )
-            # OTel span enrichment example
-            span = trace.get_current_span()
             span.set_attribute("syslog.rfc", "5424")
             span.set_attribute("message.length", len(raw_data))
             span.add_event(
                 "decoded",
                 {"hostname": model.hostname or "", "app_name": model.app_name or ""},
             )
+            logger.debug(
+                "RFC5424 decode success",
+                extra={"hostname": model.hostname, "app_name": model.app_name},
+            )
             return model
         except ValueError as e:
-            span = trace.get_current_span()
+            logger.warning("RFC5424 decode failed", extra={"error": str(e)})
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
 

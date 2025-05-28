@@ -10,7 +10,10 @@
 
 """Syslog RFC Base decoder implementation for basic PRI extraction."""
 
+
 # Standard library imports
+import logging
+
 from typing import Optional, Tuple
 
 # Third-party imports
@@ -21,6 +24,7 @@ from opentelemetry import trace
 from ziggiz_courier_handler_core.decoders.base import Decoder
 from ziggiz_courier_handler_core.models.syslog_rfc_base import SyslogRFCBaseModel
 
+logger = logging.getLogger(__name__)
 tracer = trace.get_tracer(__name__)
 
 
@@ -79,6 +83,33 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         message = raw_data[message_start:] if message_start < message_len else ""
         return pri, message
 
+    def _set_syslog_trace_attributes(
+        self,
+        span,
+        raw_data: str,
+        decoder_name: str,
+        pri: str = None,
+        success: bool = True,
+    ) -> None:
+        """
+        Set syslog RFC base trace attributes and events for this decoder and subclasses.
+        """
+        attributes = {
+            "syslog.rfc": "base",
+            "message.length": len(str(raw_data)),
+            "ziggiz.syslog.decoder": decoder_name,
+        }
+        events = []
+        if success:
+            events.append(
+                ("decoded", {"pri": str(pri) if pri is not None else "unknown"})
+            )
+        else:
+            events.append(
+                ("decode_failed", {"error": str(pri) if pri is not None else "unknown"})
+            )
+        self._set_trace_attributes(span, attributes=attributes, events=events)
+
     @tracer.start_as_current_span("SyslogRFCBaseDecoder.decode")
     def decode(
         self, raw_data: str, parsing_cache: Optional[dict] = None
@@ -97,19 +128,34 @@ class SyslogRFCBaseDecoder(Decoder[SyslogRFCBaseModel]):
         Returns:
             A SyslogRFCBaseModel instance representing the decoded data, or None if decoding fails
         """
+        span = trace.get_current_span()
+        logger.debug(
+            "Decoding syslog RFC base message", extra={"input_length": len(raw_data)}
+        )
         if parsing_cache is None:
             parsing_cache = self.event_parsing_cache
 
         try:
             pri, message = self.extract_pri_and_content(raw_data)
+            logger.debug(
+                "Extracted PRI and message",
+                extra={"pri": pri, "message_sample": message[:100]},
+            )
 
-            # Create the model using from_priority which handles validation
             model: SyslogRFCBaseModel = SyslogRFCBaseModel.from_priority(
                 pri, message=message
             )
 
             self._run_message_decoder_plugins(model, SyslogRFCBaseModel, parsing_cache)
+            self._set_syslog_trace_attributes(
+                span, raw_data, self.__class__.__name__, pri=pri, success=True
+            )
+            logger.debug("RFC base decode success", extra={"pri": pri})
             return model
-        except ValueError:
-            # Return None instead of raising an exception
+        except ValueError as e:
+            logger.warning("RFC base decode failed", extra={"error": str(e)})
+            self._set_syslog_trace_attributes(
+                span, raw_data, self.__class__.__name__, pri=str(e), success=False
+            )
+            span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
             return None

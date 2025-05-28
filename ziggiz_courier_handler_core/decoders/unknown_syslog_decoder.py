@@ -10,7 +10,10 @@
 
 """Decoder for unknown syslog string: tries RFC5424, then RFC3164, then RFCBase, else returns EventEnvelopeBaseModel."""
 
+
 # Standard library imports
+import logging
+
 from typing import Any, Optional
 
 # Third-party imports
@@ -31,6 +34,7 @@ from ziggiz_courier_handler_core.models.event_envelope_base import (
     EventEnvelopeBaseModel,
 )
 
+logger = logging.getLogger(__name__)
 tracer = trace.get_tracer(__name__)
 
 
@@ -66,15 +70,43 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
             EventEnvelopeBaseModel or subclass instance
         """
         parsing_cache: dict = {}
-        for decoder in (self._rfc5424, self._rfc3164, self._rfcbase):
+        span = trace.get_current_span()
+        logger.debug(
+            "Attempting to decode syslog message with all known decoders",
+            extra={"input_length": len(str(raw_data))},
+        )
+        for decoder, rfc in zip(
+            (self._rfc5424, self._rfc3164, self._rfcbase), ("5424", "3164", "base")
+        ):
+            decoder_name = decoder.__class__.__name__
+            logger.debug("Trying decoder", extra={"decoder": decoder_name})
             result = decoder.decode(raw_data, parsing_cache=parsing_cache)
             if result is not None:
+                logger.debug("Decoder succeeded", extra={"decoder": decoder_name})
+                self._set_trace_attributes(
+                    span,
+                    raw_data=raw_data,
+                    rfc=rfc,
+                    decoder_name=decoder_name,
+                    events=[("decode_success", {"decoder": decoder_name})],
+                )
                 return result
 
         # If all decoders fail, return EventEnvelopeBaseModel with message and timestamp
         # Standard library imports
         from datetime import datetime
 
+        logger.warning(
+            "All decoders failed, returning EventEnvelopeBaseModel fallback",
+            extra={"input_sample": str(raw_data)[:100]},
+        )
+        self._set_trace_attributes(
+            span,
+            raw_data=raw_data,
+            rfc="unknown",
+            decoder_name="fallback",
+            events=[("decode_failed", {"input_sample": str(raw_data)[:100]})],
+        )
         return EventEnvelopeBaseModel(
             message=str(raw_data), timestamp=datetime.now().astimezone()
         )

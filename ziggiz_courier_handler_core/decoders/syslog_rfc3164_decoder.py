@@ -9,7 +9,9 @@
 #
 """Syslog RFC3164 (BSD-style) decoder implementation."""
 
+
 # Standard library imports
+import logging
 import re
 
 from datetime import datetime
@@ -31,6 +33,7 @@ from ziggiz_courier_handler_core.decoders.syslog_rfc_base_decoder import (
 from ziggiz_courier_handler_core.decoders.utils.timestamp_parser import TimestampParser
 from ziggiz_courier_handler_core.models.syslog_rfc3164 import SyslogRFC3164Message
 
+logger = logging.getLogger(__name__)
 tracer = trace.get_tracer(__name__)
 
 # Compile the regex pattern for parsing hostname, app name, proc id and message at module level
@@ -265,13 +268,19 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
         app_name = None  # tag in RFC3164 terminology
         proc_id = None  # content after tag in RFC3164 terminology
 
+        span = trace.get_current_span()
+        logger.debug(
+            "Decoding RFC3164 syslog message", extra={"input_length": len(raw_data)}
+        )
         try:
-            # Extract PRI and message content using the reusable method
             pri, message_content = SyslogRFCBaseDecoder.extract_pri_and_content(
                 raw_data
             )
+            logger.debug(
+                "Extracted PRI and message content",
+                extra={"pri": pri, "message_sample": message_content[:100]},
+            )
 
-            # Try to parse timestamp
             timestamp, remaining = self._try_parse_timestamp(message_content)
 
             if timestamp is not None and remaining is not None:
@@ -281,13 +290,16 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             else:
                 hostname = app_name = proc_id = None
 
-            # Create the RFC3164 message model
             if (
                 timestamp is None
                 and hostname is None
                 and app_name is None
                 and proc_id is None
             ):
+                logger.debug(
+                    "RFC3164 decode failed: could not extract any fields",
+                    extra={"input_sample": raw_data[:100]},
+                )
                 return None
 
             model: SyslogRFC3164Message = SyslogRFC3164Message.from_priority(
@@ -299,24 +311,25 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                 proc_id=proc_id,
             )
 
-            # --- Plugin-based event_data decoding ---
             self._run_message_decoder_plugins(
                 model, SyslogRFC3164Message, parsing_cache
             )
-            # OTel span enrichment example
-            span = trace.get_current_span()
             span.set_attribute("syslog.rfc", "3164")
             span.set_attribute("message.length", len(raw_data))
             span.add_event(
                 "decoded",
                 {"hostname": model.hostname or "", "app_name": model.app_name or ""},
             )
+            logger.debug(
+                "RFC3164 decode success",
+                extra={"hostname": model.hostname, "app_name": model.app_name},
+            )
             return model
         except ValueError as e:
-            span = trace.get_current_span()
+            logger.warning("RFC3164 decode failed", extra={"error": str(e)})
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
         except Exception as e:
-            span = trace.get_current_span()
+            logger.error("RFC3164 decode exception", extra={"error": str(e)})
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None

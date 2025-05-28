@@ -13,13 +13,19 @@ This module defines base data models for Syslog protocols that share common
 elements like facility and severity.
 """
 
+
 # Standard library imports
+import logging
+
 from abc import ABC
 from enum import IntEnum
 from typing import Optional, Union
 
 # Local/package imports
 from ziggiz_courier_handler_core.models.event_envelope_base import BaseModel
+
+# Initialize module logger
+logger = logging.getLogger(__name__)
 
 
 class Facility(IntEnum):

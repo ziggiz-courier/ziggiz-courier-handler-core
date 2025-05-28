@@ -26,6 +26,34 @@ T = TypeVar("T", bound=EventEnvelopeBaseModel)
 
 
 class Decoder(Generic[T], ABC):
+
+    def _set_trace_attributes(
+        self,
+        span,
+        attributes: Optional[dict] = None,
+        events: Optional[list] = None,
+    ) -> None:
+        """
+        Set OpenTelemetry span attributes and add events for decoder operations.
+
+        Args:
+            span: The current OpenTelemetry span
+            attributes: Additional attributes to set on the span
+            events: List of events to add to the span, each as a tuple (event_name, event_attributes)
+        """
+        # Set any provided attributes
+        if attributes:
+            for key, value in attributes.items():
+                span.set_attribute(key, value)
+        # Add events
+        if events:
+            for event in events:
+                if isinstance(event, tuple) and len(event) == 2:
+                    event_name, event_attrs = event
+                    span.add_event(event_name, event_attrs)
+                elif isinstance(event, str):
+                    span.add_event(event)
+
     """
     Abstract base class for decoders that transform raw data into model objects.
 
