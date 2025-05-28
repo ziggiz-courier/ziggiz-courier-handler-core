@@ -83,12 +83,16 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
             result = decoder.decode(raw_data, parsing_cache=parsing_cache)
             if result is not None:
                 logger.debug("Decoder succeeded", extra={"decoder": decoder_name})
+                attributes = {
+                    "syslog.rfc": rfc,
+                    "message.length": len(str(raw_data)),
+                    "ziggiz.syslog.decoder": decoder_name,
+                }
+                events = [("decode_success", {"decoder": decoder_name})]
                 self._set_trace_attributes(
                     span,
-                    raw_data=raw_data,
-                    rfc=rfc,
-                    decoder_name=decoder_name,
-                    events=[("decode_success", {"decoder": decoder_name})],
+                    attributes=attributes,
+                    events=events,
                 )
                 return result
 
@@ -100,12 +104,16 @@ class UnknownSyslogDecoder(Decoder[EventEnvelopeBaseModel]):
             "All decoders failed, returning EventEnvelopeBaseModel fallback",
             extra={"input_sample": str(raw_data)[:100]},
         )
+        attributes = {
+            "syslog.rfc": "unknown",
+            "message.length": len(str(raw_data)),
+            "ziggiz.syslog.decoder": "fallback",
+        }
+        events = [("decode_failed", {"input_sample": str(raw_data)[:100]})]
         self._set_trace_attributes(
             span,
-            raw_data=raw_data,
-            rfc="unknown",
-            decoder_name="fallback",
-            events=[("decode_failed", {"input_sample": str(raw_data)[:100]})],
+            attributes=attributes,
+            events=events,
         )
         return EventEnvelopeBaseModel(
             message=str(raw_data), timestamp=datetime.now().astimezone()

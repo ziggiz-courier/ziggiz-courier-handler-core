@@ -30,6 +30,32 @@ tracer = trace.get_tracer(__name__)
 
 
 class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
+    def _set_syslog_trace_attributes(
+        self,
+        span,
+        raw_data: str,
+        decoder_name: str,
+        extra_attrs: dict = None,
+        success: bool = True,
+        event_attrs: dict = None,
+    ) -> None:
+        """
+        Set syslog RFC5424 trace attributes and events for this decoder and subclasses.
+        """
+        attributes = {
+            "syslog.rfc": "5424",
+            "message.length": len(str(raw_data)),
+            "ziggiz.syslog.decoder": decoder_name,
+        }
+        if extra_attrs:
+            attributes.update(extra_attrs)
+        events = []
+        if success:
+            events.append(("decoded", event_attrs or {}))
+        else:
+            events.append(("decode_failed", event_attrs or {}))
+        self._set_trace_attributes(span, attributes=attributes, events=events)
+
     """Decoder for syslog messages following RFC5424 format."""
 
     # Regex for parsing standard syslog format (after PRI extraction)
@@ -94,7 +120,14 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
                     "RFC5424 pattern did not match",
                     extra={"message_sample": message_content[:100]},
                 )
-                span.set_attribute("ziggiz.syslog.rfc5424.match", False)
+                self._set_syslog_trace_attributes(
+                    span,
+                    raw_data,
+                    self.__class__.__name__,
+                    extra_attrs={"ziggiz.syslog.rfc5424.match": False},
+                    success=False,
+                    event_attrs={"message_sample": message_content[:100]},
+                )
                 return None
 
             data = match.groupdict()
@@ -115,11 +148,15 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             self._run_message_decoder_plugins(
                 model, SyslogRFC5424Message, parsing_cache
             )
-            span.set_attribute("syslog.rfc", "5424")
-            span.set_attribute("message.length", len(raw_data))
-            span.add_event(
-                "decoded",
-                {"hostname": model.hostname or "", "app_name": model.app_name or ""},
+            self._set_syslog_trace_attributes(
+                span,
+                raw_data,
+                self.__class__.__name__,
+                event_attrs={
+                    "hostname": model.hostname or "",
+                    "app_name": model.app_name or "",
+                },
+                success=True,
             )
             logger.debug(
                 "RFC5424 decode success",
@@ -128,6 +165,13 @@ class SyslogRFC5424Decoder(Decoder[SyslogRFC5424Message]):
             return model
         except ValueError as e:
             logger.warning("RFC5424 decode failed", extra={"error": str(e)})
+            self._set_syslog_trace_attributes(
+                span,
+                raw_data,
+                self.__class__.__name__,
+                success=False,
+                event_attrs={"error": str(e)},
+            )
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
 

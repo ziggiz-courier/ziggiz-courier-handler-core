@@ -52,6 +52,32 @@ class DateFormatSpec(TypedDict):
 
 
 class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
+    def _set_syslog_trace_attributes(
+        self,
+        span,
+        raw_data: str,
+        decoder_name: str,
+        extra_attrs: dict = None,
+        success: bool = True,
+        event_attrs: dict = None,
+    ) -> None:
+        """
+        Set syslog RFC3164 trace attributes and events for this decoder and subclasses.
+        """
+        attributes = {
+            "syslog.rfc": "3164",
+            "message.length": len(str(raw_data)),
+            "ziggiz.syslog.decoder": decoder_name,
+        }
+        if extra_attrs:
+            attributes.update(extra_attrs)
+        events = []
+        if success:
+            events.append(("decoded", event_attrs or {}))
+        else:
+            events.append(("decode_failed", event_attrs or {}))
+        self._set_trace_attributes(span, attributes=attributes, events=events)
+
     """Decoder for syslog messages following RFC3164 format (BSD-style syslog).
 
     This decoder handles the simple format: <PRI>MESSAGE and the standard format:
@@ -300,6 +326,13 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
                     "RFC3164 decode failed: could not extract any fields",
                     extra={"input_sample": raw_data[:100]},
                 )
+                self._set_syslog_trace_attributes(
+                    span,
+                    raw_data,
+                    self.__class__.__name__,
+                    success=False,
+                    event_attrs={"input_sample": raw_data[:100]},
+                )
                 return None
 
             model: SyslogRFC3164Message = SyslogRFC3164Message.from_priority(
@@ -314,11 +347,16 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             self._run_message_decoder_plugins(
                 model, SyslogRFC3164Message, parsing_cache
             )
-            span.set_attribute("syslog.rfc", "3164")
-            span.set_attribute("message.length", len(raw_data))
-            span.add_event(
-                "decoded",
-                {"hostname": model.hostname or "", "app_name": model.app_name or ""},
+            self._set_syslog_trace_attributes(
+                span,
+                raw_data,
+                self.__class__.__name__,
+                event_attrs={
+                    "hostname": model.hostname or "",
+                    "app_name": model.app_name or "",
+                    "proc_id": model.proc_id or "",
+                },
+                success=True,
             )
             logger.debug(
                 "RFC3164 decode success",
@@ -327,9 +365,23 @@ class SyslogRFC3164Decoder(Decoder[SyslogRFC3164Message]):
             return model
         except ValueError as e:
             logger.warning("RFC3164 decode failed", extra={"error": str(e)})
+            self._set_syslog_trace_attributes(
+                span,
+                raw_data,
+                self.__class__.__name__,
+                success=False,
+                event_attrs={"error": str(e)},
+            )
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
         except Exception as e:
             logger.error("RFC3164 decode exception", extra={"error": str(e)})
+            self._set_syslog_trace_attributes(
+                span,
+                raw_data,
+                self.__class__.__name__,
+                success=False,
+                event_attrs={"error": str(e)},
+            )
             span.set_status(Status(StatusCode.ERROR, str(e)))
             return None
