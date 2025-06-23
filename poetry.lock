@@ -336,14 +336,14 @@ pydocstyle = ">=2.1"
 
 [[package]]
 name = "flake8-import-order"
-version = "0.18.2"
+version = "0.19.1"
 description = "Flake8 and pylama plugin that checks the ordering of import statements."
 optional = false
 python-versions = "*"
 groups = ["dev"]
 files = [
-    {file = "flake8-import-order-0.18.2.tar.gz", hash = "sha256:e23941f892da3e0c09d711babbb0c73bc735242e9b216b726616758a920d900e"},
-    {file = "flake8_import_order-0.18.2-py2.py3-none-any.whl", hash = "sha256:82ed59f1083b629b030ee9d3928d9e06b6213eb196fe745b3a7d4af2168130df"},
+    {file = "flake8_import_order-0.19.1-py3-none-any.whl", hash = "sha256:8235d8cba5bead8e119dc129b7286df2d92046ceebbd48fc18394abe57c5f467"},
+    {file = "flake8_import_order-0.19.1.tar.gz", hash = "sha256:e071477eb9aaddbb75d30543cec0f83e1858502990d82bd8262f5a7575527fd0"},
 ]
 
 [package.dependencies]
